@@ -1,0 +1,3 @@
+author_routes:
+    resource: author/routes.yaml
+    prefix: v1

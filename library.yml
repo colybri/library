@@ -1,0 +1,43 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Library
+  description: A simple API for manage your personal library
+
+servers:
+  - url: https://localhost/v1
+
+
+paths:
+  /author:
+    post:
+      description: Store new author
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+              properties:
+                id:
+                  type: string
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                cointry_id:
+                  type: integer
+      responses:
+        '201':
+          description: Successfully created a new artist
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string

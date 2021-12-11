@@ -1,0 +1,123 @@
+version: "3.4"
+services:
+  library:
+    container_name: library
+    build:
+      context: .
+      target: symfony_php
+      args:
+        SYMFONY_VERSION: ${SYMFONY_VERSION:-}
+        SKELETON: ${SKELETON:-symfony/skeleton}
+        STABILITY: ${STABILITY:-stable}
+    restart: unless-stopped
+    volumes:
+      - ./:/srv/app
+      - php_socket:/var/run/php
+      - ./docker/php/local.ini:/usr/local/etc/php/php.ini
+    working_dir: /srv/app
+    tty: true
+    healthcheck:
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+    environment:
+      SERVICE_NAME: library
+      SERVICE_TAGS: develop
+      # Run "composer require symfony/orm-pack" to install and configure Doctrine ORM
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-tbRv_rS8eY>4x}@database:5432/${POSTGRES_DB:-library}?serverVersion=${POSTGRES_VERSION:-14}
+      # Run "composer require symfony/mercure-bundle" to install and configure the Mercure integration
+      MERCURE_URL: ${CADDY_MERCURE_URL:-http://caddy/.well-known/mercure}
+      MERCURE_PUBLIC_URL: https://${SERVER_NAME:-localhost}/.well-known/mercure
+      MERCURE_JWT_SECRET: ${CADDY_MERCURE_JWT_SECRET:-!ChangeMe!}
+    networks:
+      library-network:
+        ipv4_address: 172.20.10.90
+
+  # Mercure is installed as a Caddy module, prevent the Flex recipe from installing another service
+  caddy:
+    container_name: library_caddy
+    build:
+      context: .
+      target: symfony_caddy
+    depends_on:
+      - library
+    environment:
+      SERVER_NAME: ${SERVER_NAME:-localhost, caddy:80}
+      MERCURE_PUBLISHER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET:-!ChangeMe!}
+      MERCURE_SUBSCRIBER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET:-!ChangeMe!}
+    restart: unless-stopped
+    volumes:
+      - php_socket:/var/run/php
+      - caddy_data:/data
+      - caddy_config:/config
+    ports:
+      # HTTP
+      - target: 80
+        published: 80
+        protocol: tcp
+      # HTTPS
+      - target: 443
+        published: 443
+        protocol: tcp
+      # HTTP/3
+      - target: 443
+        published: 443
+        protocol: udp
+    networks:
+      library-network:
+        ipv4_address: 172.20.10.91
+
+  #Postgres Service
+  postgres:
+    image: postgres:latest
+    container_name: library_postgres
+    restart: unless-stopped
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=tbRv_rS8eY>4x
+      - POSTGRES_USER:postgres
+    networks:
+      library-network:
+        ipv4_address: 172.20.10.92
+    ports:
+      - 5432:5432
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: library_pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - 5050:5050
+    networks:
+      library-network:
+        ipv4_address: 172.20.10.93
+
+  #Rabbit Service
+  library_rabbit:
+    image: rabbitmq:3.9-management
+    container_name: library_rabbit
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      library-network:
+        ipv4_address: 172.20.10.94
+
+#Docker Networks
+networks:
+  library-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.10.0/24
+
+
+volumes:
+  php_socket:
+  caddy_data:
+  caddy_config:

@@ -1,0 +1,4 @@
+create_author:
+  path: /author
+  controller: Colybri\Library\Entrypoint\Controller\Author\CreateAuthorController
+  methods: POST
