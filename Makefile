@@ -26,7 +26,10 @@ up: ## Start the docker hub in detached mode (no logs)
 
 start: build up ## Build and start the containers
 
-down: ## Stop the docker hub
+stop: ## Stop the docker hub
+	@$(DOCKER_COMP) stop
+
+down: ## Remove the docker hub
 	@$(DOCKER_COMP) down --remove-orphans
 
 logs: ## Show live logs

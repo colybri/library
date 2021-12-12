@@ -17,7 +17,15 @@ class CreateAuthorCommandHandler implements MessageHandlerInterface
 
     public function __invoke(CreateAuthorCommand $cmd)
     {
-        $author = $this->creator->execute($cmd->authorId(), $cmd->firstName());
+        $author = $this->creator->execute(
+            $cmd->authorId(),
+            $cmd->firstName(),
+            $cmd->lastName(),
+            $cmd->countryId(),
+            $cmd->isPseudonymOf(),
+            $cmd->bornAt(),
+            $cmd->deathAt()
+        );
 
         foreach ($author->events() as $event) {
             $this->brokerBus->dispatch($event);
