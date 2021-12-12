@@ -42,7 +42,7 @@ final class Author extends AggregateRoot
         $self->bornAt = $bornAt;
         $self->deathAt = $deathAt;
 
-        $self->recordThat(AuthorCreated::from($id, $firstName));
+        $self->recordThat(AuthorCreated::from($id, $firstName, $lastName, $countryId, $isPseudonymOf, $bornAt, $deathAt));
         return $self;
     }
 

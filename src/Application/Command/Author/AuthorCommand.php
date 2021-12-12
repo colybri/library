@@ -83,7 +83,6 @@ class AuthorCommand extends Command
         $this->firstName = AuthorFirstName::from((string)$payload[self::FIRST_NAME_PAYLOAD]);
         $this->lastName = AuthorLastName::from((string)$payload[self::LAST_NAME_PAYLOAD]);
         $this->countryId = Uuid::from((string)$payload[self::COUNTRY_ID_PAYLOAD]);
-        //TODO ¿como se hace si puede ser nulo?
         $this->isPseudonymOf = null === $payload[self::IS_PSEUDONYM_OF_PAYLOAD] ? null : Uuid::from((string)$payload[self::IS_PSEUDONYM_OF_PAYLOAD]);
         $this->bornAt = AuthorBornAt::from((string)$payload[self::BORN_AT_PAYLOAD]);
         $this->deathAt = null === $payload[self::DEATH_AT_PAYLOAD] ? null : AuthorDeathAt::from((string)$payload[self::DEATH_AT_PAYLOAD]);

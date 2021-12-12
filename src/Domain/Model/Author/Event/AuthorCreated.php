@@ -7,11 +7,8 @@ namespace Colybri\Library\Domain\Model\Author\Event;
 use Colybri\Library\Domain\CompanyName;
 use Colybri\Library\Domain\Model\Author\Author;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorBornAt;
-use Colybri\Library\Domain\Model\Author\ValueObject\AuthorCountryId;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorDeathAt;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorFirstName;
-use Colybri\Library\Domain\Model\Author\ValueObject\AuthorIsPseudo;
-use Colybri\Library\Domain\Model\Author\ValueObject\AuthorIsPseudonymOf;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorLastName;
 use Colybri\Library\Domain\ServiceName;
 use Forkrefactor\Ddd\Domain\Model\DomainEvent;
@@ -40,16 +37,16 @@ class AuthorCreated extends DomainEvent
     private Uuid $countryId;
     private Uuid $isPseudonymOf;
     private AuthorBornAt $bornAt;
-    private AuthorDeathAt $authorDeathAt;
+    private AuthorDeathAt $deathAt;
 
     public static function from(
-        Uuid                $id,
-        AuthorFirstName     $firstName,
-        ?AuthorLastName      $lastName,
-        Uuid     $countryId,
-        ?Uuid $isPseudonymOf,
-        AuthorBornAt        $bornAt,
-        ?AuthorDeathAt       $deathAt): static
+        Uuid            $id,
+        AuthorFirstName $firstName,
+        ?AuthorLastName $lastName,
+        Uuid            $countryId,
+        ?Uuid           $isPseudonymOf,
+        AuthorBornAt    $bornAt,
+        ?AuthorDeathAt  $deathAt): static
     {
         return static::fromPayload(
             Uuid::v4(),
@@ -75,9 +72,9 @@ class AuthorCreated extends DomainEvent
         $this->firstName = AuthorFirstName::from((string)$payload[self::FIRST_NAME_PAYLOAD]);
         $this->lastName = AuthorLastName::from((string)$payload[self::LAST_NAME_PAYLOAD]);
         $this->countryId = Uuid::from((string)$payload[self::COUNTRY_ID_PAYLOAD]);
-        $this->isPseudonymOf = Uuid::from((string)$payload[self::IS_PSEUDONYM_OF_PAYLOAD]);
+        $this->isPseudonymOf = null === $payload[self::IS_PSEUDONYM_OF_PAYLOAD] ? null : Uuid::from((string)$payload[self::IS_PSEUDONYM_OF_PAYLOAD]);
         $this->bornAt = AuthorBornAt::from((string)$payload[self::BORN_AT_PAYLOAD]);
-        $this->authorDeathAt = AuthorDeathAt::from((string)$payload[self::DEATH_AT_PAYLOAD]);
+        $this->deathAt = null === $payload[self::DEATH_AT_PAYLOAD] ? null : AuthorDeathAt::from((string)$payload[self::DEATH_AT_PAYLOAD]);
 
     }
 
