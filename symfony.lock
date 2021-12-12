@@ -97,6 +97,9 @@
     "forkrefactor/ddd-logging": {
         "version": "v1.0.0"
     },
+    "forkrefactor/messenger-bundle": {
+        "version": "v1.0.0"
+    },
     "friendsofphp/proxy-manager-lts": {
         "version": "v1.0.5"
     },

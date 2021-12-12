@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Colybri\Library\Application\Command\Author;
+namespace Colybri\Library\Application\Command\Author\Create;
 
 use Colybri\Library\Domain\Service\Author\AuthorCreator;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;

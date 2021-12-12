@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Colybri\Library\Domain\Model\Author\Event;
 
 use Colybri\Library\Domain\CompanyName;
+use Colybri\Library\Domain\Model\Author\Author;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorFirstName;
 use Colybri\Library\Domain\ServiceName;
 use Forkrefactor\Ddd\Domain\Model\DomainEvent;

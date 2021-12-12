@@ -17,6 +17,7 @@
         "doctrine/orm": "^2.10",
         "forkrefactor/ddd": "^1.0",
         "forkrefactor/ddd-logging": "^1.0",
+        "forkrefactor/messenger-bundle": "^1.0",
         "pccomponentes/topic-generator": "^2.0.1",
         "symfony/console": "6.0.*",
         "symfony/dotenv": "6.0.*",
