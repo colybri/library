@@ -155,7 +155,7 @@
         "version": "v3.0.0"
     },
     "symfony/doctrine-bridge": {
-        "version": "v6.0.0"
+        "version": "v6.0.1"
     },
     "symfony/dotenv": {
         "version": "v6.0.0"

@@ -15,7 +15,7 @@ class CreateAuthorCommandHandler implements MessageHandlerInterface
     {
     }
 
-    public function __invoke(CreateAuthorCommand $cmd)
+    public function __invoke(CreateAuthorCommand $cmd): void
     {
         $author = $this->creator->execute(
             $cmd->authorId(),
@@ -27,8 +27,8 @@ class CreateAuthorCommandHandler implements MessageHandlerInterface
             $cmd->deathAt()
         );
 
-        foreach ($author->events() as $event) {
-            $this->brokerBus->dispatch($event);
-        }
+        //foreach ($author->events() as $event) {
+        //    $this->brokerBus->dispatch($event);
+        //}
     }
 }

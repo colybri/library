@@ -73,8 +73,8 @@ class AuthorCreated extends DomainEvent
         $this->lastName = AuthorLastName::from((string)$payload[self::LAST_NAME_PAYLOAD]);
         $this->countryId = Uuid::from((string)$payload[self::COUNTRY_ID_PAYLOAD]);
         $this->isPseudonymOf = null === $payload[self::IS_PSEUDONYM_OF_PAYLOAD] ? null : Uuid::from((string)$payload[self::IS_PSEUDONYM_OF_PAYLOAD]);
-        $this->bornAt = AuthorBornAt::from((string)$payload[self::BORN_AT_PAYLOAD]);
-        $this->deathAt = null === $payload[self::DEATH_AT_PAYLOAD] ? null : AuthorDeathAt::from((string)$payload[self::DEATH_AT_PAYLOAD]);
+        $this->bornAt = AuthorBornAt::from((int)$payload[self::BORN_AT_PAYLOAD]);
+        $this->deathAt = null === $payload[self::DEATH_AT_PAYLOAD] ? null : AuthorDeathAt::from((int)$payload[self::DEATH_AT_PAYLOAD]);
 
     }
 

@@ -23,6 +23,8 @@ class AuthorUpdater
 
     public function execute(Uuid $id, AuthorFirstName $firstName, ?AuthorLastName $lastName, Uuid $countryId, ?Uuid $isPseudonymOf, AuthorBornAt $bornAt, ?AuthorDeathAt $deathAt): Author
     {
+        //find--->
+        //update en el modelo y le pasas al repo el author
 
         $author = Author::create($id, $firstName, $lastName, $countryId, $isPseudonymOf, $bornAt, $deathAt);
         //¿?¿??

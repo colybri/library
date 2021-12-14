@@ -17,7 +17,7 @@ class AuthorDbalRepository extends DbalRepository implements AuthorRepository
             SELECT * from authors 
              WHERE (
                 id = :id
-            )
+            );
         ";
 
         $statement = $this->connection->prepare($sql);
@@ -30,11 +30,11 @@ class AuthorDbalRepository extends DbalRepository implements AuthorRepository
         $sql = "
             INSERT into authors (
                 id, 
-                firstName
+                first_name
             ) VALUES (
                 :id,
                 :firstName     
-            )
+            );
         ";
 
         $statement = $this->connection->prepare($sql);
@@ -52,7 +52,18 @@ class AuthorDbalRepository extends DbalRepository implements AuthorRepository
 
     public function update(Author $author): void
     {
+        $sql = "
+            UPDATE authors set (
+                first_name = :firstName,
+                last_name = :last_name,
+                update_at = CURRENT_TIMESTAMP 
+            ) WHERE (
+                id = :id
+            );
+        ";
         // TODO: Implement update() method.
+
+        //implementar el update_at
     }
 
 

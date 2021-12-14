@@ -13,6 +13,7 @@ services:
     volumes:
       - ./:/srv/app
       - php_socket:/var/run/php
+      - ./var/xdebug:/tmp/xdebug
       - ./docker/php/local.ini:/usr/local/etc/php/php.ini
     working_dir: /srv/app
     tty: true
@@ -25,7 +26,7 @@ services:
       SERVICE_NAME: library
       SERVICE_TAGS: develop
       # Run "composer require symfony/orm-pack" to install and configure Doctrine ORM
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-tbRv_rS8eY>4x}@database:5432/${POSTGRES_DB:-library}?serverVersion=${POSTGRES_VERSION:-14}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-tbRv_rS8eY>4x}@${POSTGRES_HOST-172.20.10.92}:5432/${POSTGRES_DB:-library}?serverVersion=${POSTGRES_VERSION:-14}
       # Run "composer require symfony/mercure-bundle" to install and configure the Mercure integration
       MERCURE_URL: ${CADDY_MERCURE_URL:-http://caddy/.well-known/mercure}
       MERCURE_PUBLIC_URL: https://${SERVER_NAME:-localhost}/.well-known/mercure
@@ -108,7 +109,6 @@ services:
       library-network:
         ipv4_address: 172.20.10.94
 
-#Docker Networks
 networks:
   library-network:
     driver: bridge

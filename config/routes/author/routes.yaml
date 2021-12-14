@@ -2,3 +2,11 @@ create_author:
   path: /author
   controller: Colybri\Library\Entrypoint\Controller\Author\CreateAuthorController
   methods: POST
+update_author:
+  path: /author
+  controller: Colybri\Library\Entrypoint\Controller\Author\UpdateAuthorController
+  methods: PUT
+delete_author:
+  path: /author
+  controller: Colybri\Library\Entrypoint\Controller\Author\DeleteAuthorController
+  methods: DELETE

@@ -75,17 +75,17 @@ class AuthorCommand extends Command
             ->that($payload[self::LAST_NAME_PAYLOAD], self::LAST_NAME_PAYLOAD)->nullOr()->string()
             ->that($payload[self::COUNTRY_ID_PAYLOAD], self::COUNTRY_ID_PAYLOAD)->notEmpty()->uuid()
             ->that($payload[self::IS_PSEUDONYM_OF_PAYLOAD], self::IS_PSEUDONYM_OF_PAYLOAD)->nullOr()->uuid()
-            ->that($payload[self::BORN_AT_PAYLOAD], self::BORN_AT_PAYLOAD)->notEmpty()->date('m/d/Y')
-            ->that($payload[self::DEATH_AT_PAYLOAD], self::DEATH_AT_PAYLOAD)->nullOr()->date('m/d/Y')
+            ->that($payload[self::BORN_AT_PAYLOAD], self::BORN_AT_PAYLOAD)->notEmpty()->integer()
+            ->that($payload[self::DEATH_AT_PAYLOAD], self::DEATH_AT_PAYLOAD)->nullOr()->integer()
             ->verifyNow();
 
         $this->authorId = Uuid::from($payload[self::ID_PAYLOAD]);
         $this->firstName = AuthorFirstName::from((string)$payload[self::FIRST_NAME_PAYLOAD]);
-        $this->lastName = AuthorLastName::from((string)$payload[self::LAST_NAME_PAYLOAD]);
+        $this->lastName = null === $payload[self::LAST_NAME_PAYLOAD] ? null : AuthorLastName::from((string)$payload[self::LAST_NAME_PAYLOAD]);
         $this->countryId = Uuid::from((string)$payload[self::COUNTRY_ID_PAYLOAD]);
         $this->isPseudonymOf = null === $payload[self::IS_PSEUDONYM_OF_PAYLOAD] ? null : Uuid::from((string)$payload[self::IS_PSEUDONYM_OF_PAYLOAD]);
-        $this->bornAt = AuthorBornAt::from((string)$payload[self::BORN_AT_PAYLOAD]);
-        $this->deathAt = null === $payload[self::DEATH_AT_PAYLOAD] ? null : AuthorDeathAt::from((string)$payload[self::DEATH_AT_PAYLOAD]);
+        $this->bornAt = AuthorBornAt::from((int)$payload[self::BORN_AT_PAYLOAD]);
+        $this->deathAt = null === $payload[self::DEATH_AT_PAYLOAD] ? null : AuthorDeathAt::from((int)$payload[self::DEATH_AT_PAYLOAD]);
     }
 
     public function authorId(): Uuid
@@ -98,7 +98,7 @@ class AuthorCommand extends Command
         return $this->firstName;
     }
 
-    public function lastName(): AuthorLastName
+    public function lastName():? AuthorLastName
     {
         return $this->lastName;
     }

@@ -10,13 +10,13 @@ use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
 class UpdateAuthorCommandHandler implements MessageHandlerInterface
 {
-    public function __construct(private AuthorUpdater $creator)
+    public function __construct(private AuthorUpdater $updater)
     {
     }
 
-    public function __invoke(UpdateAuthorCommand $cmd)
+    public function __invoke(UpdateAuthorCommand $cmd): void
     {
-        $author = $this->creator->execute(
+        $this->updater->execute(
             $cmd->authorId(),
             $cmd->firstName(),
             $cmd->lastName(),
