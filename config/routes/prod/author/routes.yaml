@@ -7,6 +7,10 @@ update_author:
   controller: Colybri\Library\Entrypoint\Controller\Author\UpdateAuthorController
   methods: PUT
 delete_author:
-  path: /author
+  path: /author/{id}
   controller: Colybri\Library\Entrypoint\Controller\Author\DeleteAuthorController
   methods: DELETE
+macth_authors:
+  path: /author/match
+  controller: Colybri\Library\Entrypoint\Controller\Author\MatchAuthorController
+  methods: [GET]

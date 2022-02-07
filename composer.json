@@ -11,6 +11,7 @@
         "ext-iconv": "*",
         "ext-json": "*",
         "beberlei/assert": "^3.2",
+        "colybri/criteria": "^1.0",
         "composer/package-versions-deprecated": "1.11.99.4",
         "doctrine/doctrine-bundle": "^2.5",
         "doctrine/doctrine-migrations-bundle": "^3.2",
@@ -18,6 +19,7 @@
         "forkrefactor/ddd": "^1.0",
         "forkrefactor/ddd-logging": "^1.0",
         "forkrefactor/messenger-bundle": "^1.0",
+        "guzzlehttp/guzzle": "^7.4",
         "pccomponentes/topic-generator": "^2.0.1",
         "symfony/console": "6.0.*",
         "symfony/dotenv": "6.0.*",
@@ -40,7 +42,12 @@
         "preferred-install": {
             "*": "dist"
         },
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "symfony/flex": true,
+            "symfony/runtime": true
+        }
     },
     "autoload": {
         "psr-4": {

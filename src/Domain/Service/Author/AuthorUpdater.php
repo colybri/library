@@ -8,29 +8,28 @@ use Colybri\Library\Domain\Model\Author\Author;
 use Colybri\Library\Domain\Model\Author\AuthorRepository;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorBornAt;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorDeathAt;
-use Colybri\Library\Domain\Model\Author\ValueObject\AuthorFirstName;
-use Colybri\Library\Domain\Model\Author\ValueObject\AuthorLastName;
+use Colybri\Library\Domain\Model\Author\ValueObject\AuthorName;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 
-class AuthorUpdater
+final class AuthorUpdater
 {
-    private AuthorRepository $repo;
-
-    public function __construct(AuthorRepository $repo)
+    public function __construct(private AuthorRepository $repo, private AuthorFinder $finder)
     {
-        $this->repo = $repo;
     }
 
-    public function execute(Uuid $id, AuthorFirstName $firstName, ?AuthorLastName $lastName, Uuid $countryId, ?Uuid $isPseudonymOf, AuthorBornAt $bornAt, ?AuthorDeathAt $deathAt): Author
+    public function execute(Uuid $id, AuthorName $name, Uuid $countryId, ?Uuid $isPseudonymOf, AuthorBornAt $bornAt, ?AuthorDeathAt $deathAt): Author
     {
-        //find--->
-        //update en el modelo y le pasas al repo el author
+        $this->ensureAuthorExist($id);
 
-        $author = Author::create($id, $firstName, $lastName, $countryId, $isPseudonymOf, $bornAt, $deathAt);
-        //¿?¿??
-        $this->repo->update( $id, $firstName,  $lastName,  $countryId, $isPseudonymOf, $bornAt,  $deathAt);
+        $author = Author::hydrate($id, $name, $countryId, $isPseudonymOf, $bornAt, $deathAt);
+
+        $this->repo->update($author);
 
         return $author;
 
+    }
+    private function ensureAuthorExist(Uuid $id): void
+    {
+        $this->finder->execute($id);
     }
 }

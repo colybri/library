@@ -8,7 +8,7 @@ use Colybri\Library\Domain\Service\Author\AuthorUpdater;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
 
-class UpdateAuthorCommandHandler implements MessageHandlerInterface
+final class UpdateAuthorCommandHandler implements MessageHandlerInterface
 {
     public function __construct(private AuthorUpdater $updater)
     {
@@ -18,8 +18,7 @@ class UpdateAuthorCommandHandler implements MessageHandlerInterface
     {
         $this->updater->execute(
             $cmd->authorId(),
-            $cmd->firstName(),
-            $cmd->lastName(),
+            $cmd->name(),
             $cmd->countryId(),
             $cmd->isPseudonymOf(),
             $cmd->bornAt(),

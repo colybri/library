@@ -2,8 +2,14 @@
     "beberlei/assert": {
         "version": "v3.3.1"
     },
+    "biblys/isbn": {
+        "version": "2.5.0"
+    },
     "brick/math": {
         "version": "0.9.3"
+    },
+    "colybri/criteria": {
+        "version": "v1.0.0"
     },
     "composer/package-versions-deprecated": {
         "version": "1.11.99.4"

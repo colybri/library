@@ -11,11 +11,9 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 abstract class CommandController
 {
-    private $commandBus;
 
-    public function __contruct(MessageBusInterface $commandBus)
+    public function __construct(private MessageBusInterface $commandBus)
     {
-        $this->commandBus = $commandBus;
     }
 
     public function getRequestBody(Request $request): ParameterBag
@@ -26,6 +24,6 @@ abstract class CommandController
 
     protected function exec(Command $cmd)
     {
-        $this->commandBus->dispacth($cmd);
+        $this->commandBus->dispatch($cmd);
     }
 }

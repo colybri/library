@@ -1,3 +1,15 @@
 author_routes:
-    resource: author/routes.yaml
+    resource: prod/author/routes.yaml
+    prefix: v1
+
+country_routes:
+    resource: prod/country/routes.yaml
+    prefix: v1
+
+publisher_routes:
+    resource: prod/publisher/routes.yaml
+    prefix: v1
+
+book_routes:
+    resource: prod/book/routes.yaml
     prefix: v1

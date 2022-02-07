@@ -6,7 +6,7 @@ namespace Colybri\Library\Domain\Model\Author\ValueObject;
 
 use Forkrefactor\Ddd\Domain\Model\ValueObject\IntValueObject;
 
-class AuthorBornAt extends IntValueObject
+final class AuthorBornAt extends IntValueObject
 {
 
 }

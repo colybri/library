@@ -12,7 +12,7 @@ use Forkrefactor\Ddd\Application\Command;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 use PcComponentes\TopicGenerator\Topic;
 
-class DeleteAuthorCommand extends Command
+final class DeleteAuthorCommand extends Command
 {
     public const ID_PAYLOAD = 'id';
 

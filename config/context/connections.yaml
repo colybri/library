@@ -1,0 +1,33 @@
+services:
+  connection_write.dbal:
+    class: Doctrine\DBAL\Connection
+    factory: 'Doctrine\DBAL\DriverManager::getConnection'
+    arguments:
+      $params:
+        dbname: '%env(POSTGRES_WRITE_DB)%'
+        host: '%env(POSTGRES_WRITE_HOST)%'
+        port: '%env(POSTGRES_WRITE_PORT)%'
+        user: '%env(POSTGRES_WRITE_USER)%'
+        password: '%env(POSTGRES_WRITE_PASS)%'
+        server_version: '%env(POSTGRES_WRITE_VERSION)%'
+        driver: 'pdo_pgsql'
+        charset: '%env(POSTGRES_WRITE_CHARSET)%'
+      $config: '@connection.dbal.configuration'
+
+  connection_read.dbal:
+    class: Doctrine\DBAL\Connection
+    factory: 'Doctrine\DBAL\DriverManager::getConnection'
+    arguments:
+      $params:
+        dbname: '%env(POSTGRES_READ_DB)%'
+        host: '%env(POSTGRES_READ_HOST)%'
+        port: '%env(POSTGRES_READ_PORT)%'
+        user: '%env(POSTGRES_READ_USER)%'
+        password: '%env(POSTGRES_READ_PASS)%'
+        server_version: '%env(POSTGRES_READ_VERSION)%'
+        driver: 'pdo_pgsql'
+        charset: '%env(POSTGRES_READ_CHARSET)%'
+      $config: '@connection.dbal.configuration'
+
+  connection.dbal.configuration:
+    class: Doctrine\DBAL\Configuration

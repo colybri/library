@@ -8,7 +8,7 @@ use Assert\InvalidArgumentException;
 use Colybri\Library\Application\Command\Author\Create\CreateAuthorCommand;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorBornAt;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorDeathAt;
-use Colybri\Library\Domain\Model\Author\ValueObject\AuthorFirstName;
+use Colybri\Library\Domain\Model\Author\ValueObject\AuthorName;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 use PHPUnit\Framework\TestCase;
 
@@ -63,7 +63,7 @@ class CreateAuthorCommandTest extends TestCase
     public function given_author_members_when_command_getters_are_called_then_return_equals_objects_and_values(): void
     {
         self::assertTrue(Uuid::from($this->authorId)->equalTo($this->command->authorId()));
-        self::assertTrue(AuthorFirstName::from($this->firstName)->equalTo($this->command->firstName()));
+        self::assertTrue(AuthorName::from($this->firstName)->equalTo($this->command->name()));
         self::assertSame($this->lastName, $this->command->lastName());
         self::assertTrue(Uuid::from($this->countryId)->equalTo($this->command->countryId()));
         self::assertSame($this->isPseudonymOf, $this->command->isPseudonymOf());
@@ -149,7 +149,6 @@ class CreateAuthorCommandTest extends TestCase
                 CreateAuthorCommand::LAST_NAME_PAYLOAD => $this->lastName,
                 CreateAuthorCommand::COUNTRY_ID_PAYLOAD => $this->countryId,
                 CreateAuthorCommand::IS_PSEUDONYM_OF_PAYLOAD => 'no-soy-una-id',
-                CreateAuthorCommand::BORN_AT_PAYLOAD => $this->bornAt,
                 CreateAuthorCommand::DEATH_AT_PAYLOAD => $this->deathAt,
             ]
         );

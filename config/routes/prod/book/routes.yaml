@@ -1,0 +1,4 @@
+search_books:
+  path: /book/search
+  controller: Colybri\Library\Entrypoint\Controller\Book\SearchBookController
+  methods: [GET]

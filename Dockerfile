@@ -8,7 +8,7 @@ ARG PHP_VERSION=8.1
 ARG CADDY_VERSION=2
 
 # "php" stage
-FROM php:${PHP_VERSION}-fpm-alpine AS symfony_php
+FROM php:8.1-fpm-alpine AS symfony_php
 
 # persistent / runtime deps
 RUN apk add --no-cache \
@@ -29,25 +29,31 @@ RUN set -eux; \
 	apk add --no-cache --virtual .build-deps \
 		$PHPIZE_DEPS \
 		icu-dev \
+        libpq-dev \
 		libzip-dev \
 		zlib-dev \
         postgresql-dev \
-	; \
+        rabbitmq-c-dev \
+    	; \
 	\
 	docker-php-ext-configure zip; \
+    docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql ;\
 	docker-php-ext-install -j$(nproc) \
 		intl \
 		zip \
+        mysqli \
         pdo \
         pdo_pgsql \
 	; \
 	pecl install \
 		apcu-${APCU_VERSION} \
+        amqp \
 	; \
 	pecl clear-cache; \
 	docker-php-ext-enable \
 		apcu \
 		opcache \
+        amqp \
 	; \
 	\
 	runDeps="$( \
@@ -58,7 +64,11 @@ RUN set -eux; \
 	)"; \
 	apk add --no-cache --virtual .phpexts-rundeps $runDeps; \
 	\
-	apk del .build-deps
+	apk del .build-deps \
+    ;
+
+# Workaround for rabbitmq linking issue
+RUN ln -s /usr/lib /usr/local/lib64
 
 COPY docker/php/docker-healthcheck.sh /usr/local/bin/docker-healthcheck
 RUN chmod +x /usr/local/bin/docker-healthcheck
@@ -75,12 +85,15 @@ RUN chmod +x /usr/local/bin/docker-entrypoint
 
 VOLUME /var/run/php
 
+
+# Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # https://getcomposer.org/doc/03-cli.md#composer-allow-superuser
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
 ENV PATH="${PATH}:/root/.composer/vendor/bin"
+
 
 WORKDIR /srv/app
 
@@ -92,7 +105,9 @@ RUN set -eux; \
 	composer dump-autoload --classmap-authoritative --no-dev; \
 	composer symfony:dump-env prod; \
 	composer run-script --no-dev post-install-cmd; \
-	chmod +x bin/console; sync
+	chmod +x bin/console; sync \
+    ;
+
 VOLUME /srv/app/var
 
 ENTRYPOINT ["docker-entrypoint"]

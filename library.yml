@@ -40,6 +40,73 @@ paths:
           type: Author
             $ref: "#/components/schemas/Author"
         responses:
+          '200':
+            description: Successfully updated an author
+          '400':
+            description: Invalid request
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+    delete:
+      description: Delete an author
+      security:
+        - BearerToken:
+            - 'public'
+      content:
+        application/json:
+      properties:
+        id:
+          type: string
+        responses:
+          '200':
+            description: Successfully updated an author
+          '400':
+            description: Invalid request
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+  /publisher:
+    post:
+      description: Create new publisher
+      security:
+        - BearerToken:
+            - 'public'
+      content:
+        application/json:
+        schema:
+          type: Author
+            $ref: "#/components/schemas/Publisher"
+        responses:
+          '201':
+            description: Successfully created a new author
+          '400':
+            description: Invalid request
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+    put:
+      description: Update an publisher
+      security:
+        - BearerToken:
+            - 'public'
+      content:
+        application/json:
+        schema:
+          type: Author
+            $ref: "#/components/schemas/Author"
+        responses:
           '201':
             description: Successfully updated an author
           '400':
@@ -51,8 +118,29 @@ paths:
                   properties:
                     message:
                       type: string
-
-
+  /country:
+    post:
+      description: Create new publisher
+      security:
+        - BearerToken:
+            - 'public'
+      content:
+        application/json:
+        schema:
+          type: Author
+            $ref: "#/components/schemas/Author"
+        responses:
+          '201':
+            description: Successfully created a new author
+          '400':
+            description: Invalid request
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
 components:
   securitySchemes:
 
@@ -65,8 +153,7 @@ components:
     Author:
       required:
         - id
-        - firstName
-        - lastName
+        - name
         - countryId
         - isPseudonumOf
         - bornYear
@@ -74,15 +161,13 @@ components:
       properties:
         id:
           type: string
-        firstName:
+        name:
           type: string
-        lastName:
-          type: [string, "null"]
-        countruID:
+        countryId:
           type: string
-        isPseudonumOf:
-          type: [string, "null"]
+        isPseudonymOf:
+          type: [ string, "null" ]
         bornYear:
           type: integer
         deathYear:
-          type: [integer, "null"]
+          type: [ integer, "null" ]

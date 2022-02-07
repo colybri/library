@@ -1,0 +1,9 @@
+macth_countries:
+  path: /country/match
+  controller: Colybri\Library\Entrypoint\Controller\Country\MatchCountryController
+  methods: [GET]
+
+get_country:
+  path: /country/{id}
+  controller: Colybri\Library\Entrypoint\Controller\Country\GetCountryController
+  methods: [GET]

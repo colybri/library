@@ -8,13 +8,7 @@ use Doctrine\DBAL\Connection;
 
 abstract class DbalRepository
 {
-    protected Connection $connection;
-
-
-    public function __construct(Connection $connection)
+    public function __construct(protected Connection $connectionRead, protected Connection $connectionWrite)
     {
-        $this->connection = $connection;
     }
-
-
 }
