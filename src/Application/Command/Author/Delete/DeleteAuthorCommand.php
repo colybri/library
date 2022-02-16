@@ -14,7 +14,7 @@ use PcComponentes\TopicGenerator\Topic;
 
 final class DeleteAuthorCommand extends Command
 {
-    public const ID_PAYLOAD = 'id';
+    public const AUTHOR_ID_PAYLOAD = 'id';
 
     protected const NAME = 'delete';
     protected const VERSION = '1';
@@ -44,14 +44,14 @@ final class DeleteAuthorCommand extends Command
 
         Assert::lazy()
             ->that($payload, 'payload')->isArray()
-            ->keyExists(self::ID_PAYLOAD)
+            ->keyExists(self::AUTHOR_ID_PAYLOAD)
             ->verifyNow();
 
         Assert::lazy()
-            ->that($payload[self::ID_PAYLOAD], self::ID_PAYLOAD)->uuid()
+            ->that($payload[self::AUTHOR_ID_PAYLOAD], self::AUTHOR_ID_PAYLOAD)->uuid()
             ->verifyNow();
 
-        $this->authorId = Uuid::from($payload[self::ID_PAYLOAD]);
+        $this->authorId = Uuid::from($payload[self::AUTHOR_ID_PAYLOAD]);
     }
 
     public function authorId(): Uuid

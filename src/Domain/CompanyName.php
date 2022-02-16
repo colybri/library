@@ -8,7 +8,7 @@ use PcComponentes\TopicGenerator\Company;
 
 class CompanyName extends Company
 {
-    private const NAME = 'library';
+    private const NAME = 'colybri';
 
     public function name(): string
     {

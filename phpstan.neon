@@ -1,0 +1,9 @@
+includes:
+	- ./vendor/phpstan/phpstan-beberlei-assert/extension.neon
+	- ./vendor/phpstan/phpstan-symfony/extension.neon
+parameters:
+    level: 3
+    checkMissingIterableValueType: false
+    paths:
+        - src
+        - tests

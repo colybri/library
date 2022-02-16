@@ -12,6 +12,11 @@ nbproject/*
 # Docker proyect resources
 postgres_data/
 
+
+# Report files
+report/
+
+
 # windows thumbnail cache
 Thumbs.db
 

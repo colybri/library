@@ -52,6 +52,7 @@ class Publisher extends AggregateRoot
 
         return $self;
     }
+
     public static function modelName(): string
     {
         return self::NAME;
@@ -77,7 +78,7 @@ class Publisher extends AggregateRoot
         return $this->countryId;
     }
 
-    public function foundationYear(): PublisherFoundationYear
+    public function foundationYear(): ?PublisherFoundationYear
     {
         return $this->foundationYear;
     }

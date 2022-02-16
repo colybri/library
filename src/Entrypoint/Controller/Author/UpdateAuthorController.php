@@ -22,8 +22,12 @@ final class UpdateAuthorController extends CommandController
             UpdateAuthorCommand::fromPayload(
                 Uuid::v4(),
                 [
-                    UpdateAuthorCommand::ID_PAYLOAD => $body->get(UpdateAuthorCommand::ID_PAYLOAD),
-                    UpdateAuthorCommand::NAME_PAYLOAD => $body->get(UpdateAuthorCommand::NAME_PAYLOAD)
+                    UpdateAuthorCommand::AUTHOR_ID_PAYLOAD => $body->get(UpdateAuthorCommand::AUTHOR_ID_PAYLOAD),
+                    UpdateAuthorCommand::AUTHOR_NAME_PAYLOAD => $body->get(UpdateAuthorCommand::AUTHOR_NAME_PAYLOAD),
+                    UpdateAuthorCommand::AUTHOR_COUNTRY_ID_PAYLOAD => $body->get(CreateAuthorCommand::AUTHOR_COUNTRY_ID_PAYLOAD),
+                    UpdateAuthorCommand::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD => $body->get(CreateAuthorCommand::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD),
+                    UpdateAuthorCommand::AUTHOR_BORN_YEAR_PAYLOAD => $body->get(CreateAuthorCommand::AUTHOR_BORN_YEAR_PAYLOAD),
+                    UpdateAuthorCommand::AUTHOR_DEATH_YEAR_PAYLOAD => $body->get(CreateAuthorCommand::AUTHOR_DEATH_YEAR_PAYLOAD)
                 ]
             )
         );

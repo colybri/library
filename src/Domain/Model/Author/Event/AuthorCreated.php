@@ -18,12 +18,12 @@ use PcComponentes\TopicGenerator\Topic;
 final class AuthorCreated extends DomainEvent
 {
 
-    public const ID_PAYLOAD = 'id';
-    public const NAME_PAYLOAD = 'name';
-    public const COUNTRY_ID_PAYLOAD = 'countryId';
-    public const IS_PSEUDONYM_OF_PAYLOAD = 'isPseudonymOf';
-    public const BORN_AT_PAYLOAD = 'bornAt';
-    public const DEATH_AT_PAYLOAD = 'deathAt';
+    public const AUTHOR_ID_PAYLOAD = 'id';
+    public const AUTHOR_NAME_PAYLOAD = 'name';
+    public const AUTHOR_COUNTRY_ID_PAYLOAD = 'countryId';
+    public const AUTHOR_IS_PSEUDONYM_OF_PAYLOAD = 'isPseudonymOf';
+    public const AUTHOR_BORN_AT_PAYLOAD = 'bornAt';
+    public const AUTHOR_DEATH_AT_PAYLOAD = 'deathAt';
 
 
     private const NAME = 'created';
@@ -32,9 +32,9 @@ final class AuthorCreated extends DomainEvent
     private Uuid $authorId;
     private AuthorName $name;
     private Uuid $countryId;
-    private Uuid $isPseudonymOf;
+    private ?Uuid $isPseudonymOf;
     private AuthorBornAt $bornAt;
-    private AuthorDeathAt $deathAt;
+    private ?AuthorDeathAt $deathAt;
 
     public static function from(
         Uuid            $id,
@@ -49,11 +49,12 @@ final class AuthorCreated extends DomainEvent
             $id,
             new DateTimeValueObject(),
             [
-                self::NAME_PAYLOAD => $name->value(),
-                self::COUNTRY_ID_PAYLOAD => $countryId->value(),
-                self::IS_PSEUDONYM_OF_PAYLOAD => $isPseudonymOf?->value(),
-                self::BORN_AT_PAYLOAD => $bornAt->value(),
-                self::DEATH_AT_PAYLOAD => $deathAt?->value(),
+                self::AUTHOR_ID_PAYLOAD => $id->value(),
+                self::AUTHOR_NAME_PAYLOAD => $name->value(),
+                self::AUTHOR_COUNTRY_ID_PAYLOAD => $countryId->value(),
+                self::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD => $isPseudonymOf?->value(),
+                self::AUTHOR_BORN_AT_PAYLOAD => $bornAt->value(),
+                self::AUTHOR_DEATH_AT_PAYLOAD => $deathAt?->value(),
             ]
         );
     }
@@ -63,12 +64,12 @@ final class AuthorCreated extends DomainEvent
     {
         $payload = $this->messagePayload();
 
-        $this->authorId = Uuid::from((string)$payload[self::ID_PAYLOAD]);
-        $this->name = AuthorName::from((string)$payload[self::NAME_PAYLOAD]);
-        $this->countryId = Uuid::from((string)$payload[self::COUNTRY_ID_PAYLOAD]);
-        $this->isPseudonymOf = null === $payload[self::IS_PSEUDONYM_OF_PAYLOAD] ? null : Uuid::from((string)$payload[self::IS_PSEUDONYM_OF_PAYLOAD]);
-        $this->bornAt = AuthorBornAt::from((int)$payload[self::BORN_AT_PAYLOAD]);
-        $this->deathAt = null === $payload[self::DEATH_AT_PAYLOAD] ? null : AuthorDeathAt::from((int)$payload[self::DEATH_AT_PAYLOAD]);
+        $this->authorId = Uuid::from((string)$payload[self::AUTHOR_ID_PAYLOAD]);
+        $this->name = AuthorName::from((string)$payload[self::AUTHOR_NAME_PAYLOAD]);
+        $this->countryId = Uuid::from((string)$payload[self::AUTHOR_COUNTRY_ID_PAYLOAD]);
+        $this->isPseudonymOf = null === $payload[self::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD] ? null : Uuid::from((string)$payload[self::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD]);
+        $this->bornAt = AuthorBornAt::from((int)$payload[self::AUTHOR_BORN_AT_PAYLOAD]);
+        $this->deathAt = null === $payload[self::AUTHOR_DEATH_AT_PAYLOAD] ? null : AuthorDeathAt::from((int)$payload[self::AUTHOR_DEATH_AT_PAYLOAD]);
 
     }
 
@@ -87,5 +88,36 @@ final class AuthorCreated extends DomainEvent
     public static function messageVersion(): string
     {
         return self::VERSION;
+    }
+
+    public function authorId(): Uuid
+    {
+        return $this->authorId;
+    }
+
+    public function name(): AuthorName
+    {
+        return $this->name;
+    }
+
+    public function countryId(): Uuid
+    {
+        return $this->countryId;
+
+    }
+
+    public function bornAt(): AuthorBornAt
+    {
+        return $this->bornAt;
+    }
+
+    public function deathAt(): ?AuthorDeathAt
+    {
+        return $this->deathAt;
+    }
+
+    public function isPseudonymOf(): ?Uuid
+    {
+        return $this->isPseudonymOf;
     }
 }

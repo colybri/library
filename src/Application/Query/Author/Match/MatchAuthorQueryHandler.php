@@ -7,7 +7,7 @@ namespace Colybri\Library\Application\Query\Author\Match;
 use Colybri\Library\Domain\Service\Author\AuthorMatcher;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
-class MatchAuthorQueryHandler implements MessageHandlerInterface
+final class MatchAuthorQueryHandler implements MessageHandlerInterface
 {
     public function __construct(private AuthorMatcher $matcher)
     {

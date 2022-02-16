@@ -18,6 +18,7 @@ RUN apk add --no-cache \
 		gettext \
 		git \
 		gnu-libiconv \
+        bash \
 	;
 
 # install gnu-libiconv and set LD_PRELOAD env to make iconv work fully on Alpine image.
@@ -48,12 +49,14 @@ RUN set -eux; \
 	pecl install \
 		apcu-${APCU_VERSION} \
         amqp \
+        xdebug-3.1.0 \
 	; \
 	pecl clear-cache; \
 	docker-php-ext-enable \
 		apcu \
 		opcache \
         amqp \
+        xdebug \
 	; \
 	\
 	runDeps="$( \
@@ -76,7 +79,7 @@ RUN chmod +x /usr/local/bin/docker-healthcheck
 HEALTHCHECK --interval=10s --timeout=3s --retries=3 CMD ["docker-healthcheck"]
 
 RUN ln -s $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini
-COPY docker/php/conf.d/symfony.prod.ini $PHP_INI_DIR/conf.d/symfony.ini
+COPY docker/php/conf.d/symfony.dev.ini $PHP_INI_DIR/conf.d/symfony.ini
 
 COPY docker/php/php-fpm.d/zz-docker.conf /usr/local/etc/php-fpm.d/zz-docker.conf
 
@@ -94,6 +97,10 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 
 ENV PATH="${PATH}:/root/.composer/vendor/bin"
 
+RUN wget https://get.symfony.com/cli/installer -O - | bash
+RUN mv /root/.symfony/bin/symfony /usr/local/bin/symfony
+
+#RUN export PATH="$HOME/.symfony/bin:$PATH"
 
 WORKDIR /srv/app
 

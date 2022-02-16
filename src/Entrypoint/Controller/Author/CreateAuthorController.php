@@ -22,12 +22,12 @@ final class CreateAuthorController extends CommandController
             CreateAuthorCommand::fromPayload(
                 Uuid::v4(),
                 [
-                    CreateAuthorCommand::ID_PAYLOAD => $body->get(CreateAuthorCommand::ID_PAYLOAD),
-                    CreateAuthorCommand::NAME_PAYLOAD => $body->get(CreateAuthorCommand::NAME_PAYLOAD),
-                    CreateAuthorCommand::COUNTRY_ID_PAYLOAD => $body->get(CreateAuthorCommand::COUNTRY_ID_PAYLOAD),
-                    CreateAuthorCommand::IS_PSEUDONYM_OF_PAYLOAD => $body->get(CreateAuthorCommand::IS_PSEUDONYM_OF_PAYLOAD),
-                    CreateAuthorCommand::BORN_AT_PAYLOAD => $body->get(CreateAuthorCommand::BORN_AT_PAYLOAD),
-                    CreateAuthorCommand::DEATH_AT_PAYLOAD => $body->get(CreateAuthorCommand::DEATH_AT_PAYLOAD)
+                    CreateAuthorCommand::AUTHOR_ID_PAYLOAD => $body->get(CreateAuthorCommand::AUTHOR_ID_PAYLOAD),
+                    CreateAuthorCommand::AUTHOR_NAME_PAYLOAD => $body->get(CreateAuthorCommand::AUTHOR_NAME_PAYLOAD),
+                    CreateAuthorCommand::AUTHOR_COUNTRY_ID_PAYLOAD => $body->get(CreateAuthorCommand::AUTHOR_COUNTRY_ID_PAYLOAD),
+                    CreateAuthorCommand::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD => $body->get(CreateAuthorCommand::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD),
+                    CreateAuthorCommand::AUTHOR_BORN_YEAR_PAYLOAD => $body->get(CreateAuthorCommand::AUTHOR_BORN_YEAR_PAYLOAD),
+                    CreateAuthorCommand::AUTHOR_DEATH_YEAR_PAYLOAD => $body->get(CreateAuthorCommand::AUTHOR_DEATH_YEAR_PAYLOAD)
                 ]
             )
         );

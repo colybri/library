@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Domain\Model\Edition\ValueObject;
 
-class EditionEditorial
+use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+
+final class EditionBookId extends Uuid
 {
 
 }

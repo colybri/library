@@ -7,7 +7,7 @@ namespace Colybri\Library\Domain\Model\Edition\ValueObject;
 use Assert\Assert;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\StringValueObject;
 
-class EditionCondition extends StringValueObject
+final class EditionCondition extends StringValueObject
 {
     private const CONDITION_VALUES = ['new', 'second hand', 'inherited'];
 

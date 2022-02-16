@@ -1,19 +1,16 @@
 framework:
   messenger:
-    default_bus: messenger.bus.command
+    default_bus: command.bus
     buses:
-      messenger.bus.command:
+      command.bus:
         # disable the default middleware
-        default_middleware: true
-      messenger.bus.query:
+      query.bus:
         # disable the default middleware
-        default_middleware: true
           #transports:
           # https://symfony.com/doc/current/messenger.html#transport-configuration
           # async: '%env(MESSENGER_TRANSPORT_DSN)%'
           # failed: 'doctrine://default?queue_name=failed'
           # sync: 'sync://'
 
-          #routing:
-          # Route your messages to the transports
-          # 'App\Message\YourMessage': async
+      event-broker.bus:
+        default_middleware: allow_no_handlers

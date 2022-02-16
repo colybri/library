@@ -26,10 +26,6 @@ class MatchCountryController extends QueryController
             ),
         );
 
-        $response = new JsonResponse($result);
-
-        $response->setEncodingOptions(JSON_UNESCAPED_UNICODE);
-
-        return $response;
+        return $this->response($result);
     }
 }

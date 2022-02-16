@@ -21,7 +21,7 @@ final class DeleteAuthorController extends CommandController
             DeleteAuthorCommand::fromPayload(
                 Uuid::v4(),
                 [
-                    DeleteAuthorCommand::ID_PAYLOAD => $authorId,
+                    DeleteAuthorCommand::AUTHOR_ID_PAYLOAD => $authorId,
                 ]
             )
         );

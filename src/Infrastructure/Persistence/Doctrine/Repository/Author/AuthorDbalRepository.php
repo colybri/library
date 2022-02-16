@@ -90,14 +90,14 @@ final class AuthorDbalRepository extends DbalRepository implements AuthorReposit
     public function update(Author $author): void
     {
         $sql = "
-            UPDATE ". AuthorDbalMap::table() ." set (
+            UPDATE ".AuthorDbalMap::table()." SET 
                 name = :name,
                 country_id = :countryId,
                 is_pseudonym_of = :isPseudonymOf,
                 born_year = :bornAt,
                 death_year = :deathAt,
-                update_at = CURRENT_TIMESTAMP 
-            ) WHERE (
+                updated_at = CURRENT_TIMESTAMP 
+             WHERE (
                 id = :id
             );
         ";

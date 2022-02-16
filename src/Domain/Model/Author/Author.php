@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Domain\Model\Author;
 
-use Forkrefactor\Ddd\Domain\Model\AggregateRoot;
+use Colybri\Library\Domain\Model\Author\Event\AuthorDeleted;
+use Forkrefactor\Ddd\Domain\Model\SimpleAggregateRoot;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 use Colybri\Library\Domain\Model\Author\Event\AuthorCreated;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorBornAt;
@@ -12,7 +13,7 @@ use Colybri\Library\Domain\Model\Author\ValueObject\AuthorDeathAt;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorName;
 
 
-final class Author extends AggregateRoot
+final class Author extends SimpleAggregateRoot implements \JsonSerializable
 {
     private const NAME = 'author';
     private AuthorName $name;
@@ -37,7 +38,7 @@ final class Author extends AggregateRoot
         $self->bornAt = $bornAt;
         $self->deathAt = $deathAt;
 
-        //$self->recordThat(AuthorCreated::from($id, $name, $countryId, $isPseudonymOf, $bornAt, $deathAt));
+        $self->recordThat(AuthorCreated::from($id, $name, $countryId, $isPseudonymOf, $bornAt, $deathAt));
         return $self;
     }
 
@@ -59,6 +60,12 @@ final class Author extends AggregateRoot
         return $self;
     }
 
+    public function delete(AuthorRepository $repository)
+    {
+        $repository->delete($this->aggregateId());
+
+        $this->recordThat(AuthorDeleted::from($this->aggregateId()));
+    }
 
     public static function modelName(): string
     {
@@ -92,7 +99,7 @@ final class Author extends AggregateRoot
         return $this->isPseudonymOf;
     }
 
-    public function jsonSerialize(): array
+    public function jsonSerialize(): mixed
     {
         return [
             'id' => $this->aggregateId(),

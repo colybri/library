@@ -28,8 +28,10 @@ help: ## Outputs this help screen
 
 ## —— Phpunit ————————————————————————————————————————————————————————————————
 test: ## Builds the Docker images
-	@$(DOCKER_COMP) exec library ./vendor/bin/phpunit --coverage-text ./tests
-
+	@$(DOCKER_COMP) exec library ./vendor/bin/phpunit --coverage-html ./report
+	@$(DOCKER_COMP) exec library ./vendor/bin/phpstan analyse -c phpstan.neon
+	@$(DOCKER_COMP) exec library ./vendor/bin/parallel-lint --exclude .git --exclude app --exclude vendor . --colors
+	@$(DOCKER_COMP) exec library symfony check:security
 ## —— Docker ————————————————————————————————————————————————————————————————
 build: ## Builds the Docker images
 	@$(DOCKER_COMP) build --pull --no-cache

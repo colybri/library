@@ -11,7 +11,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 final class CreateAuthorCommandHandler implements MessageHandlerInterface
 {
 
-    public function __construct(private AuthorCreator $creator)
+    public function __construct(private AuthorCreator $creator, private MessageBusInterface $brokerBus)
     {
     }
 
@@ -26,8 +26,8 @@ final class CreateAuthorCommandHandler implements MessageHandlerInterface
             $cmd->deathAt()
         );
 
-        //foreach ($author->events() as $event) {
-        //    $this->brokerBus->dispatch($event);
-        //}
+        foreach ($author->events() as $event) {
+            $this->brokerBus->dispatch($event);
+        }
     }
 }

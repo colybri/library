@@ -48,15 +48,15 @@ class MatchCountryQuery extends Query
 
         Assert::lazy()
             ->that($payload, 'payload')
-            ->keyExists('offset')
-            ->keyExists('limit')
-            ->keyExists('match')
+            ->keyExists(MatchCountryQuery::KEYWORDS_PAYLOAD)
+            ->keyExists(MatchCountryQuery::OFFSET_PAYLOAD)
+            ->keyExists(MatchCountryQuery::LIMIT_PAYLOAD)
             ->verifyNow();
 
         Assert::lazy()
-            ->that($payload['offset'])->integerish()->min(0)
-            ->that($payload['limit'])->integerish()->min(1)->max(100)
-            ->that($payload['match'])->string()
+            ->that($payload[MatchCountryQuery::OFFSET_PAYLOAD])->integerish()->min(0)
+            ->that($payload[MatchCountryQuery::LIMIT_PAYLOAD])->integerish()->min(1)->max(100)
+            ->that($payload[MatchCountryQuery::KEYWORDS_PAYLOAD])->string()
             ->verifyNow();
 
         $this->offset = (int)$payload[self::OFFSET_PAYLOAD];

@@ -20,12 +20,12 @@ final class CreateAuthorCommand extends Command
     protected const NAME = 'create';
     protected const VERSION = '1';
 
-    public const ID_PAYLOAD = 'id';
-    public const NAME_PAYLOAD = 'name';
-    public const COUNTRY_ID_PAYLOAD = 'countryId';
-    public const IS_PSEUDONYM_OF_PAYLOAD = 'isPseudonymOf';
-    public const BORN_AT_PAYLOAD = 'bornAt';
-    public const DEATH_AT_PAYLOAD = 'deathAt';
+    public const AUTHOR_ID_PAYLOAD = 'id';
+    public const AUTHOR_NAME_PAYLOAD = 'name';
+    public const AUTHOR_COUNTRY_ID_PAYLOAD = 'countryId';
+    public const AUTHOR_IS_PSEUDONYM_OF_PAYLOAD = 'isPseudonymOf';
+    public const AUTHOR_BORN_YEAR_PAYLOAD = 'bornAt';
+    public const AUTHOR_DEATH_YEAR_PAYLOAD = 'deathAt';
 
 
     private Uuid $authorId;
@@ -58,29 +58,30 @@ final class CreateAuthorCommand extends Command
 
         Assert::lazy()
             ->that($payload, 'payload')->isArray()
-            ->keyExists(self::ID_PAYLOAD)
-            ->keyExists(self::NAME_PAYLOAD)
-            ->keyExists(self::COUNTRY_ID_PAYLOAD)
-            ->keyExists(self::IS_PSEUDONYM_OF_PAYLOAD)
-            ->keyExists(self::BORN_AT_PAYLOAD)
-            ->keyExists(self::DEATH_AT_PAYLOAD)
+            ->keyExists(self::AUTHOR_ID_PAYLOAD)
+            ->keyExists(self::AUTHOR_NAME_PAYLOAD)
+            ->keyExists(self::AUTHOR_COUNTRY_ID_PAYLOAD)
+            ->keyExists(self::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD)
+            ->keyExists(self::AUTHOR_BORN_YEAR_PAYLOAD)
+            ->keyExists(self::AUTHOR_DEATH_YEAR_PAYLOAD)
             ->verifyNow();
 
         Assert::lazy()
-            ->that($payload[self::ID_PAYLOAD], self::ID_PAYLOAD)->uuid()
-            ->that($payload[self::NAME_PAYLOAD], self::NAME_PAYLOAD)->notEmpty()->string()
-            ->that($payload[self::COUNTRY_ID_PAYLOAD], self::COUNTRY_ID_PAYLOAD)->notEmpty()->uuid()
-            ->that($payload[self::IS_PSEUDONYM_OF_PAYLOAD], self::IS_PSEUDONYM_OF_PAYLOAD)->nullOr()->uuid()
-            ->that($payload[self::BORN_AT_PAYLOAD], self::BORN_AT_PAYLOAD)->notEmpty()->integer()
-            ->that($payload[self::DEATH_AT_PAYLOAD], self::DEATH_AT_PAYLOAD)->nullOr()->integer()
+            ->that($payload[self::AUTHOR_ID_PAYLOAD], self::AUTHOR_ID_PAYLOAD)->uuid()
+            ->that($payload[self::AUTHOR_NAME_PAYLOAD], self::AUTHOR_NAME_PAYLOAD)->notEmpty()->string()
+            ->that($payload[self::AUTHOR_COUNTRY_ID_PAYLOAD], self::AUTHOR_COUNTRY_ID_PAYLOAD)->notEmpty()->uuid()
+            ->that($payload[self::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD], self::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD)->nullOr()->uuid()
+            ->that($payload[self::AUTHOR_BORN_YEAR_PAYLOAD], self::AUTHOR_BORN_YEAR_PAYLOAD)->notEmpty()->integer()
+            ->that($payload[self::AUTHOR_DEATH_YEAR_PAYLOAD], self::AUTHOR_DEATH_YEAR_PAYLOAD)->nullOr()->integer()
             ->verifyNow();
 
-        $this->authorId = Uuid::from($payload[self::ID_PAYLOAD]);
-        $this->name = AuthorName::from((string)$payload[self::NAME_PAYLOAD]);
-        $this->countryId = Uuid::from((string)$payload[self::COUNTRY_ID_PAYLOAD]);
-        $this->isPseudonymOf = null === $payload[self::IS_PSEUDONYM_OF_PAYLOAD] ? null : Uuid::from((string)$payload[self::IS_PSEUDONYM_OF_PAYLOAD]);
-        $this->bornAt = AuthorBornAt::from((int)$payload[self::BORN_AT_PAYLOAD]);
-        $this->deathAt = null === $payload[self::DEATH_AT_PAYLOAD] ? null : AuthorDeathAt::from((int)$payload[self::DEATH_AT_PAYLOAD]);
+        $this->authorId = Uuid::from((string)$payload[self::AUTHOR_ID_PAYLOAD]);
+        $this->name = AuthorName::from((string)$payload[self::AUTHOR_NAME_PAYLOAD]);
+        $this->countryId = Uuid::from((string)$payload[self::AUTHOR_COUNTRY_ID_PAYLOAD]);
+        $this->isPseudonymOf = null === $payload[self::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD] ? null : Uuid::from((string)$payload[self::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD]);
+        $this->bornAt = AuthorBornAt::from((int)$payload[self::AUTHOR_BORN_YEAR_PAYLOAD]);
+        $this->deathAt = null === $payload[self::AUTHOR_DEATH_YEAR_PAYLOAD] ? null : AuthorDeathAt::from((int)$payload[self::AUTHOR_DEATH_YEAR_PAYLOAD]);
+
     }
 
     public function authorId(): Uuid

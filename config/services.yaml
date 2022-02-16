@@ -13,6 +13,10 @@ services:
     _defaults:
       autowire: false      # Automatically injects dependencies in your services.
       autoconfigure: false # Automatically registers your services as commands, event subscribers, etc.
+        bind:
+          Symfony\Component\Messenger\MessageBusInterface $commandBus: '@command.bus'
+          Symfony\Component\Messenger\MessageBusInterface $queryBus: '@query.bus'
+          Symfony\Component\Messenger\MessageBusInterface $brokerBus: '@event-broker.bus'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
@@ -21,30 +25,26 @@ services:
         exclude: '../src/{Kernel.php}'
 
 
-    # controllers are imported separately to make sure services can be injected
-    # as action arguments even if you don't extend any base controller class
     Colybri\Library\Entrypoint\Controller\:
-        resource: '../src/Entrypoint/Controller'
-        tags: ['controller.service_arguments']
-        autowire: true
-        autoconfigure: true
-        bind:
-            Symfony\Component\Messenger\MessageBusInterface $commandBus: '@messenger.bus.command'
-            Symfony\Component\Messenger\MessageBusInterface $queryBus: '@messenger.bus.query'
+      autowire: true
+      autoconfigure: true
+      resource: '../src/Entrypoint/Controller'
+      tags: ['controller.service_arguments']
+
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
     Colybri\Library\Application\Command\:
       autowire: true
-      autoconfigure: true
+      autoconfigure: false
       resource: '../src/Application/Command/*/*/*Handler.php'
-      tags: [ { name: messenger.message_handler, bus: messenger.bus.command } ]
+      tags: [ { name: messenger.message_handler, bus: command.bus } ]
 
     Colybri\Library\Application\Query\:
       autowire: true
-      autoconfigure: true
+      autoconfigure: false
       resource: '../src/Application/Query/*/*/*Handler.php'
-      tags: [ { name: messenger.message_handler, bus: messenger.bus.query } ]
+      tags: [ { name: messenger.message_handler, bus: query.bus } ]
 
 
     Colybri\Library\Domain\Service\:

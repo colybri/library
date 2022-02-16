@@ -25,8 +25,6 @@ class GetCountryController extends QueryController
             )
         );
 
-        return new JsonResponse(
-            $country
-        );
+        return $this->response($country);
     }
 }

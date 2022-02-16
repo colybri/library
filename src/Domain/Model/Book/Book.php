@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Domain\Model\Book;
 
+use Colybri\Library\Domain\Model\Book\ValueObject\BookAuthorIds;
 use Colybri\Library\Domain\Model\Book\ValueObject\BookAuthorIsPseudo;
-use Colybri\Library\Domain\Model\Book\ValueObject\BookImage;
 use Colybri\Library\Domain\Model\Book\ValueObject\BookHaveEstimatedPublishYear;
 use Colybri\Library\Domain\Model\Book\ValueObject\BookIsOnWishList;
 use Colybri\Library\Domain\Model\Book\ValueObject\BookPublishYear;
 use Colybri\Library\Domain\Model\Book\ValueObject\BookTitle;
-use Forkrefactor\Ddd\Domain\Model\AggregateRoot;
+use Forkrefactor\Ddd\Domain\Model\SimpleAggregateRoot;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 
-class Book extends AggregateRoot
+class Book extends SimpleAggregateRoot implements \JsonSerializable
 {
     private const NAME = 'book';
     private Uuid $aggregateId;
     private BookTitle $title;
-    private BookImage $image;
+    private BookAuthorIds $authorIds;
     private BookPublishYear $publishYear;
     private BookHaveEstimatedPublishYear $bookHaveEstimatedPublishYear;
     private BookAuthorIsPseudo $isPseudo;
@@ -31,7 +31,6 @@ class Book extends AggregateRoot
     //https://www.googleapis.com/books/v1/volumes/_ojXNuzgHRcC
     public static function create(
         Uuid                         $id,
-        BookImage                    $image,
         BookPublishYear              $publishYear,
         BookHaveEstimatedPublishYear $bookHaveEstimatedPublishYear,
         BookAuthorIsPseudo           $isPseudo,
@@ -40,7 +39,6 @@ class Book extends AggregateRoot
     {
         $self = new self($id);
         $self->aggregateId = $id;
-        $self->image = $image;
         $self->publishYear = $publishYear;
         $self->bookHaveEstimatedPublishYear = $bookHaveEstimatedPublishYear;
         $self->isPseudo = $isPseudo;
@@ -68,39 +66,24 @@ class Book extends AggregateRoot
         return $this->title;
     }
 
-    public function getImage(): BookImage
-    {
-        return $this->image;
-    }
-
-
-    public function getPublishYear(): BookPublishYear
+    public function publishYear(): BookPublishYear
     {
         return $this->publishYear;
     }
 
-    /**
-     * @return BookHaveEstimatedPublishYear
-     */
-    public function getBookHaveEstimatedPublishYear(): BookHaveEstimatedPublishYear
+    public function haveEstimatedPublishYear(): bool
     {
-        return $this->bookHaveEstimatedPublishYear;
+        return $this->bookHaveEstimatedPublishYear->value();
     }
 
-    /**
-     * @return BookAuthorIsPseudo
-     */
-    public function getIsPseudo(): BookAuthorIsPseudo
+    public function isPseudo(): bool
     {
-        return $this->isPseudo;
+        return $this->isPseudo->value();
     }
 
-    /**
-     * @return BookIsOnWishList
-     */
-    public function getIsOnWishList(): BookIsOnWishList
+    public function isOnWishList(): bool
     {
-        return $this->isOnWishList;
+        return $this->isOnWishList->value();
     }
 
     public function jsonSerialize(): array

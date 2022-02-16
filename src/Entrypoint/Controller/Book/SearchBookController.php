@@ -19,7 +19,7 @@ final class SearchBookController extends QueryController
             SearchBookQuery::fromPayload(
                 Uuid::v4(),
                 [
-                    SearchBookQuery::TITLE_PAYLOAD => $request->query->get(SearchBookQuery::TITLE_PAYLOAD, null),
+                    SearchBookQuery::BOOK_TITLE_PAYLOAD => $request->query->get(SearchBookQuery::BOOK_TITLE_PAYLOAD, null),
                     SearchBookQuery::AUTHOR_PAYLOAD => $request->query->get(SearchBookQuery::AUTHOR_PAYLOAD, null),
                     SearchBookQuery::PUBLISHER_PAYLOAD => $request->query->get(SearchBookQuery::PUBLISHER_PAYLOAD, null),
                     SearchBookQuery::SUBJECT_PAYLOAD => $request->query->get(SearchBookQuery::SUBJECT_PAYLOAD, null),

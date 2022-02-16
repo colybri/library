@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Domain\Service\Author;
 
+use Colybri\Library\Domain\Model\Author\Author;
 use Colybri\Library\Domain\Model\Author\AuthorRepository;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 
@@ -14,16 +15,13 @@ final class AuthorDeleter
     {
     }
 
-    public function execute(Uuid $id): void
+    public function execute(Uuid $id): Author
     {
+        $author = $this->finder->execute($id);
 
-        $this->ensureAuthorExist($id);
+        $author->delete($this->authorRepository);
 
-        $this->authorRepository->delete($id);
+        return $author;
     }
 
-    private function ensureAuthorExist(Uuid $id): void
-    {
-        $this->finder->execute($id);
-    }
 }

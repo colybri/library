@@ -11,7 +11,7 @@ use Colybri\Library\Domain\ServiceName;
 use Forkrefactor\Ddd\Application\Query;
 use PcComponentes\TopicGenerator\Topic;
 
-class MatchAuthorQuery extends Query
+final class MatchAuthorQuery extends Query
 {
     private const VERSION = '1';
     private const NAME = 'match_author';
@@ -19,7 +19,6 @@ class MatchAuthorQuery extends Query
     public const KEYWORDS_PAYLOAD = 'query';
     public const OFFSET_PAYLOAD = 'offset';
     public const LIMIT_PAYLOAD = 'limit';
-
 
     private string $match;
     private int $offset;

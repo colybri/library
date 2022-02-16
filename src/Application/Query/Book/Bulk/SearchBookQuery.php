@@ -17,7 +17,7 @@ final class SearchBookQuery extends Query
     private const VERSION = '1';
     private const NAME = 'search_book';
 
-    public const TITLE_PAYLOAD = 'title';
+    public const BOOK_TITLE_PAYLOAD = 'title';
     public const AUTHOR_PAYLOAD = 'author';
     public const PUBLISHER_PAYLOAD = 'publisher';
     public const SUBJECT_PAYLOAD = 'subject';
@@ -52,7 +52,7 @@ final class SearchBookQuery extends Query
 
         Assert::lazy()
             ->that($payload, 'payload')
-            ->keyExists(SearchBookQuery::TITLE_PAYLOAD)
+            ->keyExists(SearchBookQuery::BOOK_TITLE_PAYLOAD)
             ->keyExists(SearchBookQuery::AUTHOR_PAYLOAD)
             ->keyExists(SearchBookQuery::PUBLISHER_PAYLOAD)
             ->keyExists(SearchBookQuery::SUBJECT_PAYLOAD)
@@ -60,7 +60,7 @@ final class SearchBookQuery extends Query
             ->verifyNow();
 
         Assert::lazy()
-            ->that($payload[SearchBookQuery::TITLE_PAYLOAD])->nullOr()->string()
+            ->that($payload[SearchBookQuery::BOOK_TITLE_PAYLOAD])->nullOr()->string()
             ->that($payload[SearchBookQuery::AUTHOR_PAYLOAD])->nullOr()->string()
             ->that($payload[SearchBookQuery::PUBLISHER_PAYLOAD])->nullOr()->string()
             ->that($payload[SearchBookQuery::SUBJECT_PAYLOAD])->nullOr()->string()
@@ -68,7 +68,7 @@ final class SearchBookQuery extends Query
             ->verifyNow();
 
 
-        $this->title = null === $payload[self::TITLE_PAYLOAD] ? null : (string) $payload[self::TITLE_PAYLOAD];
+        $this->title = null === $payload[self::BOOK_TITLE_PAYLOAD] ? null : (string) $payload[self::BOOK_TITLE_PAYLOAD];
         $this->author = null === $payload[self::AUTHOR_PAYLOAD] ? null : (string) $payload[self::AUTHOR_PAYLOAD];
         $this->publisher = null === $payload[self::PUBLISHER_PAYLOAD] ? null : (string) $payload[self::PUBLISHER_PAYLOAD];
         $this->subject = null === $payload[self::SUBJECT_PAYLOAD] ? null : (string) $payload[self::SUBJECT_PAYLOAD];

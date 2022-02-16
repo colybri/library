@@ -30,8 +30,9 @@ final class AuthorMatcher
         foreach ($keywords as $keyword) {
 
             $match = $this->authorRepository->match($this->getCriteria($keyword));
+
             /**
-             * @var $author Author
+             * @var Author $author
              */
             foreach ($match as $author) {
                 $authors[$author->aggregateId()->value()] = $author;
