@@ -1,0 +1,6 @@
+query:
+  name: keywords
+  in: query
+  description: "List of words to be searched"
+  schema:
+    type: string

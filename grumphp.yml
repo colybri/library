@@ -1,0 +1,39 @@
+grumphp:
+  hooks_dir: ~
+  hooks_preset: local
+  stop_on_failure: false
+  ignore_unstaged_changes: false
+  hide_circumvention_tip: false
+  process_timeout: 60
+  ascii:
+    failed: scripts/git/ko.txt
+    succeeded: scripts/git/ok.txt
+  parallel:
+    enabled: true
+    max_workers: 32
+  fixer:
+    enabled: true
+    fix_by_default: false
+  tasks:
+    composer:
+      strict: true
+    jsonlint: ~
+    phpcs:
+      standard:
+        - 'phpcs.xml'
+      whitelist_patterns:
+        - 'src'
+        - 'tests'
+      encoding: 'UTF-8'
+    phplint: ~
+    phpstan:
+      autoload_file: phpstan.neon
+      configuration: ~
+      level: 2
+      memory_limit: "256"
+    phpunit: ~
+    phpversion:
+      project: '8.1'
+    shell:
+      scripts:
+        - ["-c", "console"]

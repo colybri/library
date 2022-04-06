@@ -1,0 +1,6 @@
+limit:
+  name: offset
+  in: query
+  description: "Number of max items on result"
+  schema:
+    type: integer   

@@ -11,7 +11,15 @@
 
 {$SERVER_NAME}
 
-log
+log {
+        level info
+        format json
+        output file /var/log/caddy/caddy.log {
+            roll_size 10mb
+            roll_keep 20
+            roll_keep_for 720h
+          }
+}
 
 route {
     root * /srv/app/public

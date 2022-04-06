@@ -4,7 +4,7 @@ services:
     container_name: library
     build:
       context: .
-      target: symfony_php
+      target: library_php
       args:
         SYMFONY_VERSION: ${SYMFONY_VERSION:-}
         SKELETON: ${SKELETON:-symfony/skeleton}
@@ -14,6 +14,7 @@ services:
       - ./:/srv/app
       - php_socket:/var/run/php
       - ./var/xdebug:/tmp/xdebug
+      - ./var/log:/srv/app/var/log
       - ./docker/php/local.ini:/usr/local/etc/php/php.ini
     working_dir: /srv/app
     tty: true
@@ -35,11 +36,11 @@ services:
         ipv4_address: 172.20.10.90
 
   # Mercure is installed as a Caddy module, prevent the Flex recipe from installing another service
-  caddy:
+  library_caddy:
     container_name: library_caddy
     build:
       context: .
-      target: symfony_caddy
+      target: library_caddy
     depends_on:
       - library
     environment:
@@ -51,6 +52,7 @@ services:
       - php_socket:/var/run/php
       - caddy_data:/data
       - caddy_config:/config
+      - ./var/log/caddy:/var/log/caddy
     ports:
       # HTTP
       - target: 80
@@ -69,12 +71,15 @@ services:
         ipv4_address: 172.20.10.91
 
   #Postgres Service
-  postgres:
-    image: postgres:latest
+  library_postgres:
+    build:
+      context: ./docker/postgres
+      target: library_postgres
     container_name: library_postgres
     restart: unless-stopped
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
+      - ./var/log/postgresql:/var/log/postgresql
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_READ_PASS}
       - POSTGRES_USER:${POSTGRES_READ_USER}
@@ -84,7 +89,7 @@ services:
     ports:
       - 5432:5432
 
-  pgadmin:
+  library_pgadmin:
     image: dpage/pgadmin4
     container_name: library_pgadmin
     restart: always
@@ -108,6 +113,93 @@ services:
       library-network:
         ipv4_address: 172.20.10.94
 
+
+  library_elastic:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.1.0
+    container_name: library_elastic
+    ports:
+      - ${ELASTIC_SEARCH_REST_PORT}:9200
+      - ${ELASTIC_SEARCH_DISCOVERY_PORT}:9300
+    environment:
+      - discovery.type=single-node
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - xpack.security.enabled=false
+      - xpack.security.authc.api_key.enabled=true
+      - bootstrap.memory_lock=true
+      - cluster.name=docker-cluster
+      - cluster.routing.allocation.disk.threshold_enabled=false
+      - ES_JAVA_OPTS=-XX:UseAVX=2 -Xms1g -Xmx1g
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    healthcheck:
+      interval: 20s
+      retries: 10
+      test: curl -s http://172.20.10.95:9200/_cluster/health | grep -vq '"status":"red"'
+    networks:
+      library-network:
+        ipv4_address: 172.20.10.95
+
+  library_kibana:
+    image: docker.elastic.co/kibana/kibana:8.1.0
+    container_name: library_kibana
+    ports:
+      - 5601:5601
+    environment:
+      - ELASTICSEARCH_URL=http://library_elastic:9200
+      - ELASTICSEARCH_HOSTS=http://library_elastic:9200
+    healthcheck:
+      interval: 10s
+      retries: 20
+      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://172.20.10.96:5601/api/status
+    networks:
+      library-network:
+        ipv4_address: 172.20.10.96
+
+  library_filebeat:
+    image: docker.elastic.co/beats/filebeat:8.1.0
+    container_name: library_filebeat
+    command: [ "filebeat", "-e", "--path.config", "/usr/share/filebeat/config" ]
+    volumes:
+      - ./docker/filebeat/filebeat.yml:/usr/share/filebeat/config/filebeat.yml:ro
+      - ./docker/filebeat/template.json:/usr/share/filebeat/config/template.json:ro
+      - ./var/log:/var/log:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      library-network:
+        ipv4_address: 172.20.10.97
+
+  library_apm_server:
+    image: docker.elastic.co/apm/apm-server:8.1.0
+    container_name: library_apm_server
+    command: >
+      apm-server -e
+        -E setup.kibana.host=library_kibana:5601
+        -E setup.template.settings.index.number_of_replicas=0
+        -E --reporter.grpc.host-port=["library_apm_server:8200"]
+        -E output.elasticsearch.hosts=["library_elastic:9200"]
+        -E apm-server.kibana.enabled=true
+        -E apm-server.kibana.protocol="http"
+        -E apm-server.kibana.host=library_kibana:5601
+    cap_add: [ "CHOWN", "DAC_OVERRIDE", "SETGID", "SETUID" ]
+    cap_drop: [ "ALL" ]
+    ports:
+      - 8200:8200
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '2m'
+        max-file: '5'
+    depends_on:
+      - library_elastic
+      - library_kibana
+    healthcheck:
+      test: [ "CMD", "curl", "--write-out", "'HTTP %{http_code}'", "--silent", "--output", "/dev/null", "http://library_amp_server:8200/healthcheck" ]
+      retries: 10
+      interval: 10s
+    networks:
+      library-network:
+        ipv4_address: 172.20.10.98
+
 networks:
   library-network:
     driver: bridge
@@ -120,3 +212,5 @@ volumes:
   php_socket:
   caddy_data:
   caddy_config:
+  esdata:
+    driver: local

@@ -1,0 +1,125 @@
+/v1/author/{id}:
+  get:
+    description: Retrieve an author from id
+    security:
+      - JWTAuth:
+          - 'public'
+    properties:
+      id:
+        type: string
+    responses:
+      '200':
+        description: An author
+        content:
+          application/json:
+          schema:
+            $ref: "../schemas/author.yml"
+      '400':
+        description: Invalid request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+              message:
+                type: string
+/v1/author:
+  post:
+    description: Create new author
+    security:
+      - JWTAuth:
+          - 'public'
+    requestBody:
+      content:
+        application/json:
+        schema:
+          $ref: "../schemas/author.yml"
+    responses:
+      '201':
+        description: Successfully created a new author
+      '400':
+        description: Invalid request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+              message:
+                type: string
+  put:
+      description: Update an author
+      security:
+        - JWTAuth:
+            - 'public'
+      requestBody:
+        content:
+          application/json:
+          schema:
+            $ref: "../schemas/author.yml"
+        responses:
+          '200':
+            description: Successfully updated an author
+          '400':
+            description: Invalid request
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+
+  delete:
+    description: Delete an author
+    security:
+      - JWTAuth:
+          - 'public'
+    content:
+      application/json:
+    properties:
+      id:
+        type: string
+      responses:
+        '200':
+          description: Successfully deleted an author
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                message:
+                  type: string
+
+                  
+/v1/author/macth:
+  get:
+    description: Search author form name
+    security:
+      - JWTAuth:
+          - 'public'
+    parameters:
+      - required:
+          $ref: '../parameters/query.yml'
+      - $ref: '../parameters/query.yml'  
+      - $ref: '../parameters/offset.yml'
+      - $ref: '../parameters/limit.yml'  
+    responses:
+      '200':
+        description: Author list macthed
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../schemas/author.yml"
+      '400':
+        description: Invalid request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+              message:
+                type: string

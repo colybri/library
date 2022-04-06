@@ -3,7 +3,12 @@ framework:
     default_bus: command.bus
     buses:
       command.bus:
-        # disable the default middleware
+        default_middleware: true
+        middleware:
+          - middleware.trace.request
+          - middleware.trace.message
+          - middleware.logging.command
+          - middleware.execution_time
       query.bus:
         # disable the default middleware
           #transports:

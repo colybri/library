@@ -1,0 +1,6 @@
+offset:
+  name: offset
+  in: query
+  description: "Numbe for of first item of the list"
+  schema:
+    type: integer

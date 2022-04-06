@@ -1,0 +1,38 @@
+services:
+  monolog.processor.iterator:
+    class: Forkrefactor\DddLogging\MonologIteratorProcessor
+    arguments:
+      $processors:
+        - '@monolog.processor.occurred_on'
+        - '@monolog.processor.hostname'
+        - '@monolog.processor.execution_time'
+        - '@monolog.processor.info'
+        - '@monolog.processor.domain_trace'
+        - '@monolog.processor.normalize_message'
+        - '@monolog.processor.trace_of_exception'
+    tags:
+      - { name: monolog.processor }
+
+  monolog.processor.occurred_on:
+    class: Forkrefactor\DddLogging\OccurredOn\OccurredOnProcessor
+
+  monolog.processor.hostname:
+    class: Forkrefactor\DddLogging\Hostname\HostnameProcessor
+
+  monolog.processor.execution_time:
+    class: Forkrefactor\DddLogging\ExecutionTime\ExecutionTimeProcessor
+    autowire: true
+
+  monolog.processor.info:
+    class: Forkrefactor\DddLogging\Info\InfoProcessor
+
+  monolog.processor.domain_trace:
+    class: Forkrefactor\DddLogging\DomainTrace\DomainTraceProcessor
+    autowire: true
+
+  monolog.processor.normalize_message:
+    class: Forkrefactor\DddLogging\Context\NormalizeMessageProcessor
+
+  monolog.processor.trace_of_exception:
+    class: Forkrefactor\DddLogging\ExceptionCatcher\TraceOfExceptionProcessor
+

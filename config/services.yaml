@@ -31,7 +31,6 @@ services:
       resource: '../src/Entrypoint/Controller'
       tags: ['controller.service_arguments']
 
-
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
     Colybri\Library\Application\Command\:
@@ -69,3 +68,5 @@ services:
 
 imports:
   - { resource: context/connections.yaml }
+  - { resource: context/buses.yaml }
+  - { resource: context/middleware.yaml }

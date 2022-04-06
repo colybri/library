@@ -1,0 +1,44 @@
+services:
+  _defaults:
+    autowire: false
+    autoconfigure: false
+    public: false
+
+  # Trace Middleware
+  middleware.trace.request:
+    class: Forkrefactor\DddLogging\DomainTrace\RequestTraceMiddleware
+    autowire: true
+
+  middleware.trace.message:
+    class: Forkrefactor\DddLogging\DomainTrace\MessageTraceMiddleware
+    autowire: true
+
+
+  # Execution Time Middleware
+  middleware.execution_time:
+    class: Forkrefactor\DddLogging\ExecutionTime\ExecutionTimeMiddleware
+    autowire: true
+
+
+  # Logging Middleware
+  middleware.logging.command:
+    autowire: true
+    class: Forkrefactor\DddLogging\MessageLogger\MessageLoggerMiddleware
+    arguments:
+      $action: '@middleware.logging.action.process'
+    tags:
+      - { name: monolog.logger, handler: commands, channel: library-simple-message }
+
+
+  middleware.logging.action.publish:
+    class: Forkrefactor\DddLogging\MessageLogger\Action\PublishAction
+
+  middleware.logging.action.process:
+    class: Forkrefactor\DddLogging\MessageLogger\Action\ProcessAction
+
+  middleware.logging.action.persist:
+    class: Forkrefactor\DddLogging\MessageLogger\Action\PersistAction
+
+
+
+

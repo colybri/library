@@ -1,0 +1,21 @@
+Author:
+  required:
+    - id
+    - name
+    - countryId
+    - isPseudonumOf
+    - bornYear
+    - deathYear
+  properties:
+    id:
+      type: string
+    name:
+      type: string
+    countryId:
+      type: string
+    isPseudonymOf:
+      type: [ string, "null" ]
+    bornYear:
+      type: integer
+    deathYear:
+      type: [ integer, "null" ]

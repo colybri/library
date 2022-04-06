@@ -1,0 +1,38 @@
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: Library
+  description: A simple API for manage your personal library
+servers:
+  - url: https://localhost/
+paths:
+  /v1/author/{id}:
+    $ref: "./paths/author.yml"
+  /v1/author:
+    $ref: "./paths/author.yml"
+  /v1/author/macth:
+    $ref: "./paths/author.yml"
+
+  /v1/country/{id}:
+    $ref: "./paths/country.yml"
+  /v1/country/macth:
+    $ref: "./paths/country.yml"
+
+
+components:
+  securitySchemes:
+    JWTAuth:
+      scheme: bearer
+      type: http
+      bearerFormat: jwt
+      description: 'note: non-oauth scopes are not defined at the securityScheme level'
+  schemas:
+    Author:
+      $ref: "./schemas/author.yml"
+    Country:
+      $ref: "./schemas/country.yml"
+
+
+
+
+    

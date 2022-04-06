@@ -1,0 +1,53 @@
+/v1/country/{id}:
+  get:
+    description: Retrieve an country from id
+    security:
+      - JWTAuth:
+        - 'public'
+    properties:
+      id:
+        type: string    
+    responses:
+      '200':
+        description: A country
+        content:
+          application/json:
+          schema:
+            $ref: "../schemas/country.yml"
+      '400':
+        description: Invalid request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+              message:
+                type: string
+
+/v1/country/macth:
+  get:
+    description: Search country form keyword
+    security:
+      - JWTAuth:
+          - 'public'
+    parameters:
+      - required:
+          $ref: '../parameters/query.yml'
+    responses:
+      '200':
+        description: Country list macthed
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../schemas/country.yml"
+      '400':
+        description: Invalid request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+              message:
+                type: string

@@ -1,0 +1,15 @@
+Country:
+  required:
+    - id
+    - name
+    - alpha2Code
+    - nationality
+  properties:
+    id:
+      type: string
+    name:
+      type: string
+    alpha2Code:
+      type: string
+    nationality:
+      type: string

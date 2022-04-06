@@ -13,10 +13,6 @@ nbproject/*
 postgres_data/
 
 
-# Report files
-report/
-
-
 # windows thumbnail cache
 Thumbs.db
 
@@ -28,9 +24,16 @@ Thumbs.db
 .env.local
 .env.local.php
 .env.*.local
+.env.*.test
 composer.lock
 config/secrets/prod/prod.decrypt.private.php
 public/bundles/
 var/
 vendor/
 ###< symfony/framework-bundle ###
+
+###> phpunit/phpunit ###
+report/
+phpunit.xml
+.phpunit.result.cache
+###< phpunit/phpunit ###
