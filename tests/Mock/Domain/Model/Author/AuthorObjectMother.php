@@ -12,15 +12,14 @@ use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 
 final class AuthorObjectMother
 {
-
     public function __construct(
-        private ?Uuid          $id = null,
-        private ?AuthorName    $name = null,
-        private ?Uuid          $countryId = null,
-        private ?Uuid          $isPseudonymOf = null,
-        private ?AuthorBornAt  $bornAt = null,
-        private ?AuthorDeathAt $deathAt = null)
-    {
+        private ?Uuid $id = null,
+        private ?AuthorName $name = null,
+        private ?Uuid $countryId = null,
+        private ?Uuid $isPseudonymOf = null,
+        private ?AuthorBornAt $bornAt = null,
+        private ?AuthorDeathAt $deathAt = null
+    ) {
         $this->id = $id ?? Uuid::v4();
         $this->name = $name ?? AuthorName::from('Publio Cornelio Tácito');
         $this->countryId = $countryId ?? Uuid::v4();

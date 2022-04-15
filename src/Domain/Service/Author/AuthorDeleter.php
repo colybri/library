@@ -10,7 +10,6 @@ use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 
 final class AuthorDeleter
 {
-
     public function __construct(private AuthorRepository $authorRepository, private AuthorFinder $finder)
     {
     }
@@ -23,5 +22,4 @@ final class AuthorDeleter
 
         return $author;
     }
-
 }

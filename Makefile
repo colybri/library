@@ -13,25 +13,21 @@ POSTGRES  = $(PHP_CONT) bin/console
 
 WORKDIR  = /srv/app
 
-# Misc
-.DEFAULT_GOAL = help
-.PHONY        = help build up start down logs sh composer vendor sf cc
 
 # Include env variables
 include .env
 export $(shell sed 's/=.*//' .env)
 
+# Misc
+.DEFAULT_GOAL = help
+.PHONY        = help build up start stop down logs sh test lint report dump restore composer vendor sf cc
 
-## ——  The Symfony-docker Makefile  ——————————————————————————————————
+
+## ——  The Library Makefile  ———————————————————————————————————————————
 help: ## Outputs this help screen
 	@grep -E '(^[a-zA-Z0-9_-]+:.*?##.*$$)|(^##)' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}{printf "\033[32m%-30s\033[0m %s\n", $$1, $$2}' | sed -e 's/\[32m##/[33m/'
 
-## —— Phpunit ————————————————————————————————————————————————————————————————
-test: ## Builds the Docker images
-	@$(DOCKER_COMP) exec library ./vendor/bin/phpunit --coverage-html ./report
-	@$(DOCKER_COMP) exec library ./vendor/bin/phpstan analyse -c phpstan.neon
-	@$(DOCKER_COMP) exec library ./vendor/bin/parallel-lint --exclude .git --exclude app --exclude vendor . --colors
-	@$(DOCKER_COMP) exec library symfony check:security
+
 ## —— Docker ————————————————————————————————————————————————————————————————
 build: ## Builds the Docker images
 	@$(DOCKER_COMP) build --pull --no-cache
@@ -52,6 +48,24 @@ logs: ## Show live logs
 
 sh: ## Connect to the PHP FPM container
 	@$(PHP_CONT) sh
+
+## —— Phpunit ————————————————————————————————————————————————————————————————
+test: ## Builds the Docker images
+	@$(DOCKER_COMP) exec library ./vendor/bin/phpunit
+
+## —— Static analysis —————————————————————————————————————————————————————————
+lint: ## Run stactic quality analisys tools
+	@$(DOCKER_COMP) exec library symfony check:security
+	@$(DOCKER_COMP) exec library ./vendor/bin/phpstan analyse -c phpstan.neon
+	@$(DOCKER_COMP) exec library ./vendor/bin/parallel-lint --exclude .git --exclude app --exclude vendor . --colors
+	@$(DOCKER_COMP) exec library ./vendor/bin/phpcs --standard=./phpcs.xml --error-severity=1 --warning-severity=8
+
+fix: ## Fix errors according to code standard
+	@$(DOCKER_COMP) exec library ./vendor/bin/phpcbf --standard=./phpcs.xml --error-severity=1 --warning-severity=8
+
+report: ## Generate static code reports
+	@$(DOCKER_COMP) exec library ./vendor/bin/phpunit --coverage-html ./gen/coverage ./tests
+	@$(DOCKER_COMP) exec library ./vendor/bin/phpmetrics --junit=./gen/coverage/index.xml --report-html=./gen/metrics/index.html ./src
 
 ## —— Postgres ————————————————————————————————————————————————————————————————
 

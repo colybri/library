@@ -7,7 +7,6 @@ namespace Colybri\Library\Application\Command\Author\Update;
 use Colybri\Library\Domain\Service\Author\AuthorUpdater;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
-
 final class UpdateAuthorCommandHandler implements MessageHandlerInterface
 {
     public function __construct(private AuthorUpdater $updater)
@@ -24,6 +23,5 @@ final class UpdateAuthorCommandHandler implements MessageHandlerInterface
             $cmd->bornAt(),
             $cmd->deathAt()
         );
-
     }
 }

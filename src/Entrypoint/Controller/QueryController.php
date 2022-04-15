@@ -14,7 +14,6 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 class QueryController
 {
-
     public function __construct(private MessageBusInterface $queryBus, private MessageResultExtractor $extractor)
     {
     }

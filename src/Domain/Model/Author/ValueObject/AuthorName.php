@@ -8,5 +8,4 @@ use Forkrefactor\Ddd\Domain\Model\ValueObject\StringValueObject;
 
 final class AuthorName extends StringValueObject
 {
-
 }

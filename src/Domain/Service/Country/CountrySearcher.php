@@ -17,7 +17,7 @@ class CountrySearcher
         $this->repo = $repo;
     }
 
-    public function execute(Uuid $id): ? Country
+    public function execute(Uuid $id): ?Country
     {
         return $this->repo->find($id);
     }

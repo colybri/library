@@ -12,5 +12,4 @@ interface CountryRepository
     public function find(Uuid $id): ?Country;
 
     public function match(Criteria $criteria): array;
-
 }

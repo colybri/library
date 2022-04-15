@@ -1,0 +1,2 @@
+#!/bin/bash
+docker run --rm -ti --volume "$(pwd):../../library:rw" -u $(id -u):$(id -g) prooph/php:8.1-cli php vendor/bin/phpcs "$@"

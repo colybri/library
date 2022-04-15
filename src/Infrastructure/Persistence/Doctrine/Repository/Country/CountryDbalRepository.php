@@ -61,5 +61,4 @@ class CountryDbalRepository extends DbalRepository implements CountryRepository
             CountryNationality::from((string)$country['nationality'])
         );
     }
-
 }

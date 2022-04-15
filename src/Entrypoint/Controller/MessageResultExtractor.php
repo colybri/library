@@ -9,5 +9,4 @@ use Symfony\Component\Messenger\Envelope;
 interface MessageResultExtractor
 {
     public function extract(Envelope $message);
-
 }

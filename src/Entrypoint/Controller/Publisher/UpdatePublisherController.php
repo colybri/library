@@ -8,5 +8,4 @@ use Colybri\Library\Entrypoint\Controller\CommandController;
 
 class UpdatePublisherController extends CommandController
 {
-
 }

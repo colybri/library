@@ -81,7 +81,6 @@ final class CreateAuthorCommand extends Command
         $this->isPseudonymOf = null === $payload[self::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD] ? null : Uuid::from((string)$payload[self::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD]);
         $this->bornAt = AuthorBornAt::from((int)$payload[self::AUTHOR_BORN_YEAR_PAYLOAD]);
         $this->deathAt = null === $payload[self::AUTHOR_DEATH_YEAR_PAYLOAD] ? null : AuthorDeathAt::from((int)$payload[self::AUTHOR_DEATH_YEAR_PAYLOAD]);
-
     }
 
     public function authorId(): Uuid
@@ -97,7 +96,6 @@ final class CreateAuthorCommand extends Command
     public function countryId(): Uuid
     {
         return $this->countryId;
-
     }
 
     public function bornAt(): AuthorBornAt

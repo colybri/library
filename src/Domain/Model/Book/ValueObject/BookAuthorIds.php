@@ -19,7 +19,7 @@ class BookAuthorIds extends CollectionValueObject
     {
         foreach ($items as $elem) {
             if (false === \is_a($elem, Uuid::class)) {
-                throw new \InvalidArgumentException(self::class . ' only accept '. Uuid::class);
+                throw new \InvalidArgumentException(self::class . ' only accept ' . Uuid::class);
             }
         }
     }

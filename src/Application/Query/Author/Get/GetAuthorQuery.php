@@ -17,7 +17,7 @@ class GetAuthorQuery extends Query
     protected const NAME = 'get';
     protected const VERSION = '1';
 
-    public const ID_PAYLOAD = 'id';
+    public const AUTHOR_ID_PAYLOAD = 'id';
 
     private Uuid $authorId;
 
@@ -44,14 +44,14 @@ class GetAuthorQuery extends Query
 
         Assert::lazy()
             ->that($payload, 'payload')->isArray()
-            ->keyExists(self::ID_PAYLOAD)
+            ->keyExists(self::AUTHOR_ID_PAYLOAD)
             ->verifyNow();
 
         Assert::lazy()
-            ->that($payload[self::ID_PAYLOAD], self::ID_PAYLOAD)->uuid()
+            ->that($payload[self::AUTHOR_ID_PAYLOAD], self::AUTHOR_ID_PAYLOAD)->uuid()
             ->verifyNow();
 
-        $this->authorId = Uuid::from($payload[self::ID_PAYLOAD]);
+        $this->authorId = Uuid::from($payload[self::AUTHOR_ID_PAYLOAD]);
     }
 
     public function authorId(): Uuid

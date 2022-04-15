@@ -12,7 +12,6 @@ class CompanyName extends Company
 
     public function name(): string
     {
-       return self::NAME;
+        return self::NAME;
     }
-
 }

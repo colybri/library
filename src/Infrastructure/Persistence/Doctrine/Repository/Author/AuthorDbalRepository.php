@@ -19,7 +19,7 @@ final class AuthorDbalRepository extends DbalRepository implements AuthorReposit
     public function find(Uuid $id): ?Author
     {
         $sql = "
-            SELECT * from ".AuthorDbalMap::table()." 
+            SELECT * from authors 
              WHERE (
                 id = :id
             );
@@ -55,9 +55,8 @@ final class AuthorDbalRepository extends DbalRepository implements AuthorReposit
 
     public function insert(Author $author): void
     {
-
         $sql = "
-            INSERT into ".AuthorDbalMap::table()." (
+            INSERT into authors (
                 id, 
                 name,
                 country_id,                 
@@ -90,7 +89,7 @@ final class AuthorDbalRepository extends DbalRepository implements AuthorReposit
     public function update(Author $author): void
     {
         $sql = "
-            UPDATE ".AuthorDbalMap::table()." SET 
+            UPDATE authors SET 
                 name = :name,
                 country_id = :countryId,
                 is_pseudonym_of = :isPseudonymOf,
@@ -119,7 +118,7 @@ final class AuthorDbalRepository extends DbalRepository implements AuthorReposit
     public function delete(Uuid $id): void
     {
         $sql = "
-            DELETE from ".AuthorDbalMap::table()." 
+            DELETE from authors 
              WHERE (
                 id = :id
             );
@@ -142,8 +141,5 @@ final class AuthorDbalRepository extends DbalRepository implements AuthorReposit
             AuthorBornAt::from($author['born_year']),
             null === $author['death_year'] ? null : AuthorDeathAt::from($author['death_year'])
         );
-
     }
-
-
 }

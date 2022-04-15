@@ -89,5 +89,4 @@ class DeleteAuthorCommandHandlerTest extends TestCase
 
         ($this->handler)($this->command($authorId));
     }
-
 }

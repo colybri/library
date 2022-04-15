@@ -10,7 +10,6 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 final class CreateBookCommandHandler implements MessageHandlerInterface
 {
-
     public function __construct(private BookCreator $creator, private MessageBusInterface $brokerBus)
     {
     }
@@ -19,7 +18,6 @@ final class CreateBookCommandHandler implements MessageHandlerInterface
     {
         dd($cmd);
         $book = $this->creator->execute(
-
         );
         foreach ($book->events() as $event) {
             $this->brokerBus->dispatch($event);

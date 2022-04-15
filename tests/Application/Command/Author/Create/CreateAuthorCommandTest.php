@@ -14,7 +14,6 @@ use PHPUnit\Framework\TestCase;
 
 final class CreateAuthorCommandTest extends TestCase
 {
-
     private $authorId;
     private $name;
     private $countryId;

@@ -26,7 +26,6 @@ final class AuthorUpdater
         $this->repo->update($author);
 
         return $author;
-
     }
     private function ensureAuthorExist(Uuid $id): void
     {

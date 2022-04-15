@@ -19,7 +19,7 @@ class GetAuthorController extends QueryController
             GetAuthorQuery::fromPayload(
                 Uuid::v4(),
                 [
-                    GetAuthorQuery::ID_PAYLOAD => $authorId,
+                    GetAuthorQuery::AUTHOR_ID_PAYLOAD => $authorId,
                 ]
             )
         );

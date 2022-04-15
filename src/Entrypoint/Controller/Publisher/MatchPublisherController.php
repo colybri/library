@@ -8,5 +8,4 @@ use Colybri\Library\Entrypoint\Controller\QueryController;
 
 class MatchPublisherController extends QueryController
 {
-
 }

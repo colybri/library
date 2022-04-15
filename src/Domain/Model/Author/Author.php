@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Colybri\Library\Domain\Model\Author;
 
 use Colybri\Library\Domain\Model\Author\Event\AuthorDeleted;
+use Colybri\Library\Domain\Model\Author\Event\AuthorUpdated;
 use Forkrefactor\Ddd\Domain\Model\SimpleAggregateRoot;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 use Colybri\Library\Domain\Model\Author\Event\AuthorCreated;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorBornAt;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorDeathAt;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorName;
-
+use JetBrains\PhpStorm\Pure;
 
 final class Author extends SimpleAggregateRoot implements \JsonSerializable
 {
@@ -23,14 +24,13 @@ final class Author extends SimpleAggregateRoot implements \JsonSerializable
     private ?AuthorDeathAt $deathAt;
 
     public static function create(
-        Uuid           $id,
-        AuthorName     $name,
-        Uuid           $countryId,
-        ?Uuid          $isPseudonymOf,
-        AuthorBornAt   $bornAt,
+        Uuid $id,
+        AuthorName $name,
+        Uuid $countryId,
+        ?Uuid $isPseudonymOf,
+        AuthorBornAt $bornAt,
         ?AuthorDeathAt $deathAt
-    ): self
-    {
+    ): self {
         $self = new self($id);
         $self->name = $name;
         $self->countryId = $countryId;
@@ -43,20 +43,20 @@ final class Author extends SimpleAggregateRoot implements \JsonSerializable
     }
 
     public static function hydrate(
-        Uuid           $id,
-        AuthorName     $name,
-        Uuid           $countryId,
-        ?Uuid          $isPseudonymOf,
-        AuthorBornAt   $bornAt,
+        Uuid $id,
+        AuthorName $name,
+        Uuid $countryId,
+        ?Uuid $isPseudonymOf,
+        AuthorBornAt $bornAt,
         ?AuthorDeathAt $deathAt
-    ): self
-    {
+    ): self {
         $self = new self($id);
         $self->name = $name;
         $self->countryId = $countryId;
         $self->isPseudonymOf = $isPseudonymOf;
         $self->bornAt = $bornAt;
         $self->deathAt = $deathAt;
+
         return $self;
     }
 
@@ -81,7 +81,6 @@ final class Author extends SimpleAggregateRoot implements \JsonSerializable
     public function countryId(): Uuid
     {
         return $this->countryId;
-
     }
 
     public function bornAt(): AuthorBornAt
@@ -110,5 +109,4 @@ final class Author extends SimpleAggregateRoot implements \JsonSerializable
             'deathAt' => $this->deathAt(),
         ];
     }
-
 }

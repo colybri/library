@@ -21,13 +21,12 @@ final class Journal extends AggregateRoot
     private ?JournalFoundationYear $foundationYear;
 
     public static function create(
-        Uuid                   $id,
-        JournalName            $name,
-        ?JournalImage          $image,
-        Uuid                   $publisherId,
+        Uuid $id,
+        JournalName $name,
+        ?JournalImage $image,
+        Uuid $publisherId,
         ?JournalFoundationYear $foundationYear,
-    ): self
-    {
+    ): self {
         $self = new self($id);
         $self->name = $name;
         $self->image = $image;
@@ -77,5 +76,4 @@ final class Journal extends AggregateRoot
             'foundationYear' => $this->foundationYear(),
         ];
     }
-
 }

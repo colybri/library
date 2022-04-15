@@ -13,6 +13,5 @@ final class BookCreator
 {
     public function execute()
     {
-
     }
 }

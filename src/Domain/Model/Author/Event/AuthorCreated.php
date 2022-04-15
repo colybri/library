@@ -17,7 +17,6 @@ use PcComponentes\TopicGenerator\Topic;
 
 final class AuthorCreated extends DomainEvent
 {
-
     public const AUTHOR_ID_PAYLOAD = 'id';
     public const AUTHOR_NAME_PAYLOAD = 'name';
     public const AUTHOR_COUNTRY_ID_PAYLOAD = 'countryId';
@@ -37,13 +36,13 @@ final class AuthorCreated extends DomainEvent
     private ?AuthorDeathAt $deathAt;
 
     public static function from(
-        Uuid            $id,
-        AuthorName      $name,
-        Uuid            $countryId,
-        ?Uuid           $isPseudonymOf,
-        AuthorBornAt    $bornAt,
-        ?AuthorDeathAt  $deathAt): static
-    {
+        Uuid $id,
+        AuthorName $name,
+        Uuid $countryId,
+        ?Uuid $isPseudonymOf,
+        AuthorBornAt $bornAt,
+        ?AuthorDeathAt $deathAt
+    ): static {
         return static::fromPayload(
             Uuid::v4(),
             $id,
@@ -67,10 +66,11 @@ final class AuthorCreated extends DomainEvent
         $this->authorId = Uuid::from((string)$payload[self::AUTHOR_ID_PAYLOAD]);
         $this->name = AuthorName::from((string)$payload[self::AUTHOR_NAME_PAYLOAD]);
         $this->countryId = Uuid::from((string)$payload[self::AUTHOR_COUNTRY_ID_PAYLOAD]);
-        $this->isPseudonymOf = null === $payload[self::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD] ? null : Uuid::from((string)$payload[self::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD]);
+        $this->isPseudonymOf = null === $payload[self::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD]
+            ? null : Uuid::from((string)$payload[self::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD]);
         $this->bornAt = AuthorBornAt::from((int)$payload[self::AUTHOR_BORN_AT_PAYLOAD]);
-        $this->deathAt = null === $payload[self::AUTHOR_DEATH_AT_PAYLOAD] ? null : AuthorDeathAt::from((int)$payload[self::AUTHOR_DEATH_AT_PAYLOAD]);
-
+        $this->deathAt = null === $payload[self::AUTHOR_DEATH_AT_PAYLOAD]
+            ? null : AuthorDeathAt::from((int)$payload[self::AUTHOR_DEATH_AT_PAYLOAD]);
     }
 
     public static function messageName(): string
@@ -103,7 +103,6 @@ final class AuthorCreated extends DomainEvent
     public function countryId(): Uuid
     {
         return $this->countryId;
-
     }
 
     public function bornAt(): AuthorBornAt

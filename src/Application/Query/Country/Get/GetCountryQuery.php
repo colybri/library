@@ -58,5 +58,4 @@ class GetCountryQuery extends Query
     {
         return $this->countryId;
     }
-
 }

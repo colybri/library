@@ -35,9 +35,6 @@
     "composer/package-versions-deprecated": {
         "version": "1.11.99.4"
     },
-    "dealerdirect/phpcodesniffer-composer-installer": {
-        "version": "v0.7.2"
-    },
     "doctrine/annotations": {
         "version": "1.13",
         "recipe": {
@@ -118,9 +115,6 @@
     "doctrine/sql-formatter": {
         "version": "1.1.2"
     },
-    "forkrefactor/coding-standard": {
-        "version": "v1.0.0"
-    },
     "forkrefactor/ddd": {
         "version": "v1.0.0"
     },
@@ -184,14 +178,14 @@
     "phpdocumentor/type-resolver": {
         "version": "1.6.0"
     },
+    "phpmetrics/phpmetrics": {
+        "version": "v2.8.1"
+    },
     "phpro/grumphp": {
         "version": "v1.10.0"
     },
     "phpspec/prophecy": {
         "version": "v1.15.0"
-    },
-    "phpstan/phpdoc-parser": {
-        "version": "1.2.0"
     },
     "phpstan/phpstan": {
         "version": "1.4.6"
@@ -311,9 +305,6 @@
     },
     "seld/jsonlint": {
         "version": "1.9.0"
-    },
-    "slevomat/coding-standard": {
-        "version": "7.0.18"
     },
     "squizlabs/php_codesniffer": {
         "version": "3.6",

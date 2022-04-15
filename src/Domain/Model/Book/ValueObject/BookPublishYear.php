@@ -8,5 +8,4 @@ use Forkrefactor\Ddd\Domain\Model\ValueObject\IntValueObject;
 
 class BookPublishYear extends IntValueObject
 {
-
 }

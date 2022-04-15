@@ -8,5 +8,4 @@ use Forkrefactor\Ddd\Domain\Model\ValueObject\BoolValueObject;
 
 class BookAuthorIsPseudo extends BoolValueObject
 {
-
 }

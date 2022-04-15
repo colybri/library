@@ -19,12 +19,11 @@ final class Country extends SimpleAggregateRoot implements \JsonSerializable
     private CountryNationality $nationality;
 
     public static function hydrate(
-        Uuid               $id,
-        CountryName        $name,
-        CountryAlpha2Code  $code,
+        Uuid $id,
+        CountryName $name,
+        CountryAlpha2Code $code,
         CountryNationality $nationality
-    ): self
-    {
+    ): self {
         $self = new self($id);
         $self->name = $name;
         $self->code = $code;
@@ -61,6 +60,4 @@ final class Country extends SimpleAggregateRoot implements \JsonSerializable
             'nationality' => $this->nationality(),
         ];
     }
-
-
 }

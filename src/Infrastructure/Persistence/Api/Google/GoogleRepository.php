@@ -53,7 +53,8 @@ class GoogleRepository
         foreach ($params as $key => $value) {
             $path .= $key . '=' . $value . '&';
         }
-        $path .= '&key=' . $_ENV['GOOGLE_BOOKS_API_KEY'];;
+        $path .= '&key=' . $_ENV['GOOGLE_BOOKS_API_KEY'];
+        ;
 
         return $path;
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Colybri\Library\Domain;
 
 use PcComponentes\TopicGenerator\Service;
@@ -12,5 +14,4 @@ class ServiceName extends Service
     {
         return self::NAME;
     }
-
 }

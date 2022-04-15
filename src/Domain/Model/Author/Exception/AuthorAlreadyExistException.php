@@ -6,5 +6,4 @@ namespace Colybri\Library\Domain\Model\Author\Exception;
 
 final class AuthorAlreadyExistException extends \Exception
 {
-
 }

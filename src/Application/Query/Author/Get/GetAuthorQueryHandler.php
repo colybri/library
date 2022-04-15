@@ -19,6 +19,5 @@ class GetAuthorQueryHandler implements MessageHandlerInterface
         return $this->finder->execute(
             $query->authorId()
         );
-
     }
 }

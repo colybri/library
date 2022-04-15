@@ -30,13 +30,12 @@ class Book extends SimpleAggregateRoot implements \JsonSerializable
     //https://developers.google.com/books/docs/v1/using
     //https://www.googleapis.com/books/v1/volumes/_ojXNuzgHRcC
     public static function create(
-        Uuid                         $id,
-        BookPublishYear              $publishYear,
+        Uuid $id,
+        BookPublishYear $publishYear,
         BookHaveEstimatedPublishYear $bookHaveEstimatedPublishYear,
-        BookAuthorIsPseudo           $isPseudo,
-        BookIsOnWishList             $isOnWishList
-    )
-    {
+        BookAuthorIsPseudo $isPseudo,
+        BookIsOnWishList $isOnWishList
+    ) {
         $self = new self($id);
         $self->aggregateId = $id;
         $self->publishYear = $publishYear;
@@ -49,8 +48,7 @@ class Book extends SimpleAggregateRoot implements \JsonSerializable
 
     public static function hydrate(
         BookTitle $title,
-    ): self
-    {
+    ): self {
         $self = new self(Uuid::v4());
         $self->title = $title;
         return $self;
@@ -94,6 +92,4 @@ class Book extends SimpleAggregateRoot implements \JsonSerializable
 
         ];
     }
-
-
 }

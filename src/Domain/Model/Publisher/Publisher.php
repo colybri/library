@@ -20,13 +20,12 @@ class Publisher extends AggregateRoot
     private ?PublisherFoundationYear $foundationYear;
 
     public static function create(
-        Uuid                     $id,
-        PublisherName            $name,
-        ?PublisherCity           $city,
-        Uuid                     $countryId,
+        Uuid $id,
+        PublisherName $name,
+        ?PublisherCity $city,
+        Uuid $countryId,
         ?PublisherFoundationYear $foundationYear,
-    ): self
-    {
+    ): self {
         $self = new self($id);
         $self->name = $name;
         $self->city = $city;
@@ -37,13 +36,12 @@ class Publisher extends AggregateRoot
     }
 
     public static function hydrate(
-        Uuid                     $id,
-        PublisherName            $name,
-        ?PublisherCity           $city,
-        Uuid                     $countryId,
+        Uuid $id,
+        PublisherName $name,
+        ?PublisherCity $city,
+        Uuid $countryId,
         ?PublisherFoundationYear $foundationYear,
-    ): self
-    {
+    ): self {
         $self = new self($id);
         $self->name = $name;
         $self->city = $city;
@@ -93,5 +91,4 @@ class Publisher extends AggregateRoot
             'foundationYear' => $this->foundationYear(),
         ];
     }
-
 }

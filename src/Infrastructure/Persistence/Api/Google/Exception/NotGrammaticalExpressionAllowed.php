@@ -6,5 +6,4 @@ namespace Colybri\Library\Infrastructure\Persistence\Api\Google\Exception;
 
 class NotGrammaticalExpressionAllowed extends \Exception
 {
-
 }

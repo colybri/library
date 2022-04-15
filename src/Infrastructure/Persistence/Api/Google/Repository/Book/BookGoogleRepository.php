@@ -27,6 +27,5 @@ class BookGoogleRepository extends GoogleRepository implements BookRepository
         return Book::hydrate(
             BookTitle::from($book->volumeInfo->title),
         );
-
     }
 }

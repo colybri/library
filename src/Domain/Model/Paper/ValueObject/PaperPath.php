@@ -8,5 +8,4 @@ use Forkrefactor\Ddd\Domain\Model\ValueObject\StringValueObject;
 
 class PaperPath extends StringValueObject
 {
-
 }

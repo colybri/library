@@ -21,7 +21,6 @@ use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
 class SearchBookQueryHandler implements MessageHandlerInterface
 {
-
     public function __construct(private BookRepository $bookRepository)
     {
     }

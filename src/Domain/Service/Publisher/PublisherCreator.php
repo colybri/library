@@ -14,7 +14,6 @@ use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 
 class PublisherCreator
 {
-
     public function __construct(private PublisherRepository $publisherRepository)
     {
     }
@@ -26,7 +25,6 @@ class PublisherCreator
         $publisher = Publisher::create($id, $name, $city, $countryId, $foundation);
         $this->publisherRepository->insert($publisher);
         return $publisher;
-
     }
 
     public function ensurePublisherDoesNonExist(Uuid $id): void

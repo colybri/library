@@ -11,7 +11,6 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 abstract class CommandController
 {
-
     public function __construct(private MessageBusInterface $commandBus)
     {
     }

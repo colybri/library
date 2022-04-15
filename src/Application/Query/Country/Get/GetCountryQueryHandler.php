@@ -10,7 +10,6 @@ use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
 class GetCountryQueryHandler implements MessageHandlerInterface
 {
-
     public function __construct(private CountryFinder $finder)
     {
     }
@@ -20,6 +19,5 @@ class GetCountryQueryHandler implements MessageHandlerInterface
         return $this->finder->execute(
             $query->countryId()
         );
-
     }
 }

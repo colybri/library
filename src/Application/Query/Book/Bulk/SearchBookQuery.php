@@ -73,25 +73,24 @@ final class SearchBookQuery extends Query
         $this->publisher = null === $payload[self::PUBLISHER_PAYLOAD] ? null : (string) $payload[self::PUBLISHER_PAYLOAD];
         $this->subject = null === $payload[self::SUBJECT_PAYLOAD] ? null : (string) $payload[self::SUBJECT_PAYLOAD];
         $this->isbn = null === $payload[self::ISBN_PAYLOAD] ? null : (string) $payload[self::ISBN_PAYLOAD];
-
     }
 
-    public function title():? string
+    public function title(): ?string
     {
         return $this->title;
     }
 
-    public function author():? string
+    public function author(): ?string
     {
         return $this->author;
     }
 
-    public function publisher():? string
+    public function publisher(): ?string
     {
         return $this->publisher;
     }
 
-    public function subject():? string
+    public function subject(): ?string
     {
         return $this->subject;
     }

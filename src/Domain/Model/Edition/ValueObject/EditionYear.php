@@ -8,5 +8,4 @@ use Forkrefactor\Ddd\Domain\Model\ValueObject\IntValueObject;
 
 final class EditionYear extends IntValueObject
 {
-
 }

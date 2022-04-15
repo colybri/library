@@ -8,5 +8,4 @@ use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 
 final class AuthorIsPseudonymOf extends Uuid
 {
-
 }

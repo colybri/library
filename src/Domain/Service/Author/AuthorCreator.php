@@ -25,7 +25,6 @@ final class AuthorCreator
         $author = Author::create($id, $name, $countryId, $isPseudonymOf, $bornAt, $deathAt);
         $this->repo->insert($author);
         return $author;
-
     }
 
     public function ensureAuthorDoesNonExist(Uuid $id): void

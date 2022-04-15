@@ -30,11 +30,11 @@ class CriteriaGoogleBookAdapter implements ConditionVisitor
         }
 
         if (null !== $criteria->offset()) {
-            $this->path .= '&startIndex='.$criteria->offset();
+            $this->path .= '&startIndex=' . $criteria->offset();
         }
 
         if (null !== $criteria->limit()) {
-            $this->path .= '&maxResults='.$criteria->offset();
+            $this->path .= '&maxResults=' . $criteria->offset();
         }
 
         return $this->path;
@@ -59,7 +59,7 @@ class CriteriaGoogleBookAdapter implements ConditionVisitor
     {
         $this->countParams++;
 
-        return $this->mapParameter($filter).':'.$this->mapFieldValue($filter);
+        return $this->mapParameter($filter) . ':' . $this->mapFieldValue($filter);
     }
 
     private function buildExpression(Condition $filter)

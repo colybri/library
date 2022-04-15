@@ -6,5 +6,4 @@ namespace Colybri\Library\Domain\Model\Publisher\Exception;
 
 class PublisherAlreadyExistException extends \Exception
 {
-
 }

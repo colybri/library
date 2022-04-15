@@ -13,7 +13,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class CreateAuthorController extends CommandController
 {
-
     public function __invoke(Request $request)
     {
         $body = $this->getRequestBody($request);
@@ -33,7 +32,8 @@ final class CreateAuthorController extends CommandController
         );
 
         return new JsonResponse(
-            '', Response::HTTP_CREATED
+            '',
+            Response::HTTP_CREATED
         );
     }
 }

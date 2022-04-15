@@ -26,17 +26,15 @@ class Paper extends AggregateRoot
     private ?PaperPath $paperPath;
 
     public static function create(
-        Uuid                $id,
-        PaperTitle          $title,
-        Uuid                $journalId,
+        Uuid $id,
+        PaperTitle $title,
+        Uuid $journalId,
         ?PaperJournalVolume $volume,
-        ?PaperInitialPage   $initialPage,
-        ?PaperEndPage       $endPage,
-        ?PaperPublishYear   $publishYear,
-        ?PaperPath          $paperPath
-
-    )
-    {
+        ?PaperInitialPage $initialPage,
+        ?PaperEndPage $endPage,
+        ?PaperPublishYear $publishYear,
+        ?PaperPath $paperPath
+    ) {
         $self = new self($id);
         $self->aggregateId = $id;
         $self->title = $title;

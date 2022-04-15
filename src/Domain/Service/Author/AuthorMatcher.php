@@ -17,7 +17,6 @@ use Colybri\Library\Domain\Model\Author\ValueObject\AuthorName;
 
 final class AuthorMatcher
 {
-
     public function __construct(private AuthorRepository $authorRepository)
     {
     }
@@ -28,7 +27,6 @@ final class AuthorMatcher
 
         $authors = [];
         foreach ($keywords as $keyword) {
-
             $match = $this->authorRepository->match($this->getCriteria($keyword));
 
             /**

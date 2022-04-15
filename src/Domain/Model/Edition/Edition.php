@@ -19,13 +19,11 @@ final class Edition extends AggregateRoot
 
 
     public static function create(
-        Uuid               $id,
-        EditionYear        $year,
-
-        Uuid               $publisherId,
+        Uuid $id,
+        EditionYear $year,
+        Uuid $publisherId,
         EditionIsOnLibrary $isOnLibrary
-    )
-    {
+    ) {
         $self = new self($id);
         $self->aggregateId = $id;
         $self->year = $year;
@@ -67,5 +65,4 @@ final class Edition extends AggregateRoot
             'publisherId' => $this->publisherId(),
         ];
     }
-
 }

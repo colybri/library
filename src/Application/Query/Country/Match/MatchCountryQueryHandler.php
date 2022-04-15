@@ -21,7 +21,6 @@ use Colybri\Library\Domain\Model\Country\ValueObject\CountryName;
 
 class MatchCountryQueryHandler implements MessageHandlerInterface
 {
-
     public function __construct(private CountryRepository $countryRepository)
     {
     }

@@ -8,7 +8,6 @@ use Colybri\Library\Domain\Service\Publisher\PublisherCreator;
 
 class CreatePublisherCommandHandler
 {
-
     public function __construct(private PublisherCreator $creator)
     {
     }

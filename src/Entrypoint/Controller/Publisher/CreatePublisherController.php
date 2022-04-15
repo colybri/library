@@ -31,7 +31,8 @@ class CreatePublisherController extends CommandController
         );
 
         return new JsonResponse(
-            '', Response::HTTP_CREATED
+            '',
+            Response::HTTP_CREATED
         );
     }
 }

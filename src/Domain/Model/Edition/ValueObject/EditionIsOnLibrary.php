@@ -8,5 +8,4 @@ use Forkrefactor\Ddd\Domain\Model\ValueObject\BoolValueObject;
 
 final class EditionIsOnLibrary extends BoolValueObject
 {
-
 }

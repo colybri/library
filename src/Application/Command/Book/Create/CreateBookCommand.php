@@ -151,7 +151,5 @@ final class CreateBookCommand extends Command
         $this->editionISBN = EditionISBN::from((int)$payload[self::EDITION_ISBN_PAYLOAD]);
         $this->googleBooksId = null === $payload[self::EDITION_GOOGLE_ID_PAYLOAD] ? null : EditionGoogleBooksId::from((string)$payload[self::EDITION_GOOGLE_ID_PAYLOAD]);
         $this->editionImageUrl = null === $payload[self::EDITION_IMAGE_PAYLOAD] ? null : EditionImageUrl::from((string)$payload[self::EDITION_IMAGE_PAYLOAD]);
-
-
     }
 }

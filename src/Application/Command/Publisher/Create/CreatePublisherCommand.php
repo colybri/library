@@ -87,7 +87,7 @@ final class CreatePublisherCommand extends Command
         return $this->name;
     }
 
-    public function city():? PublisherCity
+    public function city(): ?PublisherCity
     {
         return $this->city;
     }
@@ -95,7 +95,6 @@ final class CreatePublisherCommand extends Command
     public function countryId(): Uuid
     {
         return $this->countryId;
-
     }
 
     public function foundation(): PublisherFoundationYear

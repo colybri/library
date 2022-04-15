@@ -10,7 +10,6 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 final class CreateAuthorCommandHandler implements MessageHandlerInterface
 {
-
     public function __construct(private AuthorCreator $creator, private MessageBusInterface $brokerBus)
     {
     }

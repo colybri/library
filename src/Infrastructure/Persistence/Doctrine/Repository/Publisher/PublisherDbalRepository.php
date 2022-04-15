@@ -89,6 +89,5 @@ class PublisherDbalRepository extends DbalRepository implements PublisherReposit
             Uuid::from($author['country_id']),
             null === $author['foundation_year'] ? null : PublisherFoundationYear::from($author['foundation_year'])
         );
-
     }
 }
