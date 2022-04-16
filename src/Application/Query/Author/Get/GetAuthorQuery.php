@@ -12,7 +12,7 @@ use Forkrefactor\Ddd\Application\Query;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 use PcComponentes\TopicGenerator\Topic;
 
-class GetAuthorQuery extends Query
+final class GetAuthorQuery extends Query
 {
     protected const NAME = 'get';
     protected const VERSION = '1';
@@ -48,7 +48,7 @@ class GetAuthorQuery extends Query
             ->verifyNow();
 
         Assert::lazy()
-            ->that($payload[self::AUTHOR_ID_PAYLOAD], self::AUTHOR_ID_PAYLOAD)->uuid()
+            ->that($payload[self::AUTHOR_ID_PAYLOAD], self::AUTHOR_ID_PAYLOAD)->notEmpty()->uuid()
             ->verifyNow();
 
         $this->authorId = Uuid::from($payload[self::AUTHOR_ID_PAYLOAD]);

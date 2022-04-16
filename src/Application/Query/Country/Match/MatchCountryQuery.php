@@ -11,12 +11,12 @@ use Colybri\Library\Domain\ServiceName;
 use Forkrefactor\Ddd\Application\Query;
 use PcComponentes\TopicGenerator\Topic;
 
-class MatchCountryQuery extends Query
+final class MatchCountryQuery extends Query
 {
     private const VERSION = '1';
-    private const NAME = 'match_country';
+    private const NAME = 'match';
 
-    public const KEYWORDS_PAYLOAD = 'query';
+    public const KEYWORDS_PAYLOAD = 'keywords';
     public const OFFSET_PAYLOAD = 'offset';
     public const LIMIT_PAYLOAD = 'limit';
 
@@ -54,9 +54,9 @@ class MatchCountryQuery extends Query
             ->verifyNow();
 
         Assert::lazy()
-            ->that($payload[MatchCountryQuery::OFFSET_PAYLOAD])->integerish()->min(0)
-            ->that($payload[MatchCountryQuery::LIMIT_PAYLOAD])->integerish()->min(1)->max(100)
-            ->that($payload[MatchCountryQuery::KEYWORDS_PAYLOAD])->string()
+            ->that($payload[MatchCountryQuery::OFFSET_PAYLOAD])->integer()->min(0)
+            ->that($payload[MatchCountryQuery::LIMIT_PAYLOAD])->integer()->min(1)->max(100)
+            ->that($payload[MatchCountryQuery::KEYWORDS_PAYLOAD])->notEmpty()->string()
             ->verifyNow();
 
         $this->offset = (int)$payload[self::OFFSET_PAYLOAD];

@@ -8,13 +8,10 @@ use Colybri\Library\Domain\Model\Country\Country;
 use Colybri\Library\Domain\Model\Country\CountryRepository;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 
-class CountrySearcher
+final class CountrySearcher
 {
-    private CountryRepository $repo;
-
-    public function __construct(CountryRepository $repo)
+    public function __construct(private CountryRepository $repo)
     {
-        $this->repo = $repo;
     }
 
     public function execute(Uuid $id): ?Country

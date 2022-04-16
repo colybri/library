@@ -12,12 +12,12 @@ use Forkrefactor\Ddd\Application\Query;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 use PcComponentes\TopicGenerator\Topic;
 
-class GetCountryQuery extends Query
+final class GetCountryQuery extends Query
 {
     protected const NAME = 'get';
     protected const VERSION = '1';
 
-    public const ID_PAYLOAD = 'id';
+    public const COUNTRY_ID_PAYLOAD = 'id';
 
     private Uuid $countryId;
 
@@ -44,14 +44,14 @@ class GetCountryQuery extends Query
 
         Assert::lazy()
             ->that($payload, 'payload')->isArray()
-            ->keyExists(self::ID_PAYLOAD)
+            ->keyExists(self::COUNTRY_ID_PAYLOAD)
             ->verifyNow();
 
         Assert::lazy()
-            ->that($payload[self::ID_PAYLOAD], self::ID_PAYLOAD)->uuid()
+            ->that($payload[self::COUNTRY_ID_PAYLOAD], self::COUNTRY_ID_PAYLOAD)->notEmpty()->uuid()
             ->verifyNow();
 
-        $this->countryId = Uuid::from($payload[self::ID_PAYLOAD]);
+        $this->countryId = Uuid::from($payload[self::COUNTRY_ID_PAYLOAD]);
     }
 
     public function countryId(): Uuid

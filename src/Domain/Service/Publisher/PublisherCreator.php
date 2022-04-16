@@ -18,7 +18,7 @@ class PublisherCreator
     {
     }
 
-    public function execute(Uuid $id, PublisherName $name, PublisherCity $city, Uuid $countryId, PublisherFoundationYear $foundation): Publisher
+    public function execute(Uuid $id, PublisherName $name, ?PublisherCity $city, Uuid $countryId, ?PublisherFoundationYear $foundation): Publisher
     {
         $this->ensurePublisherDoesNonExist($id);
 

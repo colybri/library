@@ -19,7 +19,7 @@ use Colybri\Library\Domain\Model\Edition\ValueObject\EditionISBN;
 use Colybri\Library\Domain\Model\Publisher\ValueObject\PublisherName;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
-class SearchBookQueryHandler implements MessageHandlerInterface
+final class SearchBookQueryHandler implements MessageHandlerInterface
 {
     public function __construct(private BookRepository $bookRepository)
     {

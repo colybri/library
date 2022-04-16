@@ -14,7 +14,7 @@ use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-class GetAuthorQueryHandlerTest extends TestCase
+final class GetAuthorQueryHandlerTest extends TestCase
 {
     private MockObject $repository;
 

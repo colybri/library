@@ -1,9 +1,24 @@
-create_publisher:
-  path: /publisher
-  controller: Colybri\Library\Entrypoint\Controller\Publisher\CreatePublisherController
-  methods: [POST]
-
 macth_publishers:
   path: /publisher/match
   controller: Colybri\Library\Entrypoint\Controller\Publisher\MatchPublisherController
-  methods: [GET]
+  methods: GET
+
+get_publisher:
+  path: /publisher/{id}
+  controller: Colybri\Library\Entrypoint\Controller\Publisher\GetPublisherController
+  methods: GET
+
+create_publisher:
+  path: /publisher
+  controller: Colybri\Library\Entrypoint\Controller\Publisher\CreatePublisherController
+  methods: POST
+
+update_publisher:
+  path: /publisher
+  controller: Colybri\Library\Entrypoint\Controller\Publisher\UpdatePublisherController
+  methods: PUT
+
+delete_publisher:
+  path: /publisher/{id}
+  controller: Colybri\Library\Entrypoint\Controller\Publisher\DeletePublisherController
+  methods: DELETE

@@ -14,10 +14,11 @@ use Colybri\Criteria\Domain\Order;
 use Colybri\Library\Domain\Model\Author\Author;
 use Colybri\Library\Domain\Model\Author\AuthorRepository;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorName;
+use Colybri\Library\Domain\Service\Shared\SimilarityAligner;
 
 final class AuthorMatcher
 {
-    public function __construct(private AuthorRepository $authorRepository)
+    public function __construct(private AuthorRepository $authorRepository, private SimilarityAligner $aligner)
     {
     }
 
@@ -39,10 +40,10 @@ final class AuthorMatcher
 
         $authors = array_values($authors);
 
-        return $this->orderBySimilarity($phrase, $authors);
+        return $this->aligner->execute($authors, $phrase, 'name');
     }
 
-    private function getCriteria($keyword): Criteria
+    private function getCriteria(string $keyword): Criteria
     {
         return new Criteria(
             Filters::from(
@@ -56,18 +57,5 @@ final class AuthorMatcher
             null,
             null
         );
-    }
-
-    private function orderBySimilarity($keyword, array &$authors): array
-    {
-
-        usort($authors, function (Author $a, Author $b) use ($keyword) {
-
-            similar_text($keyword, $a->name()->value(), $percentA);
-            similar_text($keyword, $b->name()->value(), $percentB);
-            return $percentA === $percentB ? 0 : ($percentA > $percentB ? -1 : 1);
-        });
-
-        return $authors;
     }
 }

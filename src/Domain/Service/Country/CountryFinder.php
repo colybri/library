@@ -8,7 +8,7 @@ use Colybri\Library\Domain\Model\Country\Country;
 use Colybri\Library\Domain\Model\Country\Exception\CountryDoesNotExistException;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 
-class CountryFinder
+final class CountryFinder
 {
     private CountrySearcher $service;
 

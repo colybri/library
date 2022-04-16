@@ -20,11 +20,11 @@ final class CreatePublisherCommand extends Command
     protected const NAME = 'create';
     protected const VERSION = '1';
 
-    public const ID_PAYLOAD = 'id';
-    public const NAME_PAYLOAD = 'name';
-    public const CITY_PAYLOAD = 'city';
-    public const COUNTRY_ID_PAYLOAD = 'countryId';
-    public const FOUNDATION_PAYLOAD = 'foundation';
+    public const PUBLISHER_ID_PAYLOAD = 'id';
+    public const PUBLISHER_NAME_PAYLOAD = 'name';
+    public const PUBLISHER_CITY_PAYLOAD = 'city';
+    public const PUBLISHER_COUNTRY_ID_PAYLOAD = 'countryId';
+    public const PUBLISHER_FOUNDATION_PAYLOAD = 'foundation';
 
     private Uuid $publisherId;
     private PublisherName $name;
@@ -55,27 +55,29 @@ final class CreatePublisherCommand extends Command
 
         Assert::lazy()
             ->that($payload, 'payload')->isArray()
-            ->keyExists(self::ID_PAYLOAD)
-            ->keyExists(self::NAME_PAYLOAD)
-            ->keyExists(self::CITY_PAYLOAD)
-            ->keyExists(self::COUNTRY_ID_PAYLOAD)
-            ->keyExists(self::FOUNDATION_PAYLOAD)
+            ->keyExists(self::PUBLISHER_ID_PAYLOAD)
+            ->keyExists(self::PUBLISHER_NAME_PAYLOAD)
+            ->keyExists(self::PUBLISHER_CITY_PAYLOAD)
+            ->keyExists(self::PUBLISHER_COUNTRY_ID_PAYLOAD)
+            ->keyExists(self::PUBLISHER_FOUNDATION_PAYLOAD)
             ->verifyNow();
 
         Assert::lazy()
-            ->that($payload[self::ID_PAYLOAD], self::ID_PAYLOAD)->uuid()
-            ->that($payload[self::NAME_PAYLOAD], self::NAME_PAYLOAD)->notEmpty()->string()
-            ->that($payload[self::CITY_PAYLOAD], self::CITY_PAYLOAD)->notEmpty()->string()
-            ->that($payload[self::COUNTRY_ID_PAYLOAD], self::COUNTRY_ID_PAYLOAD)->notEmpty()->uuid()
-            ->that($payload[self::FOUNDATION_PAYLOAD], self::FOUNDATION_PAYLOAD)->notEmpty()->integer()
+            ->that($payload[self::PUBLISHER_ID_PAYLOAD], self::PUBLISHER_ID_PAYLOAD)->notEmpty()->uuid()
+            ->that($payload[self::PUBLISHER_NAME_PAYLOAD], self::PUBLISHER_NAME_PAYLOAD)->notEmpty()->string()
+            ->that($payload[self::PUBLISHER_CITY_PAYLOAD], self::PUBLISHER_CITY_PAYLOAD)->nullOr()->string()
+            ->that($payload[self::PUBLISHER_COUNTRY_ID_PAYLOAD], self::PUBLISHER_COUNTRY_ID_PAYLOAD)->notEmpty()->uuid()
+            ->that($payload[self::PUBLISHER_FOUNDATION_PAYLOAD], self::PUBLISHER_FOUNDATION_PAYLOAD)->nullOr()->integer()
             ->verifyNow();
 
-        $this->publisherId = Uuid::from($payload[self::ID_PAYLOAD]);
-        $this->name = PublisherName::from((string)$payload[self::NAME_PAYLOAD]);
-        $this->city = PublisherCity::from((string)$payload[self::CITY_PAYLOAD]);
-        $this->countryId = Uuid::from((string)$payload[self::COUNTRY_ID_PAYLOAD]);
-        $this->foundation = PublisherFoundationYear::from((int)$payload[self::FOUNDATION_PAYLOAD]);
+        $this->publisherId = Uuid::from($payload[self::PUBLISHER_ID_PAYLOAD]);
+        $this->name = PublisherName::from((string)$payload[self::PUBLISHER_NAME_PAYLOAD]);
+        $this->city = PublisherCity::from((string)$payload[self::PUBLISHER_CITY_PAYLOAD]);
+        $this->countryId = Uuid::from((string)$payload[self::PUBLISHER_COUNTRY_ID_PAYLOAD]);
+        $this->foundation = null === $payload[self::PUBLISHER_FOUNDATION_PAYLOAD] ? null : PublisherFoundationYear::from((int)$payload[self::PUBLISHER_FOUNDATION_PAYLOAD]);
+        $this->foundation = PublisherFoundationYear::from((int)$payload[self::PUBLISHER_FOUNDATION_PAYLOAD]);
     }
+
 
     public function publisherId(): Uuid
     {

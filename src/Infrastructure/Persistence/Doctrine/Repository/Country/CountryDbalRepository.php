@@ -51,6 +51,15 @@ class CountryDbalRepository extends DbalRepository implements CountryRepository
         );
     }
 
+    public function count(Criteria $criteria): int
+    {
+        $queryBuilder = $this->connectionRead->createQueryBuilder()
+            ->select('*')->from(CountryDbalMap::table());
+
+        (new CriteriaDbalAdapter($queryBuilder, new CountryDbalMap()))->build($criteria);
+
+        return $queryBuilder->executeQuery()->rowCount();
+    }
 
     private function map(array $country): Country
     {

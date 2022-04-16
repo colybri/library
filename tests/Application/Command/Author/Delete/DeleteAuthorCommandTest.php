@@ -37,6 +37,14 @@ final class DeleteAuthorCommandTest extends TestCase
     /**
      * @test
      */
+    public function given_subject_under_test_when_set_up_then_should_return_open_async_standard_name(): void
+    {
+        self::assertMatchesRegularExpression('/^([a-z|_]+)\.([a-z|_]+)\.([0-9]){1,2}\.([a-z|_]+)\.([a-z|_]+)\.([a-z|_]+)$/', $this->command->messageName());
+    }
+
+    /**
+     * @test
+     */
     public function given_author_members_when_command_getters_are_called_then_return_equals_objects_and_values(): void
     {
         self::assertTrue(Uuid::from($this->authorId)->equalTo($this->command->authorId()));

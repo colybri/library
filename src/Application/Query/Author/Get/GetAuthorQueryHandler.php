@@ -8,7 +8,7 @@ use Colybri\Library\Domain\Model\Author\Author;
 use Colybri\Library\Domain\Service\Author\AuthorFinder;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
-class GetAuthorQueryHandler implements MessageHandlerInterface
+final class GetAuthorQueryHandler implements MessageHandlerInterface
 {
     public function __construct(private AuthorFinder $finder)
     {

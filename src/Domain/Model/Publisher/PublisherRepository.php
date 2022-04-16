@@ -13,5 +13,11 @@ interface PublisherRepository
 
     public function insert(Publisher $publisher): void;
 
+    public function update(Publisher $publisher): void;
+
     public function match(Criteria $criteria): array;
+
+    public function count(Criteria $criteria): int;
+
+    public function delete(Uuid $id): void;
 }

@@ -51,14 +51,14 @@ class Publisher extends AggregateRoot
         return $self;
     }
 
+    public function delete(PublisherRepository $repository)
+    {
+        $repository->delete($this->aggregateId());
+    }
+
     public static function modelName(): string
     {
         return self::NAME;
-    }
-
-    public function id(): Uuid
-    {
-        return $this->aggregateId;
     }
 
     public function name(): PublisherName
@@ -84,7 +84,7 @@ class Publisher extends AggregateRoot
     public function jsonSerialize(): mixed
     {
         return [
-            'id' => $this->id(),
+            'id' => $this->aggregateId(),
             'name' => $this->name(),
             'city' => $this->city(),
             'countryId' => $this->countryId(),

@@ -20,7 +20,7 @@ class GetCountryController extends QueryController
             GetCountryQuery::fromPayload(
                 Uuid::v4(),
                 [
-                    GetCountryQuery::ID_PAYLOAD => $countryId,
+                    GetCountryQuery::COUNTRY_ID_PAYLOAD => $countryId,
                 ]
             )
         );

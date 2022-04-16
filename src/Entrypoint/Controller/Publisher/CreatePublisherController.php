@@ -21,11 +21,11 @@ class CreatePublisherController extends CommandController
             CreatePublisherCommand::fromPayload(
                 Uuid::v4(),
                 [
-                    CreatePublisherCommand::ID_PAYLOAD => $body->get(CreatePublisherCommand::ID_PAYLOAD),
-                    CreatePublisherCommand::NAME_PAYLOAD => $body->get(CreatePublisherCommand::NAME_PAYLOAD),
-                    CreatePublisherCommand::CITY_PAYLOAD => $body->get(CreatePublisherCommand::CITY_PAYLOAD),
-                    CreatePublisherCommand::COUNTRY_ID_PAYLOAD => $body->get(CreatePublisherCommand::COUNTRY_ID_PAYLOAD),
-                    CreatePublisherCommand::FOUNDATION_PAYLOAD => $body->get(CreatePublisherCommand::FOUNDATION_PAYLOAD),
+                    CreatePublisherCommand::PUBLISHER_ID_PAYLOAD => $body->get(CreatePublisherCommand::PUBLISHER_ID_PAYLOAD),
+                    CreatePublisherCommand::PUBLISHER_NAME_PAYLOAD => $body->get(CreatePublisherCommand::PUBLISHER_NAME_PAYLOAD),
+                    CreatePublisherCommand::PUBLISHER_CITY_PAYLOAD => $body->get(CreatePublisherCommand::PUBLISHER_CITY_PAYLOAD),
+                    CreatePublisherCommand::PUBLISHER_COUNTRY_ID_PAYLOAD => $body->get(CreatePublisherCommand::PUBLISHER_COUNTRY_ID_PAYLOAD),
+                    CreatePublisherCommand::PUBLISHER_FOUNDATION_PAYLOAD => $body->get(CreatePublisherCommand::PUBLISHER_FOUNDATION_PAYLOAD),
                 ]
             )
         );

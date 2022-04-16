@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Application\Query\Country\Match;
 
+use Colybri\Library\Application\Query\Shared\ListResponse;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Colybri\Criteria\Domain\Criteria;
 use Colybri\Criteria\Domain\Filters;
@@ -19,22 +20,22 @@ use Colybri\Library\Domain\Model\Country\CountryRepository;
 use Colybri\Library\Domain\Model\Country\ValueObject\CountryAlpha2Code;
 use Colybri\Library\Domain\Model\Country\ValueObject\CountryName;
 
-class MatchCountryQueryHandler implements MessageHandlerInterface
+final class MatchCountryQueryHandler implements MessageHandlerInterface
 {
     public function __construct(private CountryRepository $countryRepository)
     {
     }
 
-    public function __invoke(MatchCountryQuery $query): array
+    public function __invoke(MatchCountryQuery $query): ListResponse
     {
         $filters = $this->filters($query);
 
-        return $this->countryRepository->match(new Criteria(
-            Filters::from($filters),
-            Order::from(OrderBy::from(CountryName::class), OrderType::Desc),
+        return ListResponse::fromPaginatedList(
+            $this->countryRepository->match($this->getCriteria($filters, $query)),
+            $this->countryRepository->count($this->getCriteria($filters, $query)),
             $query->offset(),
             $query->limit()
-        ));
+        );
     }
 
     public function filters(MatchCountryQuery $query): Disjunction
@@ -50,6 +51,16 @@ class MatchCountryQueryHandler implements MessageHandlerInterface
                 FilterOperator::Contains,
                 FilterValue::from($query->match())
             )
+        );
+    }
+
+    private function getCriteria(Disjunction $filters, MatchCountryQuery $query): Criteria
+    {
+        return new Criteria(
+            Filters::from($filters),
+            Order::from(OrderBy::from(CountryName::class), OrderType::Desc),
+            $query->offset(),
+            $query->limit()
         );
     }
 }

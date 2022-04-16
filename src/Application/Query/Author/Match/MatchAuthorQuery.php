@@ -14,9 +14,9 @@ use PcComponentes\TopicGenerator\Topic;
 final class MatchAuthorQuery extends Query
 {
     private const VERSION = '1';
-    private const NAME = 'match_author';
+    private const NAME = 'match';
 
-    public const KEYWORDS_PAYLOAD = 'query';
+    public const KEYWORDS_PAYLOAD = 'keywords';
     public const OFFSET_PAYLOAD = 'offset';
     public const LIMIT_PAYLOAD = 'limit';
 

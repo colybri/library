@@ -67,7 +67,7 @@ final class CreateAuthorCommand extends Command
             ->verifyNow();
 
         Assert::lazy()
-            ->that($payload[self::AUTHOR_ID_PAYLOAD], self::AUTHOR_ID_PAYLOAD)->uuid()
+            ->that($payload[self::AUTHOR_ID_PAYLOAD], self::AUTHOR_ID_PAYLOAD)->notEmpty()->uuid()
             ->that($payload[self::AUTHOR_NAME_PAYLOAD], self::AUTHOR_NAME_PAYLOAD)->notEmpty()->string()
             ->that($payload[self::AUTHOR_COUNTRY_ID_PAYLOAD], self::AUTHOR_COUNTRY_ID_PAYLOAD)->notEmpty()->uuid()
             ->that($payload[self::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD], self::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD)->nullOr()->uuid()

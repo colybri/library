@@ -52,6 +52,15 @@ final class AuthorDbalRepository extends DbalRepository implements AuthorReposit
         );
     }
 
+    public function count(Criteria $criteria): int
+    {
+        $queryBuilder = $this->connectionRead->createQueryBuilder()
+            ->select('*')->from(AuthorDbalMap::table());
+
+        (new CriteriaDbalAdapter($queryBuilder, new AuthorDbalMap()))->build($criteria);
+
+        return $queryBuilder->executeQuery()->rowCount();
+    }
 
     public function insert(Author $author): void
     {
