@@ -54,7 +54,13 @@ final class GetPublisherQueryHandlerTest extends TestCase
             ->with($publisherId)
             ->willReturn($mother->build());
 
-        ($this->handler)($this->query($publisherId));
+        $publisher = (array) json_decode(json_encode(($this->handler)($this->query($publisherId))));
+
+        $this->assertArrayHasKey('id', $publisher);
+        $this->assertArrayHasKey('name', $publisher);
+        $this->assertArrayHasKey('city', $publisher);
+        $this->assertArrayHasKey('countryId', $publisher);
+        $this->assertArrayHasKey('foundationYear', $publisher);
     }
 
     /**

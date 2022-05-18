@@ -16,6 +16,7 @@
         "doctrine/doctrine-bundle": "^2.5",
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.10",
+        "fale/isbn": "^3.1",
         "forkrefactor/ddd": "^1.0",
         "forkrefactor/ddd-logging": "^1.0",
         "forkrefactor/messenger-bundle": "^1.0",

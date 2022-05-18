@@ -9,6 +9,7 @@ framework:
           - middleware.trace.message
           - middleware.logging.command
           - middleware.execution_time
+          #- middleware.doctrine.transactional
       query.bus:
         # disable the default middleware
           #transports:

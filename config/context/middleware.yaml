@@ -4,6 +4,12 @@ services:
     autoconfigure: false
     public: false
 
+  middleware.doctrine.transactional:
+    class: Colybri\Library\Infrastructure\Messenger\Middleware\DoctrineTransactionalMiddleware
+    arguments:
+      - '@connection_write.dbal'
+    autowire: true
+
   # Trace Middleware
   middleware.trace.request:
     class: Forkrefactor\DddLogging\DomainTrace\RequestTraceMiddleware

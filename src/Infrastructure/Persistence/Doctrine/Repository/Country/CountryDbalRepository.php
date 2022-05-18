@@ -28,12 +28,12 @@ class CountryDbalRepository extends DbalRepository implements CountryRepository
         $statement = $this->connectionRead->prepare($sql);
         $statement->bindValue('id', $id->value());
 
-        $country = $statement->executeQuery();
+        $country = $statement->executeQuery()->fetchAssociative();
 
         if (false === $country) {
             return null;
         }
-        return $this->map($country->fetchAssociative());
+        return $this->map($country);
     }
 
     public function match(Criteria $criteria): array

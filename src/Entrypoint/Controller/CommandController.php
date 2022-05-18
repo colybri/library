@@ -18,6 +18,9 @@ abstract class CommandController
     public function getRequestBody(Request $request): ParameterBag
     {
         $body = json_decode($request->getContent(), true);
+        if (empty($body)) {
+            $body = json_decode(json_encode($request->request->all(), JSON_THROW_ON_ERROR), true);
+        }
         return new ParameterBag($body);
     }
 

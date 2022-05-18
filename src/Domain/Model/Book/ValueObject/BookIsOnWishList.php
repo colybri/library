@@ -6,6 +6,6 @@ namespace Colybri\Library\Domain\Model\Book\ValueObject;
 
 use Forkrefactor\Ddd\Domain\Model\ValueObject\BoolValueObject;
 
-class BookIsOnWishList extends BoolValueObject
+final class BookIsOnWishList extends BoolValueObject
 {
 }

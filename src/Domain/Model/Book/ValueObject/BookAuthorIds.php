@@ -7,7 +7,7 @@ namespace Colybri\Library\Domain\Model\Book\ValueObject;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\CollectionValueObject;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 
-class BookAuthorIds extends CollectionValueObject
+final class BookAuthorIds extends CollectionValueObject
 {
     public static function from(array $items): static
     {

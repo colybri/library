@@ -23,23 +23,12 @@ final class CreateBookController extends CommandController
                 [
                     CreateBookCommand::BOOK_ID_PAYLOAD => $body->get(CreateBookCommand::BOOK_ID_PAYLOAD),
                     CreateBookCommand::BOOK_TITLE_PAYLOAD => $body->get(CreateBookCommand::BOOK_TITLE_PAYLOAD),
+                    CreateBookCommand::BOOK_SUBTITLE_PAYLOAD => $body->get(CreateBookCommand::BOOK_SUBTITLE_PAYLOAD),
                     CreateBookCommand::BOOK_AUTHORS_PAYLOAD => $body->get(CreateBookCommand::BOOK_AUTHORS_PAYLOAD),
+                    CreateBookCommand::BOOK_AUTHOR_IS_PSEUDO_PAYLOAD => $body->get(CreateBookCommand::BOOK_AUTHOR_IS_PSEUDO_PAYLOAD),
                     CreateBookCommand::BOOK_PUBLISH_YEAR_PAYLOAD => $body->get(CreateBookCommand::BOOK_PUBLISH_YEAR_PAYLOAD),
-                    CreateBookCommand::BOOK_IS_ESTIMATED_PUBLISH => $body->get(CreateBookCommand::BOOK_IS_ESTIMATED_PUBLISH),
-                    CreateBookCommand::BOOK_PUBLISHER_ID_PAYLOAD => $body->get(CreateBookCommand::BOOK_PUBLISHER_ID_PAYLOAD),
-                    CreateBookCommand::BOOK_IS_PSEUDO_PAYLOAD => $body->get(CreateBookCommand::BOOK_IS_PSEUDO_PAYLOAD),
-
-                    CreateBookCommand::EDITION_YEAR_PAYLOAD => $body->get(CreateBookCommand::EDITION_YEAR_PAYLOAD),
-                    CreateBookCommand::EDITION_GOOGLE_ID_PAYLOAD => $body->get(CreateBookCommand::EDITION_GOOGLE_ID_PAYLOAD),
-                    CreateBookCommand::EDITION_ISBN_PAYLOAD => $body->get(CreateBookCommand::EDITION_ISBN_PAYLOAD),
-                    CreateBookCommand::EDITION_TITLE_PAYLOAD => $body->get(CreateBookCommand::EDITION_TITLE_PAYLOAD),
-                    CreateBookCommand::EDITION_IS_ON_LIBRARY => $body->get(CreateBookCommand::EDITION_IS_ON_LIBRARY),
-                    CreateBookCommand::EDITION_LANGUAGE_PAYLOAD => $body->get(CreateBookCommand::EDITION_LANGUAGE_PAYLOAD),
-                    CreateBookCommand::EDITION_IMAGE_PAYLOAD => $body->get(CreateBookCommand::EDITION_IMAGE_PAYLOAD),
-                    CreateBookCommand::EDITION_RESOURCES_PAYLOAD => $body->get(CreateBookCommand::EDITION_RESOURCES_PAYLOAD),
-                    CreateBookCommand::EDITION_CONDITION_PAYLOAD => $body->get(CreateBookCommand::EDITION_CONDITION_PAYLOAD),
-                    CreateBookCommand::EDITION_PAGES_PAYLOAD => $body->get(CreateBookCommand::EDITION_PAGES_PAYLOAD),
-                    CreateBookCommand::EDITION_CITY_PAYLOAD => $body->get(CreateBookCommand::EDITION_CITY_PAYLOAD)
+                    CreateBookCommand::BOOK_PUBLISH_YEAR_IS_ESTIMATED_PAYLOAD => $body->get(CreateBookCommand::BOOK_PUBLISH_YEAR_IS_ESTIMATED_PAYLOAD),
+                    CreateBookCommand::BOOK_IS_ON_WISH_LIST_PAYLOAD => $body->get(CreateBookCommand::BOOK_IS_ON_WISH_LIST_PAYLOAD),
                 ]
             )
         );

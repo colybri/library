@@ -72,7 +72,6 @@ final class Author extends SimpleAggregateRoot implements \JsonSerializable
         return self::NAME;
     }
 
-
     public function name(): AuthorName
     {
         return $this->name;

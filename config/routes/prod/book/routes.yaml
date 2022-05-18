@@ -3,7 +3,12 @@ create_book:
   controller: Colybri\Library\Entrypoint\Controller\Book\CreateBookController
   methods: POST
 
-search_books:
-  path: /book/search
-  controller: Colybri\Library\Entrypoint\Controller\Book\SearchBookController
-  methods: GET
+update_book:
+  path: /book
+  controller: Colybri\Library\Entrypoint\Controller\Book\UpdateBookController
+  methods: PUT
+
+delete_book:
+  path: /book/{id}
+  controller: Colybri\Library\Entrypoint\Controller\Book\DeleteBookController
+  methods: DELETE

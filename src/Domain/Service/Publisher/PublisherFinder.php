@@ -9,7 +9,7 @@ use Colybri\Library\Domain\Model\Publisher\Publisher;
 use Colybri\Library\Domain\Model\Publisher\PublisherRepository;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 
-class PublisherFinder
+final class PublisherFinder
 {
     public function __construct(private PublisherRepository $repo)
     {
@@ -27,7 +27,7 @@ class PublisherFinder
         return $publisher;
     }
 
-    public function ensurePublisherExist(?Publisher $publisher): void
+    private function ensurePublisherExist(?Publisher $publisher): void
     {
         if (null === $publisher) {
             throw new PublisherDoesNotExistException(sprintf('Publisher whit id:%s does not exist on repository', $publisher));

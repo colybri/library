@@ -16,9 +16,17 @@ final class CreateBookCommandHandler implements MessageHandlerInterface
 
     public function __invoke(CreateBookCommand $cmd): void
     {
-        dd($cmd);
         $book = $this->creator->execute(
+            $cmd->bookId(),
+            $cmd->title(),
+            $cmd->subtitle(),
+            $cmd->authorIds(),
+            $cmd->isPseudo(),
+            $cmd->publishYear(),
+            $cmd->publishYearIsEstimated(),
+            $cmd->isOnWishList()
         );
+
         foreach ($book->events() as $event) {
             $this->brokerBus->dispatch($event);
         }

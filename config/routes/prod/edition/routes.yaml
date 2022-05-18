@@ -1,0 +1,15 @@
+create_author:
+  path: /edition
+  controller: Colybri\Library\Entrypoint\Controller\Edition\CreateEditionController
+  methods: POST
+
+seek_edition:
+  path: /edition/seek
+  controller: Colybri\Library\Entrypoint\Controller\Edition\SeekEditionController
+  methods: GET
+
+delete_edition:
+  path: /edition/{id}
+  controller: Colybri\Library\Entrypoint\Controller\Edition\DeleteEditionController
+  methods: DELETE
+

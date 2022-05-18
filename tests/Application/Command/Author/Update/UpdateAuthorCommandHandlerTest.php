@@ -11,7 +11,6 @@ use Colybri\Library\Domain\Model\Author\Exception\AuthorDoesNotExistException;
 use Colybri\Library\Domain\Service\Author\AuthorFinder;
 use Colybri\Library\Domain\Service\Author\AuthorUpdater;
 use Colybri\Library\Tests\Mock\Domain\Model\Author\AuthorObjectMother;
-use Colybri\Library\Tests\Mock\Infrastructure\Bus\FakeMessageBus;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 use Monolog\Test\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;

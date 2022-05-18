@@ -1,0 +1,6 @@
+services:
+
+    Colybri\Library\Domain\Model\Edition\EditionRepository $seekEditionRepository: '@Colybri\Library\Infrastructure\Persistence\Api\Google\Repository\Edition\EditionGoogleRepository'
+    Colybri\Library\Domain\Model\Edition\EditionRepository $editionRepository: '@Colybri\Library\Infrastructure\Persistence\Doctrine\Repository\Edition\EditionDbalRepository'
+
+    Colybri\Library\Domain\Model\Edition\EditionRepository: '@Colybri\Library\Infrastructure\Persistence\Doctrine\Repository\Edition\EditionDbalRepository'

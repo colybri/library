@@ -141,7 +141,6 @@ final class AuthorDbalRepository extends DbalRepository implements AuthorReposit
 
     private function map(array $author): Author
     {
-
         return Author::hydrate(
             Uuid::from($author['id']),
             AuthorName::from($author['name']),

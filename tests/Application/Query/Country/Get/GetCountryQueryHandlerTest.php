@@ -56,7 +56,12 @@ final class GetCountryQueryHandlerTest extends TestCase
             ->willReturn($mother->build());
 
 
-        ($this->handler)($this->query($countryId));
+        $country = (array) json_decode(json_encode(($this->handler)($this->query($countryId))));
+
+        $this->assertArrayHasKey('id', $country);
+        $this->assertArrayHasKey('name', $country);
+        $this->assertArrayHasKey('alpha2Code', $country);
+        $this->assertArrayHasKey('nationality', $country);
     }
 
     /**

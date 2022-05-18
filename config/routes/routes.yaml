@@ -13,3 +13,7 @@ publisher_routes:
 book_routes:
     resource: prod/book/routes.yaml
     prefix: v1
+
+edition_routes:
+    resource: prod/edition/routes.yaml
+    prefix: v1

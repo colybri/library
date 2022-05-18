@@ -8,7 +8,7 @@ use Colybri\Library\Domain\Model\Edition\Edition;
 use Colybri\Library\Domain\Model\Edition\EditionRepository;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 
-class EditionSearcher
+final class EditionSearcher
 {
     public function __construct(private EditionRepository $repo)
     {

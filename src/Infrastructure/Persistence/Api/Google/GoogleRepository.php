@@ -37,7 +37,7 @@ class GoogleRepository
 
         $response = json_decode($request->getBody()->getContents());
 
-        return $response->items;
+        return $response->totalItems > 0 ? $response->items : [];
     }
 
     protected function byCriteria(string $path, Criteria $criteria, EntityMap $map)

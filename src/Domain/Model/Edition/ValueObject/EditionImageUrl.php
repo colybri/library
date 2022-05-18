@@ -11,8 +11,6 @@ class EditionImageUrl extends StringValueObject
 {
     public static function from(string $value): static
     {
-        Assert::that($value)->url();
-
         return parent::from($value);
     }
 }

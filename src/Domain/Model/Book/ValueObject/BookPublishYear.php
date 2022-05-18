@@ -6,6 +6,6 @@ namespace Colybri\Library\Domain\Model\Book\ValueObject;
 
 use Forkrefactor\Ddd\Domain\Model\ValueObject\IntValueObject;
 
-class BookPublishYear extends IntValueObject
+final class BookPublishYear extends IntValueObject
 {
 }
