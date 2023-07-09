@@ -95,7 +95,8 @@
         "post-install-cmd": [
             "@auto-scripts",
             "rm -rf .git/hooks",
-            "cp -r scripts/git .git/hooks"
+            "cp -r scripts/git .git/hooks",
+            "chmod ug+x .git/hooks/pre-commit"
         ],
         "post-update-cmd": [
             "@auto-scripts"

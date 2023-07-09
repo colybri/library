@@ -58,7 +58,6 @@ final class FeatureContext implements Context
 
     private function getApplication(): Application
     {
-
         $app = new Application($this->kernel);
         $app->setAutoExit(false);
 
