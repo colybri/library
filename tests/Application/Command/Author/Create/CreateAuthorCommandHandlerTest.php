@@ -6,10 +6,9 @@ namespace Colybri\Library\Tests\Application\Command\Author\Create;
 
 use Colybri\Library\Application\Command\Author\Create\CreateAuthorCommand;
 use Colybri\Library\Application\Command\Author\Create\CreateAuthorCommandHandler;
-use Colybri\Library\Application\Command\Author\Delete\DeleteAuthorCommand;
 use Colybri\Library\Domain\Model\Author\AuthorRepository;
 use Colybri\Library\Domain\Model\Author\Event\AuthorCreated;
-use Colybri\Library\Domain\Model\Author\Exception\AuthorAlreadyExistException;
+use Colybri\Library\Domain\Model\Author\Exception\AuthorAlreadyExistsException;
 use Colybri\Library\Domain\Service\Author\AuthorCreator;
 use Colybri\Library\Tests\Mock\Domain\Model\Author\AuthorObjectMother;
 use Colybri\Library\Tests\Mock\Infrastructure\Bus\FakeMessageBus;
@@ -44,7 +43,8 @@ final class CreateAuthorCommandHandlerTest extends TestCase
             Uuid::v4(),
             [
                 CreateAuthorCommand::AUTHOR_ID_PAYLOAD => $id->value(),
-                CreateAuthorCommand::AUTHOR_NAME_PAYLOAD => 'Agustín de Hipona',
+                CreateAuthorCommand::AUTHOR_FIRST_NAME_PAYLOAD => 'Agustín de Hipona',
+                CreateAuthorCommand::AUTHOR_LAST_NAME_PAYLOAD => null,
                 CreateAuthorCommand::AUTHOR_COUNTRY_ID_PAYLOAD => 'd4fff356-ad67-9347-f167-f904adcd8953',
                 CreateAuthorCommand::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD => null,
                 CreateAuthorCommand::AUTHOR_BORN_YEAR_PAYLOAD => 396,
@@ -72,7 +72,7 @@ final class CreateAuthorCommandHandlerTest extends TestCase
      */
     public function given_existing_author_then_throw_exception()
     {
-        $this->expectException(AuthorAlreadyExistException::class);
+        $this->expectException(AuthorAlreadyExistsException::class);
 
         $authorId = Uuid::v4();
         $author = new AuthorObjectMother(id: $authorId);

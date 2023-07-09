@@ -8,7 +8,7 @@ use Colybri\Library\Application\Query\Author\Match\MatchAuthorQuery;
 use Colybri\Library\Application\Query\Author\Match\MatchAuthorQueryHandler;
 use Colybri\Library\Domain\Model\Author\Author;
 use Colybri\Library\Domain\Model\Author\AuthorRepository;
-use Colybri\Library\Domain\Model\Author\ValueObject\AuthorName;
+use Colybri\Library\Domain\Model\Author\ValueObject\AuthorFirstName;
 use Colybri\Library\Domain\Service\Author\AuthorMatcher;
 use Colybri\Library\Domain\Service\Shared\SimilarityAligner;
 use Colybri\Library\Tests\Mock\Domain\Model\Author\AuthorObjectMother;
@@ -87,9 +87,9 @@ final class MatchAuthorQueryHandlerTest extends TestCase
 
     private function authors(): array
     {
-        $name = AuthorName::from('Augustin Barruel');
+        $name = AuthorFirstName::from('Augustin Barruel');
 
-        $mockOne = new AuthorObjectMother(name: AuthorName::from('Gershom Scholem'));
+        $mockOne = new AuthorObjectMother(name: AuthorFirstName::from('Gershom Scholem'));
         $mockTwo = new AuthorObjectMother(name: $name);
 
         return [$mockOne->build(), $mockTwo->build()];

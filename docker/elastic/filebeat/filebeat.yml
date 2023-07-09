@@ -1,19 +1,6 @@
 # Set custom paths for the log files. If left empty,
 # Filebeat will choose the paths depending on your OS.
 #var.paths:
-
-filebeat.modules:
-- module: postgresql
-  log:
-    enabled: true
-    # Set custom paths for the log files. If left empty,
-    # Filebeat will choose the paths depending on your OS.
-    var.paths:
-      - /var/log/postgresql
-    #Input configuration (advanced). Any input configuration option
-    #can be added under this section.
-    #input:
-
 filebeat.inputs:
   - type: log
     enabled: true
@@ -23,13 +10,10 @@ filebeat.inputs:
     json.keys_under_root: true
     json_message_key: log
 
-
-
 output.elasticsearch:
   enabled: true
-  hosts: ["library_elastic:9200"]
-  username: elastic
-  password: xDJdke434SADeasd
+  hosts: ["${ELASTICSEARCH_HOST}:9200"]
+  password: ${ELASTICSEARCH_PASSWORD}
   pipeline: library_logs
   indices:
     - index: "library-events"
@@ -42,12 +26,22 @@ output.elasticsearch:
       when.contains:
         msg: "handled request"
 
-setup.template:
+setup.dashboards:
   enabled: true
-  name: 'library'
-  pattern: 'library-*'
-  overwrite: false
-  json:
-    enabled: true
-    path: "template.json"
-    name: "library"
+
+setup.kibana:
+  host: ${KIBANA_HOST}
+  password: ${ELASTICSEARCH_PASSWORD}
+
+xpack.monitoring:
+  enabled: true
+  elasticsearch:
+#setup.template:
+#  enabled: true
+#  name: 'library'
+#  pattern: 'library-*'
+#  overwrite: false
+#  json:
+#    enabled: true
+#    path: "template.json"
+#    name: "library"

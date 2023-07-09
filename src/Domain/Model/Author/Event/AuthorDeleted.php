@@ -8,7 +8,7 @@ use Colybri\Library\Domain\CompanyName;
 use Colybri\Library\Domain\Model\Author\Author;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorBornAt;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorDeathAt;
-use Colybri\Library\Domain\Model\Author\ValueObject\AuthorName;
+use Colybri\Library\Domain\Model\Author\ValueObject\AuthorFirstName;
 use Colybri\Library\Domain\ServiceName;
 use Forkrefactor\Ddd\Domain\Model\DomainEvent;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\DateTimeValueObject;

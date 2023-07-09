@@ -6,6 +6,6 @@ namespace Colybri\Library\Domain\Model\Author\ValueObject;
 
 use Forkrefactor\Ddd\Domain\Model\ValueObject\StringValueObject;
 
-final class AuthorName extends StringValueObject
+final class AuthorFirstName extends StringValueObject
 {
 }

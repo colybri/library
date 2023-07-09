@@ -54,7 +54,7 @@ final class EditionGoogleRepository extends GoogleRepository implements EditionR
 
     private function map(\stdClass $book): Edition
     {
-        return Edition::hydrate(
+        return Edition::reconstitute(
             Uuid::v4(),
             isset($book->volumeInfo->publishedDate) ? EditionYear::from((int)$book->volumeInfo->publishedDate) : EditionYear::from(3000),
             Uuid::v4(),

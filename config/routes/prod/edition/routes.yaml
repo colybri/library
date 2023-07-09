@@ -1,4 +1,4 @@
-create_author:
+create_edition:
   path: /edition
   controller: Colybri\Library\Entrypoint\Controller\Edition\CreateEditionController
   methods: POST

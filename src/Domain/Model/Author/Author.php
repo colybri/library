@@ -6,52 +6,58 @@ namespace Colybri\Library\Domain\Model\Author;
 
 use Colybri\Library\Domain\Model\Author\Event\AuthorDeleted;
 use Colybri\Library\Domain\Model\Author\Event\AuthorUpdated;
+use Colybri\Library\Domain\Model\Author\ValueObject\AuthorLastName;
 use Forkrefactor\Ddd\Domain\Model\SimpleAggregateRoot;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 use Colybri\Library\Domain\Model\Author\Event\AuthorCreated;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorBornAt;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorDeathAt;
-use Colybri\Library\Domain\Model\Author\ValueObject\AuthorName;
+use Colybri\Library\Domain\Model\Author\ValueObject\AuthorFirstName;
 use JetBrains\PhpStorm\Pure;
 
 final class Author extends SimpleAggregateRoot implements \JsonSerializable
 {
     private const NAME = 'author';
-    private AuthorName $name;
+    private AuthorFirstName $name;
+    private ?AuthorLastName $lastName;
     private Uuid $countryId;
     private ?Uuid $isPseudonymOf;
     private AuthorBornAt $bornAt;
     private ?AuthorDeathAt $deathAt;
 
     public static function create(
-        Uuid $id,
-        AuthorName $name,
-        Uuid $countryId,
-        ?Uuid $isPseudonymOf,
-        AuthorBornAt $bornAt,
-        ?AuthorDeathAt $deathAt
+        Uuid            $id,
+        AuthorFirstName $name,
+        ?AuthorLastName $lastName,
+        Uuid            $countryId,
+        ?Uuid           $isPseudonymOf,
+        AuthorBornAt    $bornAt,
+        ?AuthorDeathAt  $deathAt
     ): self {
         $self = new self($id);
         $self->name = $name;
+        $self->lastName = $lastName;
         $self->countryId = $countryId;
         $self->isPseudonymOf = $isPseudonymOf;
         $self->bornAt = $bornAt;
         $self->deathAt = $deathAt;
 
-        $self->recordThat(AuthorCreated::from($id, $name, $countryId, $isPseudonymOf, $bornAt, $deathAt));
+        $self->recordThat(AuthorCreated::from($id, $name, $lastName, $countryId, $isPseudonymOf, $bornAt, $deathAt));
         return $self;
     }
 
-    public static function hydrate(
-        Uuid $id,
-        AuthorName $name,
-        Uuid $countryId,
-        ?Uuid $isPseudonymOf,
-        AuthorBornAt $bornAt,
-        ?AuthorDeathAt $deathAt
+    public static function reconstitute(
+        Uuid            $id,
+        AuthorFirstName $name,
+        ?AuthorLastName $lastName,
+        Uuid            $countryId,
+        ?Uuid           $isPseudonymOf,
+        AuthorBornAt    $bornAt,
+        ?AuthorDeathAt  $deathAt
     ): self {
         $self = new self($id);
         $self->name = $name;
+        $self->lastName = $lastName;
         $self->countryId = $countryId;
         $self->isPseudonymOf = $isPseudonymOf;
         $self->bornAt = $bornAt;
@@ -72,9 +78,14 @@ final class Author extends SimpleAggregateRoot implements \JsonSerializable
         return self::NAME;
     }
 
-    public function name(): AuthorName
+    public function firstName(): AuthorFirstName
     {
         return $this->name;
+    }
+
+    public function lastName():? AuthorLastName
+    {
+        return $this->lastName;
     }
 
     public function countryId(): Uuid
@@ -101,7 +112,8 @@ final class Author extends SimpleAggregateRoot implements \JsonSerializable
     {
         return [
             'id' => $this->aggregateId(),
-            'name' => $this->name(),
+            'firstName' => $this->firstName(),
+            'lastName' => $this->lastName(),
             'countryId' => $this->countryId(),
             'isPseudonymOf' => $this->isPseudonymOf(),
             'bornAt' => $this->bornAt(),

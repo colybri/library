@@ -22,15 +22,15 @@ final class AuthorFinder
     {
         $author = $this->repo->find($id);
 
-        $this->ensureAuthorExist($author);
+        $this->ensureAuthorExist($author, $id);
 
         return $author;
     }
 
-    public function ensureAuthorExist(?Author $author): void
+    public function ensureAuthorExist(?Author $author, $id): void
     {
         if (null === $author) {
-            throw new AuthorDoesNotExistException(sprintf('Author whit id:%s does not exist on repository', $author));
+            throw new AuthorDoesNotExistException(sprintf('Author whit id:%s does not exist on repository', $id));
         }
     }
 }

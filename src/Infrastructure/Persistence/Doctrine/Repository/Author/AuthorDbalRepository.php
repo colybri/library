@@ -8,7 +8,8 @@ use Colybri\Criteria\Domain\Criteria;
 use Colybri\Criteria\Infrastructure\Adapter\Dbal\CriteriaDbalAdapter;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorBornAt;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorDeathAt;
-use Colybri\Library\Domain\Model\Author\ValueObject\AuthorName;
+use Colybri\Library\Domain\Model\Author\ValueObject\AuthorFirstName;
+use Colybri\Library\Domain\Model\Author\ValueObject\AuthorLastName;
 use Colybri\Library\Infrastructure\Persistence\Doctrine\Repository\DbalRepository;
 use Colybri\Library\Domain\Model\Author\AuthorRepository;
 use Colybri\Library\Domain\Model\Author\Author;
@@ -67,14 +68,16 @@ final class AuthorDbalRepository extends DbalRepository implements AuthorReposit
         $sql = "
             INSERT into authors (
                 id, 
-                name,
+                first_name,
+                last_name,
                 country_id,                 
                 is_pseudonym_of,
                 born_year,
                 death_year               
             ) VALUES (
                 :id,
-                :name,
+                :firstName,
+                :lastName,
                 :countryId,                      
                 :isPseudonymOf,
                 :bornAt,
@@ -85,7 +88,8 @@ final class AuthorDbalRepository extends DbalRepository implements AuthorReposit
 
         $statement = $this->connectionWrite->prepare($sql);
         $statement->bindValue('id', $author->aggregateId()->value());
-        $statement->bindValue('name', $author->name()->value());
+        $statement->bindValue('firstName', $author->firstName()->value());
+        $statement->bindValue('lastName', $author->lastName()?->value());
         $statement->bindValue('countryId', $author->countryId()->value());
         $statement->bindValue('isPseudonymOf', $author->isPseudonymOf()?->value());
         $statement->bindValue('bornAt', $author->bornAt()->value());
@@ -99,7 +103,8 @@ final class AuthorDbalRepository extends DbalRepository implements AuthorReposit
     {
         $sql = "
             UPDATE authors SET 
-                name = :name,
+                first_name = :firstName,
+                last_name = :lastName,
                 country_id = :countryId,
                 is_pseudonym_of = :isPseudonymOf,
                 born_year = :bornAt,
@@ -113,7 +118,8 @@ final class AuthorDbalRepository extends DbalRepository implements AuthorReposit
         $statement = $this->connectionWrite->prepare($sql);
 
         $statement->bindValue('id', $author->aggregateId()->value());
-        $statement->bindValue('name', $author->name()->value());
+        $statement->bindValue('firstName', $author->firstName()->value());
+        $statement->bindValue('lastName', $author->lastName()?->value());
         $statement->bindValue('countryId', $author->countryId()->value());
         $statement->bindValue('isPseudonymOf', $author->isPseudonymOf()?->value());
         $statement->bindValue('bornAt', $author->bornAt()->value());
@@ -141,9 +147,10 @@ final class AuthorDbalRepository extends DbalRepository implements AuthorReposit
 
     private function map(array $author): Author
     {
-        return Author::hydrate(
+        return Author::reconstitute(
             Uuid::from($author['id']),
-            AuthorName::from($author['name']),
+            AuthorFirstName::from($author['first_name']),
+            null === $author['last_name'] ? null : AuthorLastName::from($author['last_name']),
             Uuid::from($author['country_id']),
             null === $author['is_pseudonym_of'] ? null : Uuid::from($author['is_pseudonym_of']),
             AuthorBornAt::from($author['born_year']),

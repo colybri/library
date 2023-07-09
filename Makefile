@@ -53,6 +53,11 @@ sh: ## Connect to the PHP FPM container
 test: ## Builds the Docker images
 	@$(DOCKER_COMP) exec library ./vendor/bin/phpunit
 
+## —— Behat ————————————————————————————————————————————————————————————————
+behat: ## Fix errors according to code standard
+	@$(DOCKER_COMP) exec library ./vendor/bin/behat --colors
+
+
 ## —— Static analysis —————————————————————————————————————————————————————————
 lint: ## Run stactic quality analisys tools
 	@$(DOCKER_COMP) exec library symfony check:security
@@ -62,6 +67,8 @@ lint: ## Run stactic quality analisys tools
 
 fix: ## Fix errors according to code standard
 	@$(DOCKER_COMP) exec library ./vendor/bin/phpcbf --standard=./phpcs.xml --error-severity=1 --warning-severity=8
+
+
 
 report: ## Generate static code reports
 	@$(DOCKER_COMP) exec library ./vendor/bin/phpunit --coverage-html ./gen/coverage ./tests
@@ -81,7 +88,6 @@ restore: ## Restore database from migrations
 composer: ## Execute composer with parameter "c=" to run a given command, example: make composer c="require vendor/package"
 	@docker exec -it library  \
 		composer $(c)\
-			--ignore-platform-reqs \
 			--no-ansi \
 			--no-interaction
 

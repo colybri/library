@@ -1,0 +1,7 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  Colybri\Library\Tests\Infrastructure\Behat\Context\:
+    resource: '../../../tests/Infrastructure/Behat/Context/*'

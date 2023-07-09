@@ -127,7 +127,7 @@ final class EditionDbalRepository extends DbalRepository implements EditionRepos
 
     private function map(array $edition): Edition
     {
-        return Edition::hydrate(
+        return Edition::reconstitute(
             Uuid::from((string)$edition['id']),
             EditionYear::from((int)$edition['year']),
             Uuid::from((string)$edition['publisher_id']),

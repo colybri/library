@@ -8,7 +8,7 @@ use Assert\InvalidArgumentException;
 use Colybri\Library\Application\Command\Author\Update\UpdateAuthorCommand;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorBornAt;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorDeathAt;
-use Colybri\Library\Domain\Model\Author\ValueObject\AuthorName;
+use Colybri\Library\Domain\Model\Author\ValueObject\AuthorFirstName;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 use Monolog\Test\TestCase;
 
@@ -66,7 +66,7 @@ final class UpdateAuthorCommandTest extends TestCase
     public function given_author_members_when_command_getters_are_called_then_return_equals_objects_and_values(): void
     {
         self::assertTrue(Uuid::from($this->authorId)->equalTo($this->command->authorId()));
-        self::assertTrue(AuthorName::from($this->name)->equalTo($this->command->name()));
+        self::assertTrue(AuthorFirstName::from($this->name)->equalTo($this->command->name()));
         self::assertTrue(Uuid::from($this->countryId)->equalTo($this->command->countryId()));
         self::assertSame($this->isPseudonymOf, $this->command->isPseudonymOf());
         self::assertTrue(AuthorBornAt::from($this->bornAt)->equalTo($this->command->bornAt()));

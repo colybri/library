@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Colybri\Library\Infrastructure\Messenger;
+namespace Colybri\Library\Infrastructure\Messenger\Controller;
 
 use Colybri\Library\Entrypoint\Controller\MessageResultExtractor;
 use Symfony\Component\Messenger\Envelope;

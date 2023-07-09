@@ -7,21 +7,24 @@ namespace Colybri\Library\Tests\Mock\Domain\Model\Author;
 use Colybri\Library\Domain\Model\Author\Author;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorBornAt;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorDeathAt;
-use Colybri\Library\Domain\Model\Author\ValueObject\AuthorName;
+use Colybri\Library\Domain\Model\Author\ValueObject\AuthorFirstName;
+use Colybri\Library\Domain\Model\Author\ValueObject\AuthorLastName;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 
 final class AuthorObjectMother
 {
     public function __construct(
-        private ?Uuid $id = null,
-        private ?AuthorName $name = null,
-        private ?Uuid $countryId = null,
-        private ?Uuid $isPseudonymOf = null,
-        private ?AuthorBornAt $bornAt = null,
-        private ?AuthorDeathAt $deathAt = null
+        private ?Uuid            $id = null,
+        private ?AuthorFirstName $name = null,
+        private ?AuthorLastName $lastName = null,
+        private ?Uuid            $countryId = null,
+        private ?Uuid            $isPseudonymOf = null,
+        private ?AuthorBornAt    $bornAt = null,
+        private ?AuthorDeathAt   $deathAt = null
     ) {
         $this->id = $id ?? Uuid::v4();
-        $this->name = $name ?? AuthorName::from('Publio Cornelio Tácito');
+        $this->name = $name ?? AuthorFirstName::from('Publio Cornelio');
+        $this->lastName = $this->lastName ?? AuthorLastName::from('Tácito');
         $this->countryId = $countryId ?? Uuid::v4();
         $this->isPseudonymOf = $isPseudonymOf ?? Uuid::v4();
         $this->bornAt = $bornAt ?? AuthorBornAt::from(random_int(600, 700));
@@ -33,6 +36,7 @@ final class AuthorObjectMother
         return Author::create(
             $this->id,
             $this->name,
+            $this->lastName,
             $this->countryId,
             $this->isPseudonymOf,
             $this->bornAt,
@@ -42,9 +46,10 @@ final class AuthorObjectMother
 
     public function build(): Author
     {
-        return Author::hydrate(
+        return Author::reconstitute(
             $this->id,
             $this->name,
+            $this->lastName,
             $this->countryId,
             $this->isPseudonymOf,
             $this->bornAt,

@@ -22,7 +22,8 @@ final class CreateAuthorController extends CommandController
                 Uuid::v4(),
                 [
                     CreateAuthorCommand::AUTHOR_ID_PAYLOAD => $body->get(CreateAuthorCommand::AUTHOR_ID_PAYLOAD),
-                    CreateAuthorCommand::AUTHOR_NAME_PAYLOAD => $body->get(CreateAuthorCommand::AUTHOR_NAME_PAYLOAD),
+                    CreateAuthorCommand::AUTHOR_FIRST_NAME_PAYLOAD => $body->get(CreateAuthorCommand::AUTHOR_FIRST_NAME_PAYLOAD),
+                    CreateAuthorCommand::AUTHOR_LAST_NAME_PAYLOAD => $body->get(CreateAuthorCommand::AUTHOR_LAST_NAME_PAYLOAD),
                     CreateAuthorCommand::AUTHOR_COUNTRY_ID_PAYLOAD => $body->get(CreateAuthorCommand::AUTHOR_COUNTRY_ID_PAYLOAD),
                     CreateAuthorCommand::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD => $body->get(CreateAuthorCommand::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD),
                     CreateAuthorCommand::AUTHOR_BORN_YEAR_PAYLOAD => $body->get(CreateAuthorCommand::AUTHOR_BORN_YEAR_PAYLOAD),

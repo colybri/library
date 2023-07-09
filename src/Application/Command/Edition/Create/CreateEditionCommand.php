@@ -83,8 +83,6 @@ final class CreateEditionCommand extends Command
         $payload = $this->messagePayload();
 
 
-        dd($payload);
-
         Assert::lazy()
             ->that($payload, 'payload')->isArray()
             ->keyExists(self::EDITION_ID_PAYLOAD)

@@ -13,7 +13,7 @@ use Colybri\Criteria\Domain\FilterValue;
 use Colybri\Criteria\Domain\Order;
 use Colybri\Library\Domain\Model\Author\Author;
 use Colybri\Library\Domain\Model\Author\AuthorRepository;
-use Colybri\Library\Domain\Model\Author\ValueObject\AuthorName;
+use Colybri\Library\Domain\Model\Author\ValueObject\AuthorFirstName;
 use Colybri\Library\Domain\Service\Shared\SimilarityAligner;
 
 final class AuthorMatcher
@@ -48,7 +48,7 @@ final class AuthorMatcher
         return new Criteria(
             Filters::from(
                 Filter::from(
-                    FilterField::from(AuthorName::class),
+                    FilterField::from(AuthorFirstName::class),
                     FilterOperator::Contains,
                     FilterValue::from($keyword)
                 )

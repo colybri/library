@@ -5,7 +5,6 @@
 
 # https://docs.docker.com/engine/reference/builder/#understand-how-arg-and-from-interact
 ARG PHP_VERSION=8.1
-ARG CADDY_VERSION=2
 
 # "php" stage
 FROM php:8.1-fpm-alpine AS library_php
@@ -13,6 +12,7 @@ FROM php:8.1-fpm-alpine AS library_php
 # persistent / runtime deps
 RUN apk add --no-cache \
 		acl \
+        curl \
 		fcgi \
 		file \
 		gettext \
@@ -49,14 +49,12 @@ RUN set -eux; \
 	pecl install \
 		apcu-${APCU_VERSION} \
         amqp \
-        xdebug-3.1.0 \
 	; \
 	pecl clear-cache; \
 	docker-php-ext-enable \
 		apcu \
 		opcache \
         amqp \
-        xdebug \
 	; \
 	\
 	runDeps="$( \
@@ -98,7 +96,7 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV PATH="${PATH}:/root/.composer/vendor/bin"
 
 RUN wget https://get.symfony.com/cli/installer -O - | bash
-RUN mv /root/.symfony/bin/symfony /usr/local/bin/symfony
+RUN mv /root/.symfony5/bin/symfony /usr/local/bin/symfony
 
 #RUN export PATH="$HOME/.symfony/bin:$PATH"
 
@@ -107,11 +105,11 @@ WORKDIR /srv/app
 COPY . .
 
 RUN set -eux; \
-	mkdir -p var/cache var/log; \
-	composer install --prefer-dist --no-dev --no-progress --no-scripts --no-interaction; \
-	composer dump-autoload --classmap-authoritative --no-dev; \
-	composer symfony:dump-env prod; \
-	composer run-script --no-dev post-install-cmd; \
+	#mkdir -p var/cache var/log; \
+	#composer install --prefer-dist --no-dev --no-progress --no-scripts --no-interaction; \
+	#composer dump-autoload --classmap-authoritative --no-dev; \
+	#composer symfony:dump-env prod; \
+	#composer run-script --no-dev post-install-cmd; \
 	chmod +x bin/console; sync \
     ;
 
@@ -120,19 +118,21 @@ VOLUME /srv/app/var
 ENTRYPOINT ["docker-entrypoint"]
 CMD ["php-fpm"]
 
-FROM caddy:${CADDY_VERSION}-builder-alpine AS library_caddy_builder
-
-RUN xcaddy build \
-	--with github.com/dunglas/mercure \
-	--with github.com/dunglas/mercure/caddy \
-	--with github.com/dunglas/vulcain \
-	--with github.com/dunglas/vulcain/caddy
-
-FROM caddy:${CADDY_VERSION} AS library_caddy
-
-WORKDIR /srv/app
-
-COPY --from=dunglas/mercure:v0.11 /srv/public /srv/mercure-assets/
-COPY --from=library_caddy_builder /usr/bin/caddy /usr/bin/caddy
-COPY --from=library_php /srv/app/public public/
-COPY docker/caddy/Caddyfile /etc/caddy/Caddyfile
+#ARG CADDY_VERSION=2.5.2
+#
+#FROM caddy:${CADDY_VERSION}-builder-alpine AS library_caddy_builder
+#
+#RUN xcaddy build \
+#	--with github.com/dunglas/mercure \
+#	--with github.com/dunglas/mercure/caddy \
+#	--with github.com/dunglas/vulcain \
+#	--with github.com/dunglas/vulcain/caddy
+#
+#FROM caddy:${CADDY_VERSION} AS library_caddy
+#
+#WORKDIR /srv/app
+#
+#COPY --from=dunglas/mercure:v0.11 /srv/public /srv/mercure-assets/
+#COPY --from=library_caddy_builder /usr/bin/caddy /usr/bin/caddy
+#COPY --from=library_php /srv/app/public public/
+#COPY docker/caddy/Caddyfile /etc/caddy/Caddyfile

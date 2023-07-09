@@ -1,0 +1,20 @@
+filebeat.modules:
+  - module: postgresql
+    log:
+      enabled: true
+      # Set custom paths for the log files. If left empty,
+      # Filebeat will choose the paths depending on your OS.
+      var.paths: ["/var/log/postgresql/*.log"]
+      #Input configuration (advanced). Any input configuration option
+      #can be added under this section.
+      #input:
+
+output.elasticsearch:
+  enabled: true
+  hosts: ["${ELASTICSEARCH_HOST}:9200"]
+  username: ${ELASTICSEARCH_USERNAME}
+  password: ${ELASTICSEARCH_PASSWORD}
+  pipeline: postgresql_logs
+  indices:
+    - index: "postgrest-events"
+

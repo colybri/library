@@ -18,7 +18,8 @@ final class CreateAuthorCommandHandler implements MessageHandlerInterface
     {
         $author = $this->creator->execute(
             $cmd->authorId(),
-            $cmd->name(),
+            $cmd->firstName(),
+            $cmd->lastName(),
             $cmd->countryId(),
             $cmd->isPseudonymOf(),
             $cmd->bornAt(),

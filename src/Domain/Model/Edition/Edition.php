@@ -16,9 +16,10 @@ use Colybri\Library\Domain\Model\Edition\ValueObject\EditionSubtitle;
 use Colybri\Library\Domain\Model\Edition\ValueObject\EditionTitle;
 use Colybri\Library\Domain\Model\Edition\ValueObject\EditionYear;
 use Forkrefactor\Ddd\Domain\Model\AggregateRoot;
+use Forkrefactor\Ddd\Domain\Model\SimpleAggregateRoot;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 
-final class Edition extends AggregateRoot
+final class Edition extends SimpleAggregateRoot
 {
     private const NAME = 'edition';
 
@@ -77,7 +78,7 @@ final class Edition extends AggregateRoot
         return $self;
     }
 
-    public static function hydrate(
+    public static function reconstitute(
         Uuid $id,
         EditionYear $year,
         Uuid $publisherId,

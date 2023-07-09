@@ -12,7 +12,7 @@ use Colybri\Criteria\Domain\FilterOperator;
 use Colybri\Criteria\Domain\Filters;
 use Colybri\Criteria\Domain\FilterValue;
 use Colybri\Criteria\Domain\Order;
-use Colybri\Library\Domain\Model\Author\ValueObject\AuthorName;
+use Colybri\Library\Domain\Model\Author\ValueObject\AuthorFirstName;
 use Colybri\Library\Domain\Model\Book\ValueObject\BookTitle;
 use Colybri\Library\Domain\Model\Edition\EditionRepository;
 use Colybri\Library\Domain\Model\Edition\ValueObject\EditionISBN;
@@ -51,7 +51,7 @@ final class SeekEditionQueryHandler implements MessageHandlerInterface
 
         if (null !== $query->author()) {
             $filters[] = Filter::from(
-                FilterField::from(AuthorName::class),
+                FilterField::from(AuthorFirstName::class),
                 FilterOperator::Contains,
                 FilterValue::from($query->author())
             );

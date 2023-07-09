@@ -1,6 +1,6 @@
 services:
   monolog.processor.iterator:
-    class: Forkrefactor\DddLogging\MonologIteratorProcessor
+    class: Colybri\Library\Infrastructure\Messenger\Logging\Monolog\ProcessorIterator
     arguments:
       $processors:
         - '@monolog.processor.occurred_on'
@@ -14,17 +14,17 @@ services:
       - { name: monolog.processor }
 
   monolog.processor.occurred_on:
-    class: Forkrefactor\DddLogging\OccurredOn\OccurredOnProcessor
+    class: Colybri\Library\Infrastructure\Messenger\Logging\Monolog\Processor\OccurredOnProcessor
 
   monolog.processor.hostname:
-    class: Forkrefactor\DddLogging\Hostname\HostnameProcessor
+    class: Colybri\Library\Infrastructure\Messenger\Logging\Monolog\Processor\HostnameProcessor
 
   monolog.processor.execution_time:
-    class: Forkrefactor\DddLogging\ExecutionTime\ExecutionTimeProcessor
+    class: Colybri\Library\Infrastructure\Messenger\Logging\Monolog\Processor\ExecutionTimeProcessor
     autowire: true
 
   monolog.processor.info:
-    class: Forkrefactor\DddLogging\Info\InfoProcessor
+    class: Colybri\Library\Infrastructure\Messenger\Logging\Monolog\Processor\InfoProcessor
 
   monolog.processor.domain_trace:
     class: Forkrefactor\DddLogging\DomainTrace\DomainTraceProcessor

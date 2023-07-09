@@ -9,7 +9,7 @@ use Colybri\Library\Domain\CompanyName;
 use Colybri\Library\Domain\Model\Author\Author;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorBornAt;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorDeathAt;
-use Colybri\Library\Domain\Model\Author\ValueObject\AuthorName;
+use Colybri\Library\Domain\Model\Author\ValueObject\AuthorFirstName;
 use Colybri\Library\Domain\ServiceName;
 use Forkrefactor\Ddd\Application\Command;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
@@ -29,7 +29,7 @@ final class UpdateAuthorCommand extends Command
 
 
     private Uuid $authorId;
-    private AuthorName $name;
+    private AuthorFirstName $name;
     private Uuid $countryId;
     private ?Uuid $isPseudonymOf;
     private AuthorBornAt $bornAt;
@@ -76,7 +76,7 @@ final class UpdateAuthorCommand extends Command
             ->verifyNow();
 
         $this->authorId = Uuid::from($payload[self::AUTHOR_ID_PAYLOAD]);
-        $this->name = AuthorName::from((string)$payload[self::AUTHOR_NAME_PAYLOAD]);
+        $this->name = AuthorFirstName::from((string)$payload[self::AUTHOR_NAME_PAYLOAD]);
         $this->countryId = Uuid::from((string)$payload[self::AUTHOR_COUNTRY_ID_PAYLOAD]);
         $this->isPseudonymOf = null === $payload[self::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD] ? null : Uuid::from((string)$payload[self::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD]);
         $this->bornAt = AuthorBornAt::from((int)$payload[self::AUTHOR_BORN_YEAR_PAYLOAD]);
@@ -88,7 +88,7 @@ final class UpdateAuthorCommand extends Command
         return $this->authorId;
     }
 
-    public function name(): AuthorName
+    public function name(): AuthorFirstName
     {
         return $this->name;
     }
