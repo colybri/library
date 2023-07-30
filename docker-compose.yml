@@ -10,8 +10,6 @@ services:
         SKELETON: ${SKELETON:-symfony/skeleton}
         STABILITY: ${STABILITY:-stable}
     restart: unless-stopped
-    environment:
-      - COMPOSER_NO_DEV=0
     volumes:
       - ./:/srv/app
       - php_socket:/var/run/php
@@ -26,6 +24,7 @@ services:
       retries: 3
       start_period: 30s
     environment:
+      COMPOSER_NO_DEV: 0
       SERVICE_NAME: library
       SERVICE_TAGS: develop
       # Run "composer require symfony/orm-pack" to install and configure Doctrine ORM

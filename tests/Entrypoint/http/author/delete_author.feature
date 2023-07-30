@@ -4,6 +4,7 @@ Feature: Delete an author
   I need to check the application response
 
   Scenario: Retrieving an author with bad parameters
+    Given the environment clean
     When I request "/v1/author/non-id" using HTTP "DELETE"
     Then the response code is 400
     And the response reason phrase is "Bad Request"
