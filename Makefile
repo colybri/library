@@ -4,6 +4,8 @@ DOCKER_COMP = docker-compose
 # Docker containers
 PHP_CONT = @docker exec -it library
 DATABASE_CONT = @docker exec -it library_postgres
+PG_ADMIN_CONT = @docker exec -it library_pgadmin
+PG_ADMIN_CONT_IP = $$(docker inspect --format="{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" library_pgadmin)
 
 # Executables
 PHP      = $(PHP_CONT) php
@@ -30,21 +32,21 @@ help: ## Outputs this help screen
 
 ## —— Docker ————————————————————————————————————————————————————————————————
 build: ## Builds the Docker images
-	@$(DOCKER_COMP) build --pull --no-cache
+	@USER_ID=$(id -g) GROUP_ID=$(id -g) $(DOCKER_COMP) build --pull --no-cache
 
 up: ## Start the docker hub in detached mode (no logs)
-	@$(DOCKER_COMP) up --detach
+	@USER_ID=$(id -g) GROUP_ID=$(id -g) $(DOCKER_COMP) up --detach
 
 start: build up ## Build and start the containers
 
 stop: ## Stop the docker hub
-	@$(DOCKER_COMP) stop
+	@USER_ID=$(id -g) GROUP_ID=$(id -g) $(DOCKER_COMP) stop
 
 down: ## Remove the docker hub
-	@$(DOCKER_COMP) down --remove-orphans
+	@USER_ID=$(id -g) GROUP_ID=$(id -g) $(DOCKER_COMP) down --remove-orphans
 
 logs: ## Show live logs
-	@$(DOCKER_COMP) logs --tail=0 --follow
+	@USER_ID=$(id -g) GROUP_ID=$(id -g) $(DOCKER_COMP) logs --tail=0 --follow
 
 sh: ## Connect to the PHP FPM container
 	@$(PHP_CONT) sh
@@ -57,6 +59,9 @@ test: ## Builds the Docker images
 behat: ## Fix errors according to code standard
 	@$(DOCKER_COMP) exec library ./vendor/bin/behat --colors
 
+## —— GrumPHP ————————————————————————————————————————————————————————————————
+grumphp: ## Fix errors according to code standard
+	@$(DOCKER_COMP) exec library ./vendor/bin/grumphp run
 
 ## —— Static analysis —————————————————————————————————————————————————————————
 lint: ## Run stactic quality analisys tools
@@ -75,6 +80,9 @@ report: ## Generate static code reports
 	@$(DOCKER_COMP) exec library ./vendor/bin/phpmetrics --junit=./gen/coverage/index.xml --report-html=./gen/metrics/index.html ./src
 
 ## —— Postgres ————————————————————————————————————————————————————————————————
+
+pgadmin: ## Dump sql database file on migrations folder
+	@xdg-open http://$(PG_ADMIN_CONT_IP)
 
 dump: ## Dump sql database file on migrations folder
 	$(DATABASE_CONT) /bin/bash -c "PGPASSWORD=${POSTGRES_PASS} pg_dump --username ${POSTGRES_USER} library" > ./migrations/library.sql

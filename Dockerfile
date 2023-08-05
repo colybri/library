@@ -7,7 +7,13 @@
 ARG PHP_VERSION=8.1
 
 # "php" stage
-FROM php:8.1-fpm-alpine AS library_php
+FROM php:${PHP_VERSION}-fpm-alpine AS library_php
+
+ARG UID
+ARG GID
+
+ENV USER_NAME=www-data
+ENV APP_HOME /srv/app
 
 # persistent / runtime deps
 RUN apk add --no-cache \
@@ -98,11 +104,17 @@ ENV PATH="${PATH}:/root/.composer/vendor/bin"
 RUN wget https://get.symfony.com/cli/installer -O - | bash
 RUN mv /root/.symfony5/bin/symfony /usr/local/bin/symfony
 
-#RUN export PATH="$HOME/.symfony/bin:$PATH"
+RUN export PATH="$HOME/.symfony/bin:$PATH"
 
-WORKDIR /srv/app
+RUN mkdir -p $APP_HOME/public
+RUN mkdir -p /home/$USER_NAME
+RUN chown -R $USER_NAME:$USER_NAME $APP_HOME
+RUN chown $USER_NAME:$USER_NAME /home/$USER_NAME
 
-COPY . .
+WORKDIR $APP_HOME
+
+
+COPY --chown=$USER_NAME:$USER_NAME . .
 
 RUN set -eux; \
 	#mkdir -p var/cache var/log; \
@@ -113,7 +125,9 @@ RUN set -eux; \
 	chmod +x bin/console; sync \
     ;
 
+
 VOLUME /srv/app/var
+
 
 ENTRYPOINT ["docker-entrypoint"]
 CMD ["php-fpm"]

@@ -1,4 +1,4 @@
-FROM postgres:latest AS library_postgres
+FROM postgres:14.8-bullseye AS library_postgres
 
 
 COPY ./ca/server.key /var/lib/postgresql

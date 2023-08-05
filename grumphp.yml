@@ -25,7 +25,17 @@ grumphp:
         - 'src'
         - 'tests'
       encoding: 'UTF-8'
-    phplint: ~
+      severity: ~
+      error_severity: ~
+      warning_severity: ~
+      tab_width: ~
+      report: full
+      report_width: ~
+      ignore_patterns: [ ]
+      sniffs: [ ]
+      triggered_by: [ php ]
+      exclude: [ ]
+      show_sniffs_error_path: true
     phpstan:
       autoload_file: phpstan.neon
       configuration: ~
