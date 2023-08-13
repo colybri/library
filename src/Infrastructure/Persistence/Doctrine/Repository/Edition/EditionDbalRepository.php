@@ -63,12 +63,10 @@ final class EditionDbalRepository extends DbalRepository implements EditionRepos
                 subtitle,
                 locale,
                 image,
-                resource,
-                resource_type,
-                condition,
                 pages,
                 city,
-                is_on_library
+                is_on_library,
+                condition
             ) VALUES (
                 :id,
                 :year,
@@ -80,12 +78,10 @@ final class EditionDbalRepository extends DbalRepository implements EditionRepos
                 :subtitle,                      
                 :locale,
                 :image,
-                :resource,
-                :resourceTypes,
-                :condition,
                 :pages,
                 :city,
-                :isOnLibrary
+                :isOnLibrary,
+                :condition
             );
         ";
 
@@ -100,8 +96,6 @@ final class EditionDbalRepository extends DbalRepository implements EditionRepos
         $statement->bindValue('subtitle', $edition->subtitle()?->value());
         $statement->bindValue('locale', $edition->locale()->value());
         $statement->bindValue('image', $edition->imageSlug()?->value());
-        $statement->bindValue('resource', $edition->resource()?->value());
-        $statement->bindValue('resourceTypes', $edition->resourceTypes()?->value());
         $statement->bindValue('condition', $edition->condition()?->value());
         $statement->bindValue('pages', $edition->pages()?->value(), ParameterType::INTEGER);
         $statement->bindValue('city', $edition->city()->value());
@@ -138,12 +132,10 @@ final class EditionDbalRepository extends DbalRepository implements EditionRepos
             null === $edition['subtitle'] ? null : EditionSubtitle::from((string)$edition['subtitle']),
             EditionLocale::from((string)$edition['locale']),
             null,
-            null,
-            null,
-            null === $edition['condition'] ? null : EditionCondition::from((string)$edition['condition']),
             null === $edition['pages'] ? null : EditionPages::from((int)$edition['pages']),
             EditionCity::from((string)$edition['city']),
-            EditionIsOnLibrary::from((bool)$edition['is_on_library'])
+            EditionIsOnLibrary::from((bool)$edition['is_on_library']),
+            null === $edition['condition'] ? null : EditionCondition::from((string)$edition['condition'])
         );
     }
 }

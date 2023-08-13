@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Colybri\Library\Entrypoint\Command;
+namespace Colybri\Library\Entrypoint\Console;
 
 use Colybri\Library\Infrastructure\Fixtures\FixtureReference;
 use Colybri\Library\Infrastructure\Fixtures\FixtureRegistry;

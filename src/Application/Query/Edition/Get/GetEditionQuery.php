@@ -2,23 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Colybri\Library\Application\Command\Edition\Delete;
+namespace Colybri\Library\Application\Query\Edition\Get;
 
 use Assert\Assert;
 use Colybri\Library\Domain\CompanyName;
 use Colybri\Library\Domain\Model\Edition\Edition;
 use Colybri\Library\Domain\ServiceName;
-use Forkrefactor\Ddd\Application\Command;
+use Forkrefactor\Ddd\Application\Query;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 use PcComponentes\TopicGenerator\Topic;
 
-final class DeleteEditionCommand extends Command
+class GetEditionQuery extends Query
 {
+    private const VERSION = '1';
+    private const NAME = 'get';
+
     public const EDITION_ID_PAYLOAD = 'id';
-
-    protected const NAME = 'delete';
-    protected const VERSION = '1';
-
     private Uuid $editionId;
 
     public static function messageName(): string
@@ -48,7 +47,7 @@ final class DeleteEditionCommand extends Command
             ->verifyNow();
 
         Assert::lazy()
-            ->that($payload[self::EDITION_ID_PAYLOAD], self::EDITION_ID_PAYLOAD)->uuid()
+            ->that($payload[self::EDITION_ID_PAYLOAD], self::EDITION_ID_PAYLOAD)->notEmpty()->uuid()
             ->verifyNow();
 
         $this->editionId = Uuid::from($payload[self::EDITION_ID_PAYLOAD]);

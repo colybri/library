@@ -41,7 +41,8 @@ final class UpdateAuthorCommandHandlerTest extends TestCase
             Uuid::v4(),
             [
                 UpdateAuthorCommand::AUTHOR_ID_PAYLOAD => $id->value(),
-                UpdateAuthorCommand::AUTHOR_NAME_PAYLOAD => 'Jean-Pierre-Louis de Luchet,',
+                UpdateAuthorCommand::AUTHOR_FIRST_NAME_PAYLOAD => 'Jean-Pierre-Louis',
+                UpdateAuthorCommand::AUTHOR_LAST_NAME_PAYLOAD => 'de Luchet',
                 UpdateAuthorCommand::AUTHOR_COUNTRY_ID_PAYLOAD => 'c310c88a-c751-167e-006d-8fb1cc36e136',
                 UpdateAuthorCommand::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD => null,
                 UpdateAuthorCommand::AUTHOR_BORN_YEAR_PAYLOAD => 1740,

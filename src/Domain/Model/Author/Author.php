@@ -15,7 +15,7 @@ use Colybri\Library\Domain\Model\Author\ValueObject\AuthorDeathAt;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorFirstName;
 use JetBrains\PhpStorm\Pure;
 
-final class Author extends SimpleAggregateRoot implements \JsonSerializable
+final class Author extends SimpleAggregateRoot
 {
     private const NAME = 'author';
     private AuthorFirstName $name;
@@ -26,13 +26,13 @@ final class Author extends SimpleAggregateRoot implements \JsonSerializable
     private ?AuthorDeathAt $deathAt;
 
     public static function create(
-        Uuid            $id,
+        Uuid $id,
         AuthorFirstName $name,
         ?AuthorLastName $lastName,
-        Uuid            $countryId,
-        ?Uuid           $isPseudonymOf,
-        AuthorBornAt    $bornAt,
-        ?AuthorDeathAt  $deathAt
+        Uuid $countryId,
+        ?Uuid $isPseudonymOf,
+        AuthorBornAt $bornAt,
+        ?AuthorDeathAt $deathAt
     ): self {
         $self = new self($id);
         $self->name = $name;
@@ -47,16 +47,16 @@ final class Author extends SimpleAggregateRoot implements \JsonSerializable
     }
 
     public static function reconstitute(
-        Uuid            $id,
-        AuthorFirstName $name,
+        Uuid $id,
+        AuthorFirstName $firstName,
         ?AuthorLastName $lastName,
-        Uuid            $countryId,
-        ?Uuid           $isPseudonymOf,
-        AuthorBornAt    $bornAt,
-        ?AuthorDeathAt  $deathAt
+        Uuid $countryId,
+        ?Uuid $isPseudonymOf,
+        AuthorBornAt $bornAt,
+        ?AuthorDeathAt $deathAt
     ): self {
         $self = new self($id);
-        $self->name = $name;
+        $self->name = $firstName;
         $self->lastName = $lastName;
         $self->countryId = $countryId;
         $self->isPseudonymOf = $isPseudonymOf;
@@ -83,7 +83,7 @@ final class Author extends SimpleAggregateRoot implements \JsonSerializable
         return $this->name;
     }
 
-    public function lastName():? AuthorLastName
+    public function lastName(): ?AuthorLastName
     {
         return $this->lastName;
     }

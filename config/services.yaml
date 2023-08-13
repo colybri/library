@@ -71,10 +71,10 @@ services:
     class: Colybri\Library\Infrastructure\Messenger\Controller\LastHandledStampExtractor
 
   ## Commands
-  Colybri\Library\Entrypoint\Command\:
+  Colybri\Library\Entrypoint\Console\:
     autowire: true
     autoconfigure: true
-    resource: '../src/Entrypoint/Command'
+    resource: '../src/Entrypoint/Console'
     tags:
       - { name: console.command }
 

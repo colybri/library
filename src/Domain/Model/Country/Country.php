@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Domain\Model\Country;
 
-
 use Colybri\Library\Domain\Model\Country\ValueObject\CountryAlpha2Code;
 use Colybri\Library\Domain\Model\Country\ValueObject\CountryName;
 use Colybri\Library\Domain\Model\Country\ValueObject\CountryNationality;
@@ -32,7 +31,7 @@ final class Country extends SimpleAggregateRoot implements \JsonSerializable
     }
 
     public static function reconstitute(
-        Uuid            $id,
+        Uuid $id,
         CountryName $name,
         ?CountryAlpha2Code $code,
         CountryNationality $nationality

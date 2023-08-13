@@ -6,7 +6,7 @@ namespace Colybri\Library\Application\Command\Book\Delete;
 
 use Assert\Assert;
 use Colybri\Library\Domain\CompanyName;
-use Colybri\Library\Domain\Model\Author\Author;
+use Colybri\Library\Domain\Model\Book\Book;
 use Colybri\Library\Domain\ServiceName;
 use Forkrefactor\Ddd\Application\Command;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
@@ -28,7 +28,7 @@ final class DeleteBookCommand extends Command
             ServiceName::instance(),
             self::messageVersion(),
             self::messageType(),
-            Author::modelName(),
+            Book::modelName(),
             self::NAME
         );
     }

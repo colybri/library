@@ -62,11 +62,10 @@ final class CreateEditionCommandHandlerTest extends TestCase
                 CreateEditionCommand::EDITION_SUBTITLE_PAYLOAD => null,
                 CreateEditionCommand::EDITION_LANGUAGE_PAYLOAD => 'es',
                 CreateEditionCommand::EDITION_IMAGE_PAYLOAD => null,
-                CreateEditionCommand::EDITION_RESOURCES_PAYLOAD => null,
-                CreateEditionCommand::EDITION_CONDITION_PAYLOAD => 'second hand',
                 CreateEditionCommand::EDITION_CITY_PAYLOAD => 'Madrrid',
                 CreateEditionCommand::EDITION_PAGES_PAYLOAD => null,
                 CreateEditionCommand::EDITION_IS_ON_LIBRARY => true,
+                CreateEditionCommand::EDITION_CONDITION_PAYLOAD => 'second hand',
             ],
         );
     }

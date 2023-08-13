@@ -9,6 +9,7 @@ use Colybri\Library\Application\Query\Author\Match\MatchAuthorQueryHandler;
 use Colybri\Library\Domain\Model\Author\Author;
 use Colybri\Library\Domain\Model\Author\AuthorRepository;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorFirstName;
+use Colybri\Library\Domain\Model\Author\ValueObject\AuthorLastName;
 use Colybri\Library\Domain\Service\Author\AuthorMatcher;
 use Colybri\Library\Domain\Service\Shared\SimilarityAligner;
 use Colybri\Library\Tests\Mock\Domain\Model\Author\AuthorObjectMother;
@@ -47,7 +48,8 @@ final class MatchAuthorQueryHandlerTest extends TestCase
         self::assertSame(50, $response->limit());
         self::assertCount(2, $response->items());
         self::assertInstanceOf(Author::class, $response->items()[1]);
-        self::assertSame($response->items()[0]->name(), $mockTwo->name());
+        self::assertSame($response->items()[0]->firstName(), $mockTwo->firstName());
+        self::assertSame($response->items()[0]->lastName(), $mockTwo->lastName());
     }
 
     /**
@@ -69,7 +71,8 @@ final class MatchAuthorQueryHandlerTest extends TestCase
         self::assertSame(1, $response->limit());
         self::assertCount(1, $response->items());
         self::assertInstanceOf(Author::class, $response->items()[0]);
-        self::assertSame($response->items()[0]->name(), $mockTwo->name());
+        self::assertSame($response->items()[0]->firstName(), $mockTwo->firstName());
+        self::assertSame($response->items()[0]->lastName(), $mockTwo->lastName());
     }
 
     private function query($limit): MatchAuthorQuery
@@ -87,10 +90,8 @@ final class MatchAuthorQueryHandlerTest extends TestCase
 
     private function authors(): array
     {
-        $name = AuthorFirstName::from('Augustin Barruel');
-
-        $mockOne = new AuthorObjectMother(name: AuthorFirstName::from('Gershom Scholem'));
-        $mockTwo = new AuthorObjectMother(name: $name);
+        $mockOne = new AuthorObjectMother(firstName: AuthorFirstName::from('Gershom'), lastName: AuthorLastName::from('Scholem'));
+        $mockTwo = new AuthorObjectMother(firstName: AuthorFirstName::from('Augustin'), lastName: AuthorLastName::from('Barruel'));
 
         return [$mockOne->build(), $mockTwo->build()];
     }

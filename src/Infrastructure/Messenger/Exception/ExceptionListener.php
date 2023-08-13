@@ -30,7 +30,7 @@ final class ExceptionListener
         ];
     }
 
-    public function onKernelException(ExceptionEvent $event):void
+    public function onKernelException(ExceptionEvent $event): void
     {
 
         $exception = $event->getThrowable();
@@ -40,15 +40,13 @@ final class ExceptionListener
         }
 
         foreach ($this->exceptions as $key => $httpCode) {
-
             if (true === is_a($exception, $key)) {
-
                 $response = new JsonResponse(
                     $this->serializeException($exception),
                     $httpCode
                 );
                 $response->setEncodingOptions(JSON_UNESCAPED_UNICODE);
-                $response->setEncodingOptions( $response->getEncodingOptions() | JSON_PRETTY_PRINT );
+                $response->setEncodingOptions($response->getEncodingOptions() | JSON_PRETTY_PRINT);
                 $event->setResponse($response);
                 return;
             }

@@ -10,6 +10,7 @@ use Colybri\Library\Domain\Model\Author\Author;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorBornAt;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorDeathAt;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorFirstName;
+use Colybri\Library\Domain\Model\Author\ValueObject\AuthorLastName;
 use Colybri\Library\Domain\ServiceName;
 use Forkrefactor\Ddd\Application\Command;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
@@ -21,7 +22,8 @@ final class UpdateAuthorCommand extends Command
     protected const VERSION = '1';
 
     public const AUTHOR_ID_PAYLOAD = 'id';
-    public const AUTHOR_NAME_PAYLOAD = 'name';
+    public const AUTHOR_FIRST_NAME_PAYLOAD = 'firstName';
+    public const AUTHOR_LAST_NAME_PAYLOAD = 'lastName';
     public const AUTHOR_COUNTRY_ID_PAYLOAD = 'countryId';
     public const AUTHOR_IS_PSEUDONYM_OF_PAYLOAD = 'isPseudonymOf';
     public const AUTHOR_BORN_YEAR_PAYLOAD = 'bornAt';
@@ -29,7 +31,8 @@ final class UpdateAuthorCommand extends Command
 
 
     private Uuid $authorId;
-    private AuthorFirstName $name;
+    private AuthorFirstName $firstName;
+    private AuthorLastName $lastName;
     private Uuid $countryId;
     private ?Uuid $isPseudonymOf;
     private AuthorBornAt $bornAt;
@@ -59,7 +62,8 @@ final class UpdateAuthorCommand extends Command
         Assert::lazy()
             ->that($payload, 'payload')->isArray()
             ->keyExists(self::AUTHOR_ID_PAYLOAD)
-            ->keyExists(self::AUTHOR_NAME_PAYLOAD)
+            ->keyExists(self::AUTHOR_FIRST_NAME_PAYLOAD)
+            ->keyExists(self::AUTHOR_LAST_NAME_PAYLOAD)
             ->keyExists(self::AUTHOR_COUNTRY_ID_PAYLOAD)
             ->keyExists(self::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD)
             ->keyExists(self::AUTHOR_BORN_YEAR_PAYLOAD)
@@ -68,7 +72,8 @@ final class UpdateAuthorCommand extends Command
 
         Assert::lazy()
             ->that($payload[self::AUTHOR_ID_PAYLOAD], self::AUTHOR_ID_PAYLOAD)->uuid()
-            ->that($payload[self::AUTHOR_NAME_PAYLOAD], self::AUTHOR_NAME_PAYLOAD)->notEmpty()->string()
+            ->that($payload[self::AUTHOR_FIRST_NAME_PAYLOAD], self::AUTHOR_FIRST_NAME_PAYLOAD)->notEmpty()->string()
+            ->that($payload[self::AUTHOR_LAST_NAME_PAYLOAD], self::AUTHOR_LAST_NAME_PAYLOAD)->nullOr()->string()
             ->that($payload[self::AUTHOR_COUNTRY_ID_PAYLOAD], self::AUTHOR_COUNTRY_ID_PAYLOAD)->notEmpty()->uuid()
             ->that($payload[self::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD], self::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD)->nullOr()->uuid()
             ->that($payload[self::AUTHOR_BORN_YEAR_PAYLOAD], self::AUTHOR_BORN_YEAR_PAYLOAD)->notEmpty()->integer()
@@ -76,7 +81,8 @@ final class UpdateAuthorCommand extends Command
             ->verifyNow();
 
         $this->authorId = Uuid::from($payload[self::AUTHOR_ID_PAYLOAD]);
-        $this->name = AuthorFirstName::from((string)$payload[self::AUTHOR_NAME_PAYLOAD]);
+        $this->firstName = AuthorFirstName::from((string)$payload[self::AUTHOR_FIRST_NAME_PAYLOAD]);
+        $this->lastName = null === $payload[self::AUTHOR_LAST_NAME_PAYLOAD] ? null : AuthorLastName::from((string)$payload[self::AUTHOR_LAST_NAME_PAYLOAD]);
         $this->countryId = Uuid::from((string)$payload[self::AUTHOR_COUNTRY_ID_PAYLOAD]);
         $this->isPseudonymOf = null === $payload[self::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD] ? null : Uuid::from((string)$payload[self::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD]);
         $this->bornAt = AuthorBornAt::from((int)$payload[self::AUTHOR_BORN_YEAR_PAYLOAD]);
@@ -88,9 +94,14 @@ final class UpdateAuthorCommand extends Command
         return $this->authorId;
     }
 
-    public function name(): AuthorFirstName
+    public function firstName(): AuthorFirstName
     {
-        return $this->name;
+        return $this->firstName;
+    }
+
+    public function lastName(): ?AuthorLastName
+    {
+        return $this->lastName;
     }
 
     public function countryId(): Uuid

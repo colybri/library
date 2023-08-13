@@ -30,7 +30,6 @@ final class CreateEditionCommandTest extends TestCase
     private $subtitle;
     private $locale;
     private $image;
-    private $resource;
     private $condition;
     private $city;
     private $pages;
@@ -50,11 +49,10 @@ final class CreateEditionCommandTest extends TestCase
         $this->subtitle = 'Magia y religión';
         $this->locale = 'es';
         $this->image = null;
-        $this->resource = null;
-        $this->condition = 'new';
         $this->city = 'México D.F.';
         $this->pages = 690;
         $this->isOnLibrary = true;
+        $this->condition = 'new';
 
         $this->command = CreateEditionCommand::fromPayload(
             Uuid::v4(),
@@ -69,11 +67,10 @@ final class CreateEditionCommandTest extends TestCase
                 CreateEditionCommand::EDITION_SUBTITLE_PAYLOAD => $this->subtitle,
                 CreateEditionCommand::EDITION_LANGUAGE_PAYLOAD => $this->locale,
                 CreateEditionCommand::EDITION_IMAGE_PAYLOAD => $this->image,
-                CreateEditionCommand::EDITION_RESOURCES_PAYLOAD => $this->resource,
-                CreateEditionCommand::EDITION_CONDITION_PAYLOAD => $this->condition,
                 CreateEditionCommand::EDITION_CITY_PAYLOAD => $this->city,
                 CreateEditionCommand::EDITION_PAGES_PAYLOAD => $this->pages,
                 CreateEditionCommand::EDITION_IS_ON_LIBRARY => $this->isOnLibrary,
+                CreateEditionCommand::EDITION_CONDITION_PAYLOAD => $this->condition,
             ]
         );
     }
@@ -109,7 +106,6 @@ final class CreateEditionCommandTest extends TestCase
         self::assertTrue(EditionSubtitle::from($this->subtitle)->equalTo($this->command->subtitle()));
         self::assertTrue(EditionLocale::from($this->locale)->equalTo($this->command->locale()));
         self::assertEquals($this->image, $this->command->image());
-        self::assertEquals($this->resource, $this->command->resource());
         self::assertTrue(EditionCondition::from($this->condition)->equalTo($this->command->condition()));
         self::assertTrue(EditionCity::from($this->city)->equalTo($this->command->city()));
         self::assertTrue(EditionPages::from($this->pages)->equalTo($this->command->pages()));
@@ -136,11 +132,10 @@ final class CreateEditionCommandTest extends TestCase
                 CreateEditionCommand::EDITION_SUBTITLE_PAYLOAD => $this->subtitle,
                 CreateEditionCommand::EDITION_LANGUAGE_PAYLOAD => $this->locale,
                 CreateEditionCommand::EDITION_IMAGE_PAYLOAD => $this->image,
-                CreateEditionCommand::EDITION_RESOURCES_PAYLOAD => $this->resource,
-                CreateEditionCommand::EDITION_CONDITION_PAYLOAD => $this->condition,
                 CreateEditionCommand::EDITION_CITY_PAYLOAD => $this->city,
                 CreateEditionCommand::EDITION_PAGES_PAYLOAD => $this->pages,
                 CreateEditionCommand::EDITION_IS_ON_LIBRARY => $this->isOnLibrary,
+                CreateEditionCommand::EDITION_CONDITION_PAYLOAD => $this->condition,
             ]
         );
     }
@@ -165,11 +160,10 @@ final class CreateEditionCommandTest extends TestCase
                 CreateEditionCommand::EDITION_SUBTITLE_PAYLOAD => $this->subtitle,
                 CreateEditionCommand::EDITION_LANGUAGE_PAYLOAD => $this->locale,
                 CreateEditionCommand::EDITION_IMAGE_PAYLOAD => $this->image,
-                CreateEditionCommand::EDITION_RESOURCES_PAYLOAD => $this->resource,
-                CreateEditionCommand::EDITION_CONDITION_PAYLOAD => $this->condition,
                 CreateEditionCommand::EDITION_CITY_PAYLOAD => $this->city,
                 CreateEditionCommand::EDITION_PAGES_PAYLOAD => $this->pages,
                 CreateEditionCommand::EDITION_IS_ON_LIBRARY => $this->isOnLibrary,
+                CreateEditionCommand::EDITION_CONDITION_PAYLOAD => $this->condition,
             ]
         );
     }
@@ -194,11 +188,10 @@ final class CreateEditionCommandTest extends TestCase
                 CreateEditionCommand::EDITION_SUBTITLE_PAYLOAD => $this->subtitle,
                 CreateEditionCommand::EDITION_LANGUAGE_PAYLOAD => $this->locale,
                 CreateEditionCommand::EDITION_IMAGE_PAYLOAD => $this->image,
-                CreateEditionCommand::EDITION_RESOURCES_PAYLOAD => $this->resource,
-                CreateEditionCommand::EDITION_CONDITION_PAYLOAD => $this->condition,
                 CreateEditionCommand::EDITION_CITY_PAYLOAD => $this->city,
                 CreateEditionCommand::EDITION_PAGES_PAYLOAD => $this->pages,
                 CreateEditionCommand::EDITION_IS_ON_LIBRARY => $this->isOnLibrary,
+                CreateEditionCommand::EDITION_CONDITION_PAYLOAD => $this->condition,
             ]
         );
     }
@@ -222,11 +215,10 @@ final class CreateEditionCommandTest extends TestCase
                 CreateEditionCommand::EDITION_SUBTITLE_PAYLOAD => $this->subtitle,
                 CreateEditionCommand::EDITION_LANGUAGE_PAYLOAD => $this->locale,
                 CreateEditionCommand::EDITION_IMAGE_PAYLOAD => $this->image,
-                CreateEditionCommand::EDITION_RESOURCES_PAYLOAD => $this->resource,
-                CreateEditionCommand::EDITION_CONDITION_PAYLOAD => null,
                 CreateEditionCommand::EDITION_CITY_PAYLOAD => $this->city,
                 CreateEditionCommand::EDITION_PAGES_PAYLOAD => $this->pages,
                 CreateEditionCommand::EDITION_IS_ON_LIBRARY => true,
+                CreateEditionCommand::EDITION_CONDITION_PAYLOAD => null,
             ]
         );
     }
@@ -251,11 +243,10 @@ final class CreateEditionCommandTest extends TestCase
                 CreateEditionCommand::EDITION_SUBTITLE_PAYLOAD => $this->subtitle,
                 CreateEditionCommand::EDITION_LANGUAGE_PAYLOAD => $this->locale,
                 CreateEditionCommand::EDITION_IMAGE_PAYLOAD => $this->image,
-                CreateEditionCommand::EDITION_RESOURCES_PAYLOAD => $this->resource,
-                CreateEditionCommand::EDITION_CONDITION_PAYLOAD => 'used',
                 CreateEditionCommand::EDITION_CITY_PAYLOAD => $this->city,
                 CreateEditionCommand::EDITION_PAGES_PAYLOAD => $this->pages,
                 CreateEditionCommand::EDITION_IS_ON_LIBRARY => false,
+                CreateEditionCommand::EDITION_CONDITION_PAYLOAD => 'used',
             ]
         );
     }
@@ -280,11 +271,10 @@ final class CreateEditionCommandTest extends TestCase
                 CreateEditionCommand::EDITION_SUBTITLE_PAYLOAD => $this->subtitle,
                 CreateEditionCommand::EDITION_LANGUAGE_PAYLOAD => $this->locale,
                 CreateEditionCommand::EDITION_IMAGE_PAYLOAD => $this->image,
-                CreateEditionCommand::EDITION_RESOURCES_PAYLOAD => $this->resource,
-                CreateEditionCommand::EDITION_CONDITION_PAYLOAD => $this->condition,
                 CreateEditionCommand::EDITION_CITY_PAYLOAD => $this->city,
                 CreateEditionCommand::EDITION_PAGES_PAYLOAD => $this->pages,
                 CreateEditionCommand::EDITION_IS_ON_LIBRARY => $this->isOnLibrary,
+                CreateEditionCommand::EDITION_CONDITION_PAYLOAD => $this->condition,
             ]
         );
     }

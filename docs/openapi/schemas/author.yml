@@ -1,21 +1,24 @@
-Author:
-  required:
-    - id
-    - name
-    - countryId
-    - isPseudonumOf
-    - bornYear
-    - deathYear
-  properties:
-    id:
-      type: string
-    name:
-      type: string
-    countryId:
-      type: string
-    isPseudonymOf:
-      type: [ string, "null" ]
-    bornYear:
+properties:
+  id:
+    type: string
+    format: uuid
+    required: true
+  firstName:
+    type: string
+    required: true
+  lastName:
+    type: [ string, "null" ]
+    required: true
+  countryId:
+    type: string
+    required: true
+  isPseudonymOf:
+    type: [ string, "null" ]
+    format: uuid
+    required: true
+  bornYear:
       type: integer
-    deathYear:
+      required: true
+  deathYear:
       type: [ integer, "null" ]
+      required: true

@@ -15,7 +15,8 @@ use Monolog\Test\TestCase;
 final class UpdateAuthorCommandTest extends TestCase
 {
     private $authorId;
-    private $name;
+    private $firstName;
+    private $lastName;
     private $countryId;
     private $isPseudonymOf;
     private $bornAt;
@@ -25,17 +26,19 @@ final class UpdateAuthorCommandTest extends TestCase
     public function setUp(): void
     {
         $this->authorId = (Uuid::v4())->value();
-        $this->name = 'Euripides';
+        $this->firstName = 'Johannes Valentinus';
+        $this->lastName = 'Andrae';
         $this->countryId = (Uuid::v4())->value();
         $this->isPseudonymOf = null;
-        $this->bornAt = -484;
-        $this->deathAt = -406;
+        $this->bornAt = 1586;
+        $this->deathAt = 1654;
 
         $this->command = UpdateAuthorCommand::fromPayload(
             Uuid::v4(),
             [
                 UpdateAuthorCommand::AUTHOR_ID_PAYLOAD => $this->authorId,
-                UpdateAuthorCommand::AUTHOR_NAME_PAYLOAD => $this->name,
+                UpdateAuthorCommand::AUTHOR_FIRST_NAME_PAYLOAD => $this->firstName,
+                UpdateAuthorCommand::AUTHOR_LAST_NAME_PAYLOAD => $this->lastName,
                 UpdateAuthorCommand::AUTHOR_COUNTRY_ID_PAYLOAD => $this->countryId,
                 UpdateAuthorCommand::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD => $this->isPseudonymOf,
                 UpdateAuthorCommand::AUTHOR_BORN_YEAR_PAYLOAD => $this->bornAt,
@@ -66,7 +69,7 @@ final class UpdateAuthorCommandTest extends TestCase
     public function given_author_members_when_command_getters_are_called_then_return_equals_objects_and_values(): void
     {
         self::assertTrue(Uuid::from($this->authorId)->equalTo($this->command->authorId()));
-        self::assertTrue(AuthorFirstName::from($this->name)->equalTo($this->command->name()));
+        self::assertTrue(AuthorFirstName::from($this->firstName)->equalTo($this->command->firstName()));
         self::assertTrue(Uuid::from($this->countryId)->equalTo($this->command->countryId()));
         self::assertSame($this->isPseudonymOf, $this->command->isPseudonymOf());
         self::assertTrue(AuthorBornAt::from($this->bornAt)->equalTo($this->command->bornAt()));
@@ -99,7 +102,8 @@ final class UpdateAuthorCommandTest extends TestCase
             Uuid::v4(),
             [
                 UpdateAuthorCommand::AUTHOR_ID_PAYLOAD => $this->authorId,
-                UpdateAuthorCommand::AUTHOR_NAME_PAYLOAD => null,
+                UpdateAuthorCommand::AUTHOR_FIRST_NAME_PAYLOAD => null,
+                UpdateAuthorCommand::AUTHOR_LAST_NAME_PAYLOAD => null,
                 UpdateAuthorCommand::AUTHOR_COUNTRY_ID_PAYLOAD => $this->countryId,
                 UpdateAuthorCommand::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD => $this->isPseudonymOf,
                 UpdateAuthorCommand::AUTHOR_BORN_YEAR_PAYLOAD => $this->bornAt,
@@ -119,7 +123,8 @@ final class UpdateAuthorCommandTest extends TestCase
             Uuid::v4(),
             [
                 UpdateAuthorCommand::AUTHOR_ID_PAYLOAD => $this->authorId,
-                UpdateAuthorCommand::AUTHOR_NAME_PAYLOAD => $this->name,
+                UpdateAuthorCommand::AUTHOR_FIRST_NAME_PAYLOAD => $this->firstName,
+                UpdateAuthorCommand::AUTHOR_LAST_NAME_PAYLOAD => null,
                 UpdateAuthorCommand::AUTHOR_COUNTRY_ID_PAYLOAD => '1984',
                 UpdateAuthorCommand::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD => $this->isPseudonymOf,
                 UpdateAuthorCommand::AUTHOR_BORN_YEAR_PAYLOAD => $this->bornAt,
@@ -139,7 +144,8 @@ final class UpdateAuthorCommandTest extends TestCase
             Uuid::v4(),
             [
                 UpdateAuthorCommand::AUTHOR_ID_PAYLOAD => $this->authorId,
-                UpdateAuthorCommand::AUTHOR_NAME_PAYLOAD => $this->name,
+                UpdateAuthorCommand::AUTHOR_FIRST_NAME_PAYLOAD => $this->firstName,
+                UpdateAuthorCommand::AUTHOR_LAST_NAME_PAYLOAD => null,
                 UpdateAuthorCommand::AUTHOR_COUNTRY_ID_PAYLOAD => $this->countryId,
                 UpdateAuthorCommand::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD => 'i-am-not-a-id',
                 UpdateAuthorCommand::AUTHOR_DEATH_YEAR_PAYLOAD => $this->deathAt,

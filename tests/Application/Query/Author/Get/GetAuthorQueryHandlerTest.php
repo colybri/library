@@ -57,7 +57,8 @@ final class GetAuthorQueryHandlerTest extends TestCase
         $author = (array) json_decode(json_encode(($this->handler)($this->query($authorId))));
 
         $this->assertArrayHasKey('id', $author);
-        $this->assertArrayHasKey('name', $author);
+        $this->assertArrayHasKey('firstName', $author);
+        $this->assertArrayHasKey('lastName', $author);
         $this->assertArrayHasKey('countryId', $author);
         $this->assertArrayHasKey('isPseudonymOf', $author);
         $this->assertArrayHasKey('bornAt', $author);

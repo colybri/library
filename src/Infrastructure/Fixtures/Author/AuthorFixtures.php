@@ -15,7 +15,6 @@ use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 
 final class AuthorFixtures implements FixtureRepository
 {
-
     public const AUTHOR_IDS = [
         '09b87ec5-59d7-49a4-96ff-dcbfe92f5b43'
     ];
@@ -42,7 +41,6 @@ final class AuthorFixtures implements FixtureRepository
         foreach ($entities as $entity) {
             $this->repository->insert($entity);
         }
-
     }
 
     public function dependants(): array

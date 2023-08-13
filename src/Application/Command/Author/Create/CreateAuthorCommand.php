@@ -97,7 +97,7 @@ final class CreateAuthorCommand extends Command
         return $this->firstName;
     }
 
-    public function lastName():? AuthorLastName
+    public function lastName(): ?AuthorLastName
     {
         return $this->lastName;
     }

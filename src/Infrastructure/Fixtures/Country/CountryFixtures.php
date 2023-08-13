@@ -46,7 +46,6 @@ final class CountryFixtures implements FixtureRepository
 
         /** @var Country $entity */
         foreach ($entities as $entity) {
-
             $sql = "
                     INSERT into countries (
                         id, 
@@ -85,7 +84,6 @@ final class CountryFixtures implements FixtureRepository
     public function clean(): void
     {
         foreach (self::COUNTRIES_IDS as $countryId) {
-
             $sql = "
                     DELETE from countries 
                      WHERE (

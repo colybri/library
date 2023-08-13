@@ -13,7 +13,6 @@
         "ext-curl": "*",
         "beberlei/assert": "^3.2",
         "colybri/criteria": "^1.0",
-        "composer/package-versions-deprecated": "1.11.99.4",
         "doctrine/doctrine-bundle": "^2.5",
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.10",

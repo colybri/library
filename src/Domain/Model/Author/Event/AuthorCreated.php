@@ -39,15 +39,14 @@ final class AuthorCreated extends DomainEvent
     private ?AuthorDeathAt $deathAt;
 
     public static function from(
-        Uuid            $id,
+        Uuid $id,
         AuthorFirstName $name,
         ?AuthorLastName $lastName,
-        Uuid            $countryId,
-        ?Uuid           $isPseudonymOf,
-        AuthorBornAt    $bornAt,
-        ?AuthorDeathAt  $deathAt
-    ): static
-    {
+        Uuid $countryId,
+        ?Uuid $isPseudonymOf,
+        AuthorBornAt $bornAt,
+        ?AuthorDeathAt $deathAt
+    ): static {
         return static::fromPayload(
             Uuid::v4(),
             $id,
@@ -108,7 +107,7 @@ final class AuthorCreated extends DomainEvent
         return $this->name;
     }
 
-    public function lastName():? AuthorLastName
+    public function lastName(): ?AuthorLastName
     {
         return $this->lastName;
     }

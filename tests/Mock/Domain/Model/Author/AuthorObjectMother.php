@@ -14,16 +14,16 @@ use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 final class AuthorObjectMother
 {
     public function __construct(
-        private ?Uuid            $id = null,
-        private ?AuthorFirstName $name = null,
+        private ?Uuid $id = null,
+        private ?AuthorFirstName $firstName = null,
         private ?AuthorLastName $lastName = null,
-        private ?Uuid            $countryId = null,
-        private ?Uuid            $isPseudonymOf = null,
-        private ?AuthorBornAt    $bornAt = null,
-        private ?AuthorDeathAt   $deathAt = null
+        private ?Uuid $countryId = null,
+        private ?Uuid $isPseudonymOf = null,
+        private ?AuthorBornAt $bornAt = null,
+        private ?AuthorDeathAt $deathAt = null
     ) {
         $this->id = $id ?? Uuid::v4();
-        $this->name = $name ?? AuthorFirstName::from('Publio Cornelio');
+        $this->firstName = $firstName ?? AuthorFirstName::from('Publio Cornelio');
         $this->lastName = $this->lastName ?? AuthorLastName::from('Tácito');
         $this->countryId = $countryId ?? Uuid::v4();
         $this->isPseudonymOf = $isPseudonymOf ?? Uuid::v4();
@@ -35,7 +35,7 @@ final class AuthorObjectMother
     {
         return Author::create(
             $this->id,
-            $this->name,
+            $this->firstName,
             $this->lastName,
             $this->countryId,
             $this->isPseudonymOf,
@@ -48,7 +48,7 @@ final class AuthorObjectMother
     {
         return Author::reconstitute(
             $this->id,
-            $this->name,
+            $this->firstName,
             $this->lastName,
             $this->countryId,
             $this->isPseudonymOf,

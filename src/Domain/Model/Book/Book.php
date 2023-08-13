@@ -17,7 +17,7 @@ use Colybri\Library\Domain\Model\Book\ValueObject\BookTitle;
 use Forkrefactor\Ddd\Domain\Model\SimpleAggregateRoot;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 
-class Book extends SimpleAggregateRoot implements \JsonSerializable
+class Book extends SimpleAggregateRoot
 {
     private const NAME = 'book';
     private Uuid $aggregateId;

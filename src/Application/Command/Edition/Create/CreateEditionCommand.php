@@ -6,7 +6,7 @@ namespace Colybri\Library\Application\Command\Edition\Create;
 
 use Assert\Assert;
 use Colybri\Library\Domain\CompanyName;
-use Colybri\Library\Domain\Model\Book\Book;
+use Colybri\Library\Domain\Model\Edition\Edition;
 use Colybri\Library\Domain\Model\Edition\ValueObject\EditionCity;
 use Colybri\Library\Domain\Model\Edition\ValueObject\EditionCondition;
 use Colybri\Library\Domain\Model\Edition\ValueObject\EditionGoogleBooksId;
@@ -40,7 +40,6 @@ final class CreateEditionCommand extends Command
     public const EDITION_LANGUAGE_PAYLOAD = 'language';
     public const EDITION_IMAGE_PAYLOAD = 'image';
     public const EDITION_IS_ON_LIBRARY = 'isOnLibrary';
-    public const EDITION_RESOURCES_PAYLOAD = 'resources';
     public const EDITION_CONDITION_PAYLOAD = 'condition';
     public const EDITION_PAGES_PAYLOAD = 'pages';
     public const EDITION_CITY_PAYLOAD = 'city';
@@ -55,7 +54,6 @@ final class CreateEditionCommand extends Command
     private ?EditionSubtitle $subtitle;
     private EditionLocale $locale;
     private ?EditionImageUrl $imageUrl;
-    private $resource;
     private ?EditionCondition $condition;
     private EditionCity $city;
     private ?EditionPages $pages;
@@ -68,7 +66,7 @@ final class CreateEditionCommand extends Command
             ServiceName::instance(),
             self::messageVersion(),
             self::messageType(),
-            Book::modelName(),
+            Edition::modelName(),
             self::NAME
         );
     }
@@ -94,7 +92,6 @@ final class CreateEditionCommand extends Command
             ->keyExists(self::EDITION_IS_ON_LIBRARY)
             ->keyExists(self::EDITION_LANGUAGE_PAYLOAD)
             ->keyExists(self::EDITION_IMAGE_PAYLOAD)
-            ->keyExists(self::EDITION_RESOURCES_PAYLOAD)
             ->keyExists(self::EDITION_CONDITION_PAYLOAD)
             ->keyExists(self::EDITION_PAGES_PAYLOAD)
             ->keyExists(self::EDITION_CITY_PAYLOAD)
@@ -112,7 +109,6 @@ final class CreateEditionCommand extends Command
             ->that($payload[self::EDITION_SUBTITLE_PAYLOAD], self::EDITION_SUBTITLE_PAYLOAD)->nullOr()->string()
             ->that($payload[self::EDITION_LANGUAGE_PAYLOAD], self::EDITION_LANGUAGE_PAYLOAD)->notEmpty()->string()
             ->that($payload[self::EDITION_IMAGE_PAYLOAD], self::EDITION_IMAGE_PAYLOAD)->nullOr()->string()
-            ->that($payload[self::EDITION_RESOURCES_PAYLOAD], self::EDITION_RESOURCES_PAYLOAD)->nullOr()->file()
             ->that($payload[self::EDITION_CONDITION_PAYLOAD], self::EDITION_CONDITION_PAYLOAD)->nullOr()->string()
             ->that($payload[self::EDITION_PAGES_PAYLOAD], self::EDITION_PAGES_PAYLOAD)->nullOr()->integer()
             ->that($payload[self::EDITION_CITY_PAYLOAD], self::EDITION_CITY_PAYLOAD)->notEmpty()->string()
@@ -137,10 +133,10 @@ final class CreateEditionCommand extends Command
         $this->subtitle = null === $payload[self::EDITION_SUBTITLE_PAYLOAD] ? null : EditionSubtitle::from((string)$payload[self::EDITION_SUBTITLE_PAYLOAD]);
         $this->locale = EditionLocale::from((string)$payload[self::EDITION_LANGUAGE_PAYLOAD]);
         $this->imageUrl = null === $payload[self::EDITION_IMAGE_PAYLOAD] ? null : EditionImageUrl::from((string)$payload[self::EDITION_IMAGE_PAYLOAD]);
-        $this->condition = null === $payload[self::EDITION_CONDITION_PAYLOAD] ? null : EditionCondition::from((string)$payload[self::EDITION_CONDITION_PAYLOAD]);
         $this->pages = null === $payload[self::EDITION_PAGES_PAYLOAD] ? null : EditionPages::from((int)$payload[self::EDITION_PAGES_PAYLOAD]);
         $this->city = EditionCity::from((string)$payload[self::EDITION_CITY_PAYLOAD]);
         $this->isOnLibrary = EditionIsOnLibrary::from((bool)$payload[self::EDITION_IS_ON_LIBRARY]);
+        $this->condition = null === $payload[self::EDITION_CONDITION_PAYLOAD] ? null : EditionCondition::from((string)$payload[self::EDITION_CONDITION_PAYLOAD]);
     }
 
     public function editionId(): Uuid
@@ -193,10 +189,6 @@ final class CreateEditionCommand extends Command
         return $this->imageUrl;
     }
 
-    public function resource()
-    {
-        return $this->resource;
-    }
     public function condition(): ?EditionCondition
     {
         return $this->condition;

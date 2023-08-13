@@ -32,8 +32,6 @@ final class Edition extends SimpleAggregateRoot
     private ?EditionSubtitle $subtitle;
     private EditionLocale $locale;
     private ?EditionImageUrl $imageSlug;
-    private $resource;
-    private $resourceTypes;
     private ?EditionCondition $condition;
     private EditionCity $city;
     private ?EditionPages $pages;
@@ -51,12 +49,10 @@ final class Edition extends SimpleAggregateRoot
         ?EditionSubtitle $subtitle,
         EditionLocale $locale,
         ?EditionImageUrl $image,
-        $resource,
-        $resourceTypes,
-        ?EditionCondition $condition,
         ?EditionPages $pages,
         EditionCity $city,
-        EditionIsOnLibrary $isOnLibrary
+        EditionIsOnLibrary $isOnLibrary,
+        ?EditionCondition $condition
     ): self {
         $self = new self($id);
         $self->year = $year;
@@ -68,12 +64,10 @@ final class Edition extends SimpleAggregateRoot
         $self->subtitle = $subtitle;
         $self->locale = $locale;
         $self->imageSlug = $image;
-        $self->resource = $resource;
-        $self->resourceTypes = $resourceTypes;
-        $self->condition = $condition;
         $self->pages = $pages;
         $self->city = $city;
         $self->isOnLibrary = $isOnLibrary;
+        $self->condition = $condition;
 
         return $self;
     }
@@ -89,12 +83,10 @@ final class Edition extends SimpleAggregateRoot
         ?EditionSubtitle $subtitle,
         EditionLocale $locale,
         ?EditionImageUrl $image,
-        $resource,
-        $resourceTypes,
-        ?EditionCondition $condition,
         ?EditionPages $pages,
         EditionCity $city,
-        EditionIsOnLibrary $isOnLibrary
+        EditionIsOnLibrary $isOnLibrary,
+        ?EditionCondition $condition
     ): self {
         $self = new self($id);
         $self->year = $year;
@@ -106,12 +98,10 @@ final class Edition extends SimpleAggregateRoot
         $self->subtitle = $subtitle;
         $self->locale = $locale;
         $self->imageSlug = $image;
-        $self->resource = $resource;
-        $self->resourceTypes = $resourceTypes;
-        $self->condition = $condition;
         $self->pages = $pages;
         $self->city = $city;
         $self->isOnLibrary = $isOnLibrary;
+        $self->condition = $condition;
 
         return $self;
     }
@@ -170,16 +160,6 @@ final class Edition extends SimpleAggregateRoot
     public function imageSlug(): ?EditionImageUrl
     {
         return $this->imageSlug;
-    }
-
-    public function resource()
-    {
-        return $this->resource;
-    }
-
-    public function resourceTypes()
-    {
-        return $this->resourceTypes;
     }
 
     public function condition(): ?EditionCondition

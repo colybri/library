@@ -1,6 +1,7 @@
 query:
   name: keywords
   in: query
+  required: true
   description: "List of words to be searched"
   schema:
     type: string

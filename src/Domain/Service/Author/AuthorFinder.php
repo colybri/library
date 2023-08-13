@@ -30,7 +30,7 @@ final class AuthorFinder
     public function ensureAuthorExist(?Author $author, $id): void
     {
         if (null === $author) {
-            throw new AuthorDoesNotExistException(sprintf('Author whit id:%s does not exist on repository', $id));
+            throw new AuthorDoesNotExistException(sprintf('Author whit id: %s does not exist on repository', $id));
         }
     }
 }

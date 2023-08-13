@@ -44,11 +44,10 @@ final class EditionCreator
         ?EditionSubtitle $subtitle,
         EditionLocale $locale,
         ?EditionImageUrl $image,
-        $resource,
-        ?EditionCondition $condition,
         ?EditionPages $pages,
         EditionCity $city,
-        EditionIsOnLibrary $isOnLibrary
+        EditionIsOnLibrary $isOnLibrary,
+        ?EditionCondition $condition
     ): Edition {
         $this->ensureEditionDoesNonExist($id);
 
@@ -67,12 +66,10 @@ final class EditionCreator
             $subtitle,
             $locale,
             $image,
-            null,
-            null,
-            $condition,
             $pages,
             $city,
-            $isOnLibrary
+            $isOnLibrary,
+            $condition
         );
 
         $this->editionRepository->insert($edition);

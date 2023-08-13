@@ -2,24 +2,24 @@
 
 declare(strict_types=1);
 
-namespace Colybri\Library\Application\Command\Edition\Delete;
+namespace Colybri\Library\Application\Command\Edition\Create;
 
 use Assert\Assert;
 use Colybri\Library\Domain\CompanyName;
+use Colybri\Library\Domain\Model\Book\Book;
 use Colybri\Library\Domain\Model\Edition\Edition;
 use Colybri\Library\Domain\ServiceName;
 use Forkrefactor\Ddd\Application\Command;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 use PcComponentes\TopicGenerator\Topic;
 
-final class DeleteEditionCommand extends Command
+class CreateEditionResourceCommand extends Command
 {
-    public const EDITION_ID_PAYLOAD = 'id';
+    protected const NAME = 'create_resource';
 
-    protected const NAME = 'delete';
     protected const VERSION = '1';
 
-    private Uuid $editionId;
+    public const EDITION_ID_PAYLOAD = 'id';
+    public const EDITION_RESOURCE_PAYLOAD = 'resource';
 
     public static function messageName(): string
     {
@@ -45,17 +45,12 @@ final class DeleteEditionCommand extends Command
         Assert::lazy()
             ->that($payload, 'payload')->isArray()
             ->keyExists(self::EDITION_ID_PAYLOAD)
+            ->keyExists(self::EDITION_RESOURCE_PAYLOAD)
             ->verifyNow();
 
         Assert::lazy()
             ->that($payload[self::EDITION_ID_PAYLOAD], self::EDITION_ID_PAYLOAD)->uuid()
+            ->that($payload[self::EDITION_RESOURCE_PAYLOAD], self::EDITION_RESOURCE_PAYLOAD)->file()
             ->verifyNow();
-
-        $this->editionId = Uuid::from($payload[self::EDITION_ID_PAYLOAD]);
-    }
-
-    public function editionId(): Uuid
-    {
-        return $this->editionId;
     }
 }

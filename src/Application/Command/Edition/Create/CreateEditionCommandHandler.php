@@ -26,11 +26,10 @@ final class CreateEditionCommandHandler implements MessageHandlerInterface
             $cmd->subtitle(),
             $cmd->locale(),
             $cmd->image(),
-            null,
-            $cmd->condition(),
             $cmd->pages(),
             $cmd->city(),
-            $cmd->isOnLibrary()
+            $cmd->isOnLibrary(),
+            $cmd->condition()
         );
     }
 }

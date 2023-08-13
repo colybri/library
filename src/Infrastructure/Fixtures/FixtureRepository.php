@@ -11,5 +11,4 @@ interface FixtureRepository
     public function dependants(): array;
 
     public function clean(): void;
-
 }

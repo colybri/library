@@ -28,7 +28,7 @@ final class DeleteAuthorController extends CommandController
 
         return new JsonResponse(
             '',
-            Response::HTTP_OK
+            Response::HTTP_NO_CONTENT
         );
     }
 }

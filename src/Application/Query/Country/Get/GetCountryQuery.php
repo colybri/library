@@ -16,9 +16,7 @@ final class GetCountryQuery extends Query
 {
     protected const NAME = 'get';
     protected const VERSION = '1';
-
     public const COUNTRY_ID_PAYLOAD = 'id';
-
     private Uuid $countryId;
 
     public static function messageName(): string

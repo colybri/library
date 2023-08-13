@@ -1,6 +1,7 @@
 offset:
   name: offset
   in: query
-  description: "Numbe for of first item of the list"
+  required: false
+  description: "Number for of first item of the list"
   schema:
     type: integer

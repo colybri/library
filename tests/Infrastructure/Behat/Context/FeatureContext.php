@@ -53,7 +53,6 @@ final class FeatureContext implements Context
         );
 
         $application->run($arg, new \Symfony\Component\Console\Output\NullOutput());
-
     }
 
     private function getApplication(): Application

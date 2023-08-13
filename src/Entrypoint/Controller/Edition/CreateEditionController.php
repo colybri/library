@@ -32,12 +32,10 @@ final class CreateEditionController extends CommandController
                     CreateEditionCommand::EDITION_SUBTITLE_PAYLOAD => $body->get(CreateEditionCommand::EDITION_SUBTITLE_PAYLOAD),
                     CreateEditionCommand::EDITION_LANGUAGE_PAYLOAD => $body->get(CreateEditionCommand::EDITION_LANGUAGE_PAYLOAD),
                     CreateEditionCommand::EDITION_IMAGE_PAYLOAD => $body->get(CreateEditionCommand::EDITION_IMAGE_PAYLOAD),
-                    CreateEditionCommand::EDITION_RESOURCES_PAYLOAD =>
-                        array_map(fn(UploadedFile $file) => base64_decode($file), $request->files->get(CreateEditionCommand::EDITION_RESOURCES_PAYLOAD)),
-                    CreateEditionCommand::EDITION_CONDITION_PAYLOAD => $body->get(CreateEditionCommand::EDITION_CONDITION_PAYLOAD),
                     CreateEditionCommand::EDITION_PAGES_PAYLOAD => $body->get(CreateEditionCommand::EDITION_PAGES_PAYLOAD),
                     CreateEditionCommand::EDITION_CITY_PAYLOAD => $body->get(CreateEditionCommand::EDITION_CITY_PAYLOAD),
-                    CreateEditionCommand::EDITION_IS_ON_LIBRARY => $body->get(CreateEditionCommand::EDITION_IS_ON_LIBRARY)
+                    CreateEditionCommand::EDITION_IS_ON_LIBRARY => $body->get(CreateEditionCommand::EDITION_IS_ON_LIBRARY),
+                    CreateEditionCommand::EDITION_CONDITION_PAYLOAD => $body->get(CreateEditionCommand::EDITION_CONDITION_PAYLOAD),
                 ]
             )
         );
