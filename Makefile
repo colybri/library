@@ -4,8 +4,8 @@ DOCKER_COMP = docker-compose
 # Docker containers
 PHP_CONT = @docker exec -it library
 DATABASE_CONT = @docker exec -it library_postgres
-PG_ADMIN_CONT = @docker exec -it library_pgadmin
 PG_ADMIN_CONT_IP = $$(docker inspect --format="{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" library_pgadmin)
+RABBIT_CONT_IP = $$(docker inspect --format="{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" library_rabbit)
 
 # Executables
 PHP      = $(PHP_CONT) php
@@ -81,7 +81,7 @@ report: ## Generate static code reports
 
 ## —— Postgres ————————————————————————————————————————————————————————————————
 
-pgadmin: ## Dump sql database file on migrations folder
+pgadmin: ## Open pgadmin on browser
 	@xdg-open http://$(PG_ADMIN_CONT_IP)
 
 dump: ## Dump sql database file on migrations folder
@@ -100,9 +100,16 @@ composer: ## Execute composer with parameter "c=" to run a given command, exampl
 			--no-interaction
 
 ## —— Symfony ———————————————————————————————————————————————————————————————
-sf: ## List all Symfony commands or pass the parameter "c=" to run a given command, example: make sf c=about
+console: ## List all Symfony commands or pass the parameter "c=" to run a given command, example: make sf c=about
 	@$(eval c ?=)
 	@$(SYMFONY) $(c)
 
 cc: c=c:c ## Clear the cache
-cc: sf
+cc: console
+
+cache: ## See list of console commands avialable
+	@docker exec -it library php bin/console cache:clear && composer dump-autoload
+
+## —— Rabbit ————————————————————————————————————————————————————————————————
+rabbit: ## Open message broker on browser
+	@xdg-open http://$(RABBIT_CONT_IP):15672

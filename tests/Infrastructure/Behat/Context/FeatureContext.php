@@ -17,30 +17,7 @@ final class FeatureContext implements Context
         $this->kernel = $kernel;
     }
 
-    /** @Given the environment clean */
-    public function cleanEnvironment(): void
-    {
-        $this->bootstrapEnvironment();
-    }
-
-    /** @Given the environment with fixtures */
-    public function loadFixtures(): void
-    {
-        $this->bootstrapEnvironment();
-
-        $application = $this->getApplication();
-
-        $arg = new \Symfony\Component\Console\Input\ArrayInput(
-            [
-                'command' => 'library:fixtures:generate',
-                '--no-interaction' => true,
-            ],
-        );
-
-        $application->run($arg, new \Symfony\Component\Console\Output\NullOutput());
-    }
-
-
+    /** @Given the environment with clean */
     private function bootstrapEnvironment(): void
     {
         $application = $this->getApplication();
@@ -54,6 +31,23 @@ final class FeatureContext implements Context
 
         $application->run($arg, new \Symfony\Component\Console\Output\NullOutput());
     }
+
+    /** @Given the environment with fixtures */
+    public function loadFixtures(): void
+    {
+        $application = $this->getApplication();
+        $this->bootstrapEnvironment();
+
+        $arg = new \Symfony\Component\Console\Input\ArrayInput(
+            [
+                'command' => 'library:fixtures:generate',
+                '--no-interaction' => true,
+            ],
+        );
+
+        $application->run($arg, new \Symfony\Component\Console\Output\NullOutput());
+    }
+
 
     private function getApplication(): Application
     {

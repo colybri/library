@@ -42,6 +42,6 @@ Feature: Retrieve an author
     And the response body contains JSON:
     """
       {
-        "error": "Author whit id:47f9587f-423d-48dd-bba3-99897f5c91f3 does not exist on repository"
+          "error": "Author whit id: 47f9587f-423d-48dd-bba3-99897f5c91f3 does not exist on repository"
       }
     """

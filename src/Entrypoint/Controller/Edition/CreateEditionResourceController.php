@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Entrypoint\Controller\Edition;
 
-use Colybri\Library\Application\Command\Edition\Create\CreateEditionResourceCommand;
+use Colybri\Library\Application\Command\Resource\CreateEditionResourceCommand;
 use Colybri\Library\Entrypoint\Controller\CommandController;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class CreateEditionResourceController extends CommandController
+final class CreateEditionResourceController extends CommandController
 {
     public function __invoke(Request $request)
     {

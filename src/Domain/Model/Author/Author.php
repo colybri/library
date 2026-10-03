@@ -4,16 +4,14 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Domain\Model\Author;
 
-use Colybri\Library\Domain\Model\Author\Event\AuthorDeleted;
-use Colybri\Library\Domain\Model\Author\Event\AuthorUpdated;
-use Colybri\Library\Domain\Model\Author\ValueObject\AuthorLastName;
-use Forkrefactor\Ddd\Domain\Model\SimpleAggregateRoot;
+use Colybri\Library\Domain\Model\SimpleAggregateRoot;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use Colybri\Library\Domain\Model\Author\Event\AuthorDeleted;
+use Colybri\Library\Domain\Model\Author\ValueObject\AuthorLastName;
 use Colybri\Library\Domain\Model\Author\Event\AuthorCreated;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorBornAt;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorDeathAt;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorFirstName;
-use JetBrains\PhpStorm\Pure;
 
 final class Author extends SimpleAggregateRoot
 {

@@ -1,0 +1,50 @@
+Created:
+  description: Resource was created
+  content:
+    application/json: {}
+
+Deleted:
+  description: Resource was deleted
+  content:
+    application/json: {}
+
+Updated:
+  description: Resource was updated
+  content:
+    application/json: {}
+
+InvalidArgument:
+  description: Invalid argument
+  content:
+    application/json:
+      schema:
+        type: object
+        properties:
+          error:
+            type: string
+            examples:
+             - Request contains an invalid argument
+
+NotFound:
+  description: Not found
+  content:
+    application/json:
+      schema:
+        type: object
+        properties:
+          error:
+            type: string
+            examples:
+             - Resource not found
+
+Conflict:
+  description: Logic exception
+  content:
+    application/json:
+      schema:
+        type: object
+        properties:
+          error:
+            type: string
+            examples:
+             - A logic exception ocurred

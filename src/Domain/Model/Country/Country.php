@@ -7,10 +7,10 @@ namespace Colybri\Library\Domain\Model\Country;
 use Colybri\Library\Domain\Model\Country\ValueObject\CountryAlpha2Code;
 use Colybri\Library\Domain\Model\Country\ValueObject\CountryName;
 use Colybri\Library\Domain\Model\Country\ValueObject\CountryNationality;
-use Forkrefactor\Ddd\Domain\Model\SimpleAggregateRoot;
+use Colybri\Library\Domain\Model\SimpleAggregateRoot;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 
-final class Country extends SimpleAggregateRoot implements \JsonSerializable
+final class Country extends SimpleAggregateRoot
 {
     private const NAME = 'country';
     private CountryName $name;

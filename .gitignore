@@ -11,7 +11,7 @@ nbproject/*
 
 # Docker proyect resources
 postgres_data/
-
+redis_data/
 
 # windows thumbnail cache
 Thumbs.db
@@ -27,6 +27,7 @@ Thumbs.db
 .env.*.local
 .env.*.test
 
+keys/
 public/bundles/
 var/
 gen/
@@ -37,3 +38,7 @@ vendor/
 .phpunit.result.cache
 ###< phpunit/phpunit ###
 
+
+###> lexik/jwt-authentication-bundle ###
+/config/jwt/*.pem
+###< lexik/jwt-authentication-bundle ###

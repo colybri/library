@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Tests\Infrastructure\Messenger\Logging\Monolog\Processor;
 
-use Colybri\Library\Infrastructure\Messenger\Logging\Monolog\Processor\InfoProcessor;
+use Colybri\Library\Infrastructure\Logging\Monolog\Processor\InfoProcessor;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\DateTimeValueObject;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 use Forkrefactor\Ddd\Util\Message\AggregateMessage;

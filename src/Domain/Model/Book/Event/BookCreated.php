@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Domain\Model\Book\Event;
 
-use Colybri\Library\Domain\CompanyName;
+use Colybri\Library\Domain\VendorName;
+use Colybri\Library\Domain\ServiceName;
+use Colybri\Library\Domain\Messaging\DomainEvent;
+use Colybri\Library\Domain\Messaging\Message\ValueObject\MessageName;
 use Colybri\Library\Domain\Model\Book\Book;
 use Colybri\Library\Domain\Model\Book\ValueObject\BookAuthorIds;
 use Colybri\Library\Domain\Model\Book\ValueObject\BookAuthorIsPseudo;
@@ -13,11 +16,8 @@ use Colybri\Library\Domain\Model\Book\ValueObject\BookPublishYear;
 use Colybri\Library\Domain\Model\Book\ValueObject\BookPublishYearIsEstimated;
 use Colybri\Library\Domain\Model\Book\ValueObject\BookSubtitle;
 use Colybri\Library\Domain\Model\Book\ValueObject\BookTitle;
-use Colybri\Library\Domain\ServiceName;
-use Forkrefactor\Ddd\Domain\Model\DomainEvent;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\DateTimeValueObject;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
-use PcComponentes\TopicGenerator\Topic;
 
 final class BookCreated extends DomainEvent
 {
@@ -44,8 +44,8 @@ final class BookCreated extends DomainEvent
 
     public static function messageName(): string
     {
-        return Topic::generate(
-            CompanyName::instance(),
+        return MessageName::generate(
+            VendorName::instance(),
             ServiceName::instance(),
             self::messageVersion(),
             self::messageType(),

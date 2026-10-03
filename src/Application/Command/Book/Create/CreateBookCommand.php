@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Colybri\Library\Application\Command\Book\Create;
 
 use Assert\Assert;
-use Colybri\Library\Domain\CompanyName;
+use Colybri\Library\Application\Command\Command;
+use Colybri\Library\Domain\Messaging\Message\ValueObject\MessageName;
+use Colybri\Library\Domain\VendorName;
+use Colybri\Library\Domain\ServiceName;
 use Colybri\Library\Domain\Model\Book\Book;
 use Colybri\Library\Domain\Model\Book\ValueObject\BookAuthorIds;
 use Colybri\Library\Domain\Model\Book\ValueObject\BookAuthorIsPseudo;
@@ -14,22 +17,7 @@ use Colybri\Library\Domain\Model\Book\ValueObject\BookPublishYearIsEstimated;
 use Colybri\Library\Domain\Model\Book\ValueObject\BookPublishYear;
 use Colybri\Library\Domain\Model\Book\ValueObject\BookSubtitle;
 use Colybri\Library\Domain\Model\Book\ValueObject\BookTitle;
-use Colybri\Library\Domain\Model\Edition\ValueObject\EditionBookId;
-use Colybri\Library\Domain\Model\Edition\ValueObject\EditionCity;
-use Colybri\Library\Domain\Model\Edition\ValueObject\EditionCondition;
-use Colybri\Library\Domain\Model\Edition\ValueObject\EditionGoogleBooksId;
-use Colybri\Library\Domain\Model\Edition\ValueObject\EditionImageUrl;
-use Colybri\Library\Domain\Model\Edition\ValueObject\EditionISBN;
-use Colybri\Library\Domain\Model\Edition\ValueObject\EditionIsOnLibrary;
-use Colybri\Library\Domain\Model\Edition\ValueObject\EditionLocale;
-use Colybri\Library\Domain\Model\Edition\ValueObject\EditionPages;
-use Colybri\Library\Domain\Model\Edition\ValueObject\EditionPublisherId;
-use Colybri\Library\Domain\Model\Edition\ValueObject\EditionTitle;
-use Colybri\Library\Domain\Model\Edition\ValueObject\EditionYear;
-use Colybri\Library\Domain\ServiceName;
-use Forkrefactor\Ddd\Application\Command;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
-use PcComponentes\TopicGenerator\Topic;
 
 final class CreateBookCommand extends Command
 {
@@ -56,8 +44,8 @@ final class CreateBookCommand extends Command
 
     public static function messageName(): string
     {
-        return Topic::generate(
-            CompanyName::instance(),
+        return MessageName::generate(
+            VendorName::instance(),
             ServiceName::instance(),
             self::messageVersion(),
             self::messageType(),

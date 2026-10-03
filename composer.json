@@ -8,9 +8,10 @@
     "require": {
         "php": ">=8.1.0",
         "ext-ctype": "*",
+        "ext-curl": "*",
         "ext-iconv": "*",
         "ext-json": "*",
-        "ext-curl": "*",
+        "ext-amqp": "*",
         "beberlei/assert": "^3.2",
         "colybri/criteria": "^1.0",
         "doctrine/doctrine-bundle": "^2.5",
@@ -21,6 +22,7 @@
         "forkrefactor/ddd-logging": "^1.0",
         "forkrefactor/messenger-bundle": "^1.0",
         "guzzlehttp/guzzle": "^7.4",
+        "lexik/jwt-authentication-bundle": "^2.19",
         "pccomponentes/topic-generator": "^2.0.1",
         "symfony/console": "6.0.*",
         "symfony/dotenv": "6.0.*",
@@ -30,6 +32,7 @@
         "symfony/monolog-bundle": "^3.7",
         "symfony/proxy-manager-bridge": "6.0.*",
         "symfony/runtime": "6.0.*",
+        "symfony/security-bundle": "6.0.*",
         "symfony/stopwatch": "6.0.*",
         "symfony/yaml": "6.0.*"
     },
@@ -93,9 +96,7 @@
         },
         "post-install-cmd": [
             "@auto-scripts",
-            "rm -rf .git/hooks",
-            "cp -r scripts/git .git/hooks",
-            "chmod ug+x .git/hooks/pre-commit"
+            "./vendor/bin/grumphp git:init"
         ],
         "post-update-cmd": [
             "@auto-scripts"

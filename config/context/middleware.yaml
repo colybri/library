@@ -5,7 +5,7 @@ services:
     public: false
 
   middleware.doctrine.transactional:
-    class: Colybri\Library\Infrastructure\Messenger\Middleware\DoctrineTransactionalMiddleware
+    class: Colybri\Library\Infrastructure\Messaging\Middleware\DoctrineTransactionalMiddleware
     arguments:
       - '@connection_write.dbal'
     autowire: true

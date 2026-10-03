@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class CreatePublisherController extends CommandController
+final class CreatePublisherController extends CommandController
 {
     public function __invoke(Request $request)
     {

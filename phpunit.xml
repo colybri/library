@@ -22,5 +22,11 @@
     </coverage>
     <php>
         <ini name="serialize_precision" value="14"/>
+
+        <!-- ###+ lexik/jwt-authentication-bundle ### -->
+        <env name="JWT_SECRET_KEY" value="%kernel.project_dir%/config/jwt/private.pem"/>
+        <env name="JWT_PUBLIC_KEY" value="%kernel.project_dir%/config/jwt/public.pem"/>
+        <env name="JWT_PASSPHRASE" value="110bd2f8348a4fd39088a4688d5e461fff146ece502a50228a9fcd6d56805ef8"/>
+        <!-- ###- lexik/jwt-authentication-bundle ### -->
     </php>
 </phpunit>

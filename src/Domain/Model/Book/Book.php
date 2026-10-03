@@ -14,7 +14,7 @@ use Colybri\Library\Domain\Model\Book\ValueObject\BookIsOnWishList;
 use Colybri\Library\Domain\Model\Book\ValueObject\BookPublishYear;
 use Colybri\Library\Domain\Model\Book\ValueObject\BookSubtitle;
 use Colybri\Library\Domain\Model\Book\ValueObject\BookTitle;
-use Forkrefactor\Ddd\Domain\Model\SimpleAggregateRoot;
+use Colybri\Library\Domain\Model\SimpleAggregateRoot;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 
 class Book extends SimpleAggregateRoot

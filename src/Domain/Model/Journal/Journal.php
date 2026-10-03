@@ -7,10 +7,10 @@ namespace Colybri\Library\Domain\Model\Journal;
 use Colybri\Library\Domain\Model\Journal\ValueObject\JournalFoundationYear;
 use Colybri\Library\Domain\Model\Journal\ValueObject\JournalImage;
 use Colybri\Library\Domain\Model\Journal\ValueObject\JournalName;
-use Forkrefactor\Ddd\Domain\Model\AggregateRoot;
+use Colybri\Library\Domain\Model\SimpleAggregateRoot;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 
-final class Journal extends AggregateRoot
+final class Journal extends SimpleAggregateRoot
 {
     private const NAME = 'journal';
 

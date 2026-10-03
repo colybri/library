@@ -136,7 +136,7 @@ final class UpdateAuthorCommandTest extends TestCase
     /**
      * @test
      */
-    public function given_invalid_pseudonym_id_when_command_is_invoke_then_throws_invalid_argument_exception(): void
+    public function given_invalid_is_pseudonym_when_command_is_invoke_then_throws_invalid_argument_exception(): void
     {
         self::expectException(InvalidArgumentException::class);
 
@@ -147,7 +147,7 @@ final class UpdateAuthorCommandTest extends TestCase
                 UpdateAuthorCommand::AUTHOR_FIRST_NAME_PAYLOAD => $this->firstName,
                 UpdateAuthorCommand::AUTHOR_LAST_NAME_PAYLOAD => null,
                 UpdateAuthorCommand::AUTHOR_COUNTRY_ID_PAYLOAD => $this->countryId,
-                UpdateAuthorCommand::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD => 'i-am-not-a-id',
+                UpdateAuthorCommand::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD => 'i-am-not-a-boolean',
                 UpdateAuthorCommand::AUTHOR_DEATH_YEAR_PAYLOAD => $this->deathAt,
             ]
         );

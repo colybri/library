@@ -34,7 +34,7 @@ final class CreateEditionController extends CommandController
                     CreateEditionCommand::EDITION_IMAGE_PAYLOAD => $body->get(CreateEditionCommand::EDITION_IMAGE_PAYLOAD),
                     CreateEditionCommand::EDITION_PAGES_PAYLOAD => $body->get(CreateEditionCommand::EDITION_PAGES_PAYLOAD),
                     CreateEditionCommand::EDITION_CITY_PAYLOAD => $body->get(CreateEditionCommand::EDITION_CITY_PAYLOAD),
-                    CreateEditionCommand::EDITION_IS_ON_LIBRARY => $body->get(CreateEditionCommand::EDITION_IS_ON_LIBRARY),
+                    CreateEditionCommand::EDITION_IS_ON_LIBRARY_PAYLOAD => $body->get(CreateEditionCommand::EDITION_IS_ON_LIBRARY_PAYLOAD),
                     CreateEditionCommand::EDITION_CONDITION_PAYLOAD => $body->get(CreateEditionCommand::EDITION_CONDITION_PAYLOAD),
                 ]
             )

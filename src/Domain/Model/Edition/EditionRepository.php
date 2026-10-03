@@ -15,5 +15,7 @@ interface EditionRepository
 
     public function insert(Edition $edition): void;
 
+    public function update(Edition $edition): void;
+
     public function delete(Uuid $id): void;
 }

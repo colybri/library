@@ -20,8 +20,8 @@ final class DeleteAuthorCommandHandler implements MessageHandlerInterface
             $cmd->authorId(),
         );
 
-        foreach ($author->events() as $event) {
-            $this->brokerBus->dispatch($event);
-        }
+        //foreach ($author->events() as $event) {
+        //    $this->brokerBus->dispatch($event);
+        //}
     }
 }

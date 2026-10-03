@@ -16,11 +16,13 @@ final class CountryFixtures implements FixtureRepository
 {
     public const COUNTRIES_IDS = [
         '3cfc35e3-84f5-4589-b164-d6bf50ff02bc',
-        'a60c8d1c-17d0-43bb-8059-862f2265d2e5'
+        'a60c8d1c-17d0-43bb-8059-862f2265d2e5',
+        '31d7038a-2d45-4a68-b23d-7cbbcc27803a'
     ];
     private const NUM_CODE = [
         '3cfc35e3-84f5-4589-b164-d6bf50ff02bc' => 5789,
-        'a60c8d1c-17d0-43bb-8059-862f2265d2e5' => 8957
+        'a60c8d1c-17d0-43bb-8059-862f2265d2e5' => 8957,
+        '31d7038a-2d45-4a68-b23d-7cbbcc27803a' => 7765
     ];
 
     public function __construct(protected Connection $connectionWrite)
@@ -41,6 +43,12 @@ final class CountryFixtures implements FixtureRepository
                 CountryName::from('Atlantis'),
                 CountryAlpha2Code::from('AH'),
                 CountryNationality::from('Atlanteans')
+            ),
+            Country::reconstitute(
+                Uuid::from(self::COUNTRIES_IDS[2]),
+                CountryName::from('Terra Incognita'),
+                CountryAlpha2Code::from('TI'),
+                CountryNationality::from('Incognites')
             )
         ];
 

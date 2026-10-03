@@ -104,6 +104,49 @@ final class EditionDbalRepository extends DbalRepository implements EditionRepos
         $statement->executeQuery();
     }
 
+    public function update(Edition $edition): void
+    {
+        $sql = "
+            UPDATE editions SET 
+                year = :year,
+                publisher_id = :publisherId,
+                book_id = :bookId,
+                google_id = :googleId,
+                isbn = :isbn,
+                title = :title,
+                subtitle = :subtitle,
+                locale = :locale,
+                image = :image,
+                pages = :pages,
+                city = :city,
+                is_on_library = :isOnLibrary,
+                condition = :condition,
+                updated_at = CURRENT_TIMESTAMP 
+             WHERE (
+                id = :id
+            );
+        ";
+
+        $statement = $this->connectionWrite->prepare($sql);
+        $statement->bindValue('id', $edition->aggregateId()->value());
+        $statement->bindValue('year', $edition->year()->value(), ParameterType::INTEGER);
+        $statement->bindValue('publisherId', $edition->publisherId()->value());
+        $statement->bindValue('bookId', $edition->bookId()->value());
+        $statement->bindValue('googleId', $edition->googleBooksId()?->value());
+        $statement->bindValue('isbn', $edition->isbn()->value(), ParameterType::INTEGER);
+        $statement->bindValue('title', $edition->title()->value());
+        $statement->bindValue('subtitle', $edition->subtitle()?->value());
+        $statement->bindValue('locale', $edition->locale()->value());
+        $statement->bindValue('image', $edition->imageSlug()?->value());
+        $statement->bindValue('condition', $edition->condition()?->value());
+        $statement->bindValue('pages', $edition->pages()?->value(), ParameterType::INTEGER);
+        $statement->bindValue('city', $edition->city()->value());
+        $statement->bindValue('isOnLibrary', $edition->isOnLibrary()->value(), ParameterType::BOOLEAN);
+
+        $statement->executeQuery();
+    }
+
+
     public function delete(Uuid $id): void
     {
         $sql = "
@@ -121,7 +164,7 @@ final class EditionDbalRepository extends DbalRepository implements EditionRepos
 
     private function map(array $edition): Edition
     {
-        return Edition::reconstitute(
+        return Edition::hydrate(
             Uuid::from((string)$edition['id']),
             EditionYear::from((int)$edition['year']),
             Uuid::from((string)$edition['publisher_id']),

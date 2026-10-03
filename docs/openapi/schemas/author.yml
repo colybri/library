@@ -1,24 +1,31 @@
+type: object
 properties:
   id:
     type: string
     format: uuid
-    required: true
+    example: 19424912-a0fc-4a94-869e-5b02d9965aa9
   firstName:
     type: string
-    required: true
+    example: Gershom
   lastName:
     type: [ string, "null" ]
-    required: true
+    example: Scholem
   countryId:
     type: string
-    required: true
+    format: uuid
+    example: a28cf9dc-4a77-466a-b3c5-2987f50e2d28
   isPseudonymOf:
     type: [ string, "null" ]
     format: uuid
-    required: true
+    example: 28873063-44e5-4908-862c-356604428a86
   bornYear:
       type: integer
-      required: true
+      example: 1897
   deathYear:
       type: [ integer, "null" ]
-      required: true
+      example: 1982
+required: 
+  -  id
+  - firstName
+  - countryId
+  - bornYear

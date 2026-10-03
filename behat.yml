@@ -6,8 +6,9 @@ default:
     api:
       paths: [tests/Entrypoint/http]
       contexts:
-        - Colybri\Library\Tests\Infrastructure\Behat\Context\FeatureContext
-        - Imbo\BehatApiExtension\Context\ApiContext
+        - class: Colybri\Library\Tests\Infrastructure\Behat\Context\LibraryApiContext
+        - class: Colybri\Library\Tests\Infrastructure\Behat\Context\FeatureContext
+        - class: Imbo\BehatApiExtension\Context\ApiContext
   extensions:
       Imbo\BehatApiExtension:
         apiClient:
@@ -15,7 +16,8 @@ default:
           timeout: 5.0
           verify: false
       FriendsOfBehat\SymfonyExtension:
-        bootstrap: ~
+        bootstrap: tests/bootstrap.php
         kernel:
+          path: src/Kernel.php
           class: Colybri\Library\Kernel
           environment: test

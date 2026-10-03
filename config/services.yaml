@@ -11,12 +11,16 @@ parameters:
 services:
   # default configuration for services in *this* file
   _defaults:
-    autowire: false      # Automatically injects dependencies in your services.
-    autoconfigure: false # Automatically registers your services as commands, event subscribers, etc.
+    autowire: true      # Automatically injects dependencies in your services.
+    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
     bind:
       Symfony\Component\Messenger\MessageBusInterface $commandBus: '@command.bus'
       Symfony\Component\Messenger\MessageBusInterface $queryBus: '@query.bus'
-      Symfony\Component\Messenger\MessageBusInterface $brokerBus: '@event-broker.bus'
+
+
+  _instanceof:
+    Colybri\Library\Domain\Messaging\DomainEventSubscriber:
+      tags: ['library.domain_event_subscriber']
 
   # makes classes in src/ available to be used as services
   # this creates a service per class whose id is the fully-qualified class name
@@ -24,15 +28,23 @@ services:
     resource: '../src/*'
     exclude: '../src/{Kernel.php}'
 
-
   Colybri\Library\Entrypoint\Controller\:
     autowire: true
     autoconfigure: true
     resource: '../src/Entrypoint/Controller'
-    tags: [ 'controller.service_arguments' ]
+    tags:
+      - { name: controller.service_arguments }
+
+  ## Commands
+  Colybri\Library\Entrypoint\Console\:
+    autowire: true
+    autoconfigure: true
+    resource: '../src/Entrypoint/Console'
+    tags:
+      - { name: console.command }
 
 
-  Colybri\Library\Infrastructure\Messenger\Exception\ExceptionListener:
+  Colybri\Library\Infrastructure\Messaging\Exception\ExceptionListener:
     tags:
       - { name: kernel.event_listener, event: kernel.exception }
 
@@ -67,16 +79,17 @@ services:
       Doctrine\DBAL\Connection $connectionWrite: '@connection_write.dbal'
       Doctrine\DBAL\Connection $connectionRead: '@connection_read.dbal'
 
-  Colybri\Library\Infrastructure\Messenger\Controller\LastHandledStampExtractor:
-    class: Colybri\Library\Infrastructure\Messenger\Controller\LastHandledStampExtractor
 
-  ## Commands
-  Colybri\Library\Entrypoint\Console\:
+  Colybri\Library\Infrastructure\Messaging\Bus\LastHandledStampExtractor:
+    class: Colybri\Library\Infrastructure\Messaging\Bus\LastHandledStampExtractor
+
+
+  ## Bridge
+  Colybri\Library\Infrastructure\Auth\Symfony\:
     autowire: true
     autoconfigure: true
-    resource: '../src/Entrypoint/Console'
-    tags:
-      - { name: console.command }
+    resource: '../src/Infrastructure/Auth/Symfony/'
+
 
   ## Fixtures
   Colybri\Library\Infrastructure\Fixtures\:
@@ -96,3 +109,4 @@ imports:
   - { resource: context/buses.yaml }
   - { resource: context/middleware.yaml }
   - { resource: context/repositories.yaml }
+  - { resource: context/message-broker.yaml }

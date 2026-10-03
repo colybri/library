@@ -1,0 +1,38 @@
+Authors:
+  type: object
+  properties: 
+    total:
+      $ref: '#/total' 
+    offset:
+      $ref: '#/offset' 
+    limit:
+      $ref: '#/limit' 
+    items:
+      type: array
+      items:
+        $ref: '../openapi.yml#/components/schemas/Author' 
+Countries:
+  type: array
+  properties: 
+    total:
+      $ref: '#/total' 
+    offset:
+      $ref: '#/offset' 
+    limit:
+      $ref: '#/limit' 
+    items:
+      type: array
+      items:
+        $ref: '../openapi.yml#/components/schemas/Country' 
+total:
+  type: integer
+  description: Total items
+  example: 272
+offset:
+  type: integer
+  description: Number for of first item of the list
+  example: 0
+limit:
+  type: integer
+  description: Number of max items on result
+  example: 1

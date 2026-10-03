@@ -10,7 +10,7 @@ use Colybri\Library\Entrypoint\Controller\QueryController;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 use Symfony\Component\HttpFoundation\Request;
 
-class GetEditionController extends QueryController
+final class GetEditionController extends QueryController
 {
     public function __invoke(Request $request)
     {

@@ -4,16 +4,13 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Domain\Model\Author\Event;
 
-use Colybri\Library\Domain\CompanyName;
-use Colybri\Library\Domain\Model\Author\Author;
-use Colybri\Library\Domain\Model\Author\ValueObject\AuthorBornAt;
-use Colybri\Library\Domain\Model\Author\ValueObject\AuthorDeathAt;
-use Colybri\Library\Domain\Model\Author\ValueObject\AuthorFirstName;
+use Colybri\Library\Domain\VendorName;
 use Colybri\Library\Domain\ServiceName;
-use Forkrefactor\Ddd\Domain\Model\DomainEvent;
+use Colybri\Library\Domain\Messaging\DomainEvent;
+use Colybri\Library\Domain\Messaging\Message\ValueObject\MessageName;
+use Colybri\Library\Domain\Model\Author\Author;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\DateTimeValueObject;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
-use PcComponentes\TopicGenerator\Topic;
 
 class AuthorDeleted extends DomainEvent
 {
@@ -45,8 +42,8 @@ class AuthorDeleted extends DomainEvent
 
     public static function messageName(): string
     {
-        return Topic::generate(
-            CompanyName::instance(),
+        return MessageName::generate(
+            VendorName::instance(),
             ServiceName::instance(),
             self::messageVersion(),
             self::messageType(),

@@ -46,7 +46,10 @@ final class EditionGoogleRepository extends GoogleRepository implements EditionR
     {
         throw new RepositoryMethodNotImplementException('This repository not implement method ' . __FUNCTION__);
     }
-
+    public function update(Edition $edition): void
+    {
+        throw new RepositoryMethodNotImplementException('This repository not implement method ' . __FUNCTION__);
+    }
     public function delete(Uuid $id): void
     {
         throw new RepositoryMethodNotImplementException('This repository not implement method ' . __FUNCTION__);
@@ -54,7 +57,7 @@ final class EditionGoogleRepository extends GoogleRepository implements EditionR
 
     private function map(\stdClass $book): Edition
     {
-        return Edition::reconstitute(
+        return Edition::hydrate(
             Uuid::v4(),
             isset($book->volumeInfo->publishedDate) ? EditionYear::from((int)$book->volumeInfo->publishedDate) : EditionYear::from(3000),
             Uuid::v4(),

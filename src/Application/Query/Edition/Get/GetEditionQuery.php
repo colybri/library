@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Colybri\Library\Application\Query\Edition\Get;
 
 use Assert\Assert;
-use Colybri\Library\Domain\CompanyName;
-use Colybri\Library\Domain\Model\Edition\Edition;
+use Colybri\Library\Application\Query\Query;
+use Colybri\Library\Domain\Messaging\Message\ValueObject\MessageName;
+use Colybri\Library\Domain\VendorName;
 use Colybri\Library\Domain\ServiceName;
-use Forkrefactor\Ddd\Application\Query;
+use Colybri\Library\Domain\Model\Edition\Edition;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
-use PcComponentes\TopicGenerator\Topic;
 
 class GetEditionQuery extends Query
 {
@@ -22,8 +22,8 @@ class GetEditionQuery extends Query
 
     public static function messageName(): string
     {
-        return Topic::generate(
-            CompanyName::instance(),
+        return MessageName::generate(
+            VendorName::instance(),
             ServiceName::instance(),
             self::messageVersion(),
             self::messageType(),

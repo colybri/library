@@ -1,0 +1,8 @@
+name: id
+in: path
+required: true
+description: Identifier of resource
+example: 3595a029-5bd8-459f-a38f-33027e95b47c
+schema:
+  type: string
+  format: uuid

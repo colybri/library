@@ -1,7 +1,7 @@
-limit:
-  name: offset
-  in: query
-  required: false
-  description: "Number of max items on result"
-  schema:
-    type: integer   
+name: limit
+in: query
+required: false
+description: Number of max items on result
+example: 100
+schema:
+  type: integer   

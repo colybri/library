@@ -7,10 +7,10 @@ namespace Colybri\Library\Domain\Model\Publisher;
 use Colybri\Library\Domain\Model\Publisher\ValueObject\PublisherCity;
 use Colybri\Library\Domain\Model\Publisher\ValueObject\PublisherFoundationYear;
 use Colybri\Library\Domain\Model\Publisher\ValueObject\PublisherName;
-use Forkrefactor\Ddd\Domain\Model\AggregateRoot;
+use Colybri\Library\Domain\Model\SimpleAggregateRoot;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 
-class Publisher extends AggregateRoot
+class Publisher extends SimpleAggregateRoot
 {
     private const NAME = 'publisher';
     private Uuid $aggregateId;

@@ -74,7 +74,7 @@ final class EditionObjectMother
 
     public function build(): Edition
     {
-        return Edition::reconstitute(
+        return Edition::hydrate(
             $this->id,
             $this->year,
             $this->publisherId,

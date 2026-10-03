@@ -1,13 +1,10 @@
+FROM php:8.2-fpm-alpine AS library_php
 # the different stages of this Dockerfile are meant to be built into separate images
 # https://docs.docker.com/develop/develop-images/multistage-build/#stop-at-a-specific-build-stage
 # https://docs.docker.com/compose/compose-file/#target
 
 
 # https://docs.docker.com/engine/reference/builder/#understand-how-arg-and-from-interact
-ARG PHP_VERSION=8.1
-
-# "php" stage
-FROM php:${PHP_VERSION}-fpm-alpine AS library_php
 
 ARG UID
 ARG GID
@@ -55,6 +52,7 @@ RUN set -eux; \
 	pecl install \
 		apcu-${APCU_VERSION} \
         amqp \
+        redis \
 	; \
 	pecl clear-cache; \
 	docker-php-ext-enable \
@@ -132,21 +130,3 @@ VOLUME /srv/app/var
 ENTRYPOINT ["docker-entrypoint"]
 CMD ["php-fpm"]
 
-#ARG CADDY_VERSION=2.5.2
-#
-#FROM caddy:${CADDY_VERSION}-builder-alpine AS library_caddy_builder
-#
-#RUN xcaddy build \
-#	--with github.com/dunglas/mercure \
-#	--with github.com/dunglas/mercure/caddy \
-#	--with github.com/dunglas/vulcain \
-#	--with github.com/dunglas/vulcain/caddy
-#
-#FROM caddy:${CADDY_VERSION} AS library_caddy
-#
-#WORKDIR /srv/app
-#
-#COPY --from=dunglas/mercure:v0.11 /srv/public /srv/mercure-assets/
-#COPY --from=library_caddy_builder /usr/bin/caddy /usr/bin/caddy
-#COPY --from=library_php /srv/app/public public/
-#COPY docker/caddy/Caddyfile /etc/caddy/Caddyfile

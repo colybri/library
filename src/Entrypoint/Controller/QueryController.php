@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Colybri\Library\Entrypoint\Controller;
 
 use Assert\Assertion;
-use Forkrefactor\Ddd\Application\Query;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Colybri\Library\Application\Query\Query;
 
 class QueryController
 {

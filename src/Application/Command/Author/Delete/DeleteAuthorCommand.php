@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Colybri\Library\Application\Command\Author\Delete;
 
 use Assert\Assert;
-use Colybri\Library\Domain\CompanyName;
+use Colybri\Library\Application\Command\Command;
+use Colybri\Library\Domain\Messaging\Message\ValueObject\MessageName;
 use Colybri\Library\Domain\Model\Author\Author;
 use Colybri\Library\Domain\ServiceName;
-use Forkrefactor\Ddd\Application\Command;
+use Colybri\Library\Domain\VendorName;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
-use PcComponentes\TopicGenerator\Topic;
 
 final class DeleteAuthorCommand extends Command
 {
@@ -23,8 +23,8 @@ final class DeleteAuthorCommand extends Command
 
     public static function messageName(): string
     {
-        return Topic::generate(
-            CompanyName::instance(),
+        return MessageName::generate(
+            VendorName::instance(),
             ServiceName::instance(),
             self::messageVersion(),
             self::messageType(),

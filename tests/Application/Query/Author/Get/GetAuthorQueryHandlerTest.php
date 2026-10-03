@@ -68,7 +68,7 @@ final class GetAuthorQueryHandlerTest extends TestCase
     /**
      * @test
      */
-    public function given_not_existing_author_then_throw_exception(): void
+    public function given_not_existing_author_then_throw_author_does_not_exist_exception(): void
     {
         $this->expectException(AuthorDoesNotExistException::class);
 

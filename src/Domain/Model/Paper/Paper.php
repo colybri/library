@@ -10,10 +10,10 @@ use Colybri\Library\Domain\Model\Paper\ValueObject\PaperPath;
 use Colybri\Library\Domain\Model\Paper\ValueObject\PaperPublishYear;
 use Colybri\Library\Domain\Model\Paper\ValueObject\PaperTitle;
 use Colybri\Library\Domain\Model\Paper\ValueObject\PaperJournalVolume;
-use Forkrefactor\Ddd\Domain\Model\AggregateRoot;
+use Colybri\Library\Domain\Model\SimpleAggregateRoot;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 
-class Paper extends AggregateRoot
+class Paper extends SimpleAggregateRoot
 {
     private const NAME = 'paper';
     private Uuid $aggregateId;

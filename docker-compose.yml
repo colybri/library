@@ -9,6 +9,7 @@ services:
         SYMFONY_VERSION: ${SYMFONY_VERSION:-6.0}
         SKELETON: ${SKELETON:-symfony/skeleton}
         STABILITY: ${STABILITY:-stable}
+        PHP_VERSION: 8.2
     restart: unless-stopped
     volumes:
       - ./:/srv/app
@@ -28,19 +29,14 @@ services:
       COMPOSER_NO_DEV: 0
       SERVICE_NAME: library
       SERVICE_TAGS: develop
-      # Run "composer require symfony/orm-pack" to install and configure Doctrine ORM
-      # Run "composer require symfony/mercure-bundle" to install and configure the Mercure integration
-      MERCURE_URL: ${CADDY_MERCURE_URL:-http://caddy/.well-known/mercure}
-      MERCURE_PUBLIC_URL: https://${SERVER_NAME:-localhost}/.well-known/mercure
-      MERCURE_JWT_SECRET: ${CADDY_MERCURE_JWT_SECRET:-!ChangeMe!}
 
-
+  #Nginx Service
   library_nginx:
     container_name: library_nginx
+    restart: unless-stopped
     build:
       context: ./docker/nginx
       target: webserver
-    restart: always
     ports:
       - "80:80"
       - "443:443"
@@ -49,43 +45,6 @@ services:
       - php_socket:/var/run/php
     depends_on:
       - library
-
-
-
-# Mercure is installed as a Caddy module, prevent the Flex recipe from installing another service
-#  library_caddy:
-#    container_name: library_caddy
-#    build:
-#      context: .
-#      target: library_caddy
-#    depends_on:
-#      - library
-#    environment:
-#      SERVER_NAME: ${SERVER_NAME:-localhost, caddy:80}
-#      MERCURE_PUBLISHER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET:-!ChangeMe!}
-#      MERCURE_SUBSCRIBER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET:-!ChangeMe!}
-#    restart: unless-stopped
-#    volumes:
-#      - php_socket:/var/run/php
-#      - caddy_data:/data
-#      - caddy_config:/config
-#      - ./var/log/caddy:/var/log/caddy
-#    ports:
-#      # HTTP
-#      - target: 80
-#        published: 80
-#        protocol: tcp
-#      # HTTPS
-#      - target: 443
-#        published: 443
-#        protocol: tcp
-#      # HTTP/3
-#      - target: 443
-#        published: 443
-#        protocol: udp
-#    networks:
-#      library-network:
-#        ipv4_address: 172.20.10.91
 
   #Postgres Service
   library_postgres:
@@ -99,34 +58,47 @@ services:
       - ./postgres_data:/var/lib/postgresql/data
       - ./var/log/postgresql:/var/log/postgresql
     environment:
-      - POSTGRES_PASSWORD=${POSTGRES_READ_PASS}
-      - POSTGRES_USER:${POSTGRES_READ_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_READ_PASS}
+      POSTGRES_USER: ${POSTGRES_READ_USER}
     ports:
       - 5432:5432
 
   library_pgadmin:
     image: dpage/pgadmin4:latest
     container_name: library_pgadmin
-    restart: always
+    restart: unless-stopped
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: root
     ports:
       - 5050:5050
 
+  library_redis:
+    image: redis:alpine
+    container_name: library_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --loglevel warning --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - ./redis_data:/data/redis
 
   #Rabbit Service
-#  library_rabbit:
-#    image: rabbitmq:3.9-management
-#    container_name: library_rabbit
-#    ports:
-#      - 5672:5672
-#      - 15672:15672
-#    networks:
-#      library-network:
-#        ipv4_address: 172.20.10.94
-#
-#
+  library_rabbit:
+    image: rabbitmq:latest
+    container_name: library_rabbit
+    restart: unless-stopped
+    ports:
+      - 5672:5672
+      - 15672:15672
+    user: ${USER_ID}
+    volumes:
+      - amqp-data:/var/lib/rabbitmq
+      - ./docker/rabbit/enabled_plugins:/etc/rabbitmq/enabled_plugins
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_LOGIN}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+
 #  library_elastic:
 #    image: docker.elastic.co/elasticsearch/elasticsearch:8.1.0
 #    container_name: library_elastic
@@ -264,7 +236,6 @@ services:
 
 volumes:
   php_socket:
-#  caddy_data:
-#  caddy_config:
-#  esdata:
+    driver: local
+  amqp-data:
     driver: local

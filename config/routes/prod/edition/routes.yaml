@@ -13,6 +13,11 @@ create_edition:
   controller: Colybri\Library\Entrypoint\Controller\Edition\CreateEditionController
   methods: POST
 
+update_edition:
+  path: /edition
+  controller: Colybri\Library\Entrypoint\Controller\Edition\UpdateEditionController
+  methods: PUT
+
 delete_edition:
   path: /edition/{id}
   controller: Colybri\Library\Entrypoint\Controller\Edition\DeleteEditionController
