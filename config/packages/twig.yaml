@@ -1,6 +1,10 @@
-twig:
-    default_path: '%kernel.project_dir%/templates'
+# Twig is only installed as a dev dependency (for the web profiler), so it is
+# configured only in the environments where TwigBundle is registered.
+when@dev:
+    twig:
+        default_path: '%kernel.project_dir%/templates'
 
 when@test:
     twig:
+        default_path: '%kernel.project_dir%/templates'
         strict_variables: true
