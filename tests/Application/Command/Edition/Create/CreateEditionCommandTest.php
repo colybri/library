@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Tests\Application\Command\Edition\Create;
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use Colybri\Library\Application\Command\Edition\Create\CreateEditionCommand;
 use Colybri\Library\Domain\Model\Edition\ValueObject\EditionCity;
 use Colybri\Library\Domain\Model\Edition\ValueObject\EditionCondition;
@@ -78,25 +80,19 @@ final class CreateEditionCommandTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_subject_under_test_when_set_up_then_should_return_same_instance_class(): void
     {
         self::assertInstanceOf(CreateEditionCommand::class, $this->command);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_subject_under_test_when_set_up_then_should_return_open_async_standard_name(): void
     {
         self::assertMatchesRegularExpression('/^([a-z|_]+)\.([a-z|_]+)\.([0-9]){1,2}\.([a-z|_]+)\.([a-z|_]+)\.([a-z|_]+)$/', $this->command->messageName());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_book_members_when_command_getters_are_called_then_return_equals_objects_and_values(): void
     {
         self::assertTrue(Uuid::from($this->bookId)->equalTo($this->command->bookId()));
@@ -115,7 +111,7 @@ final class CreateEditionCommandTest extends TestCase
         self::assertEquals(EditionIsOnLibrary::from($this->isOnLibrary), $this->command->isOnLibrary());
     }
 
-    private function not_nullable_arguments(): array
+    public static function not_nullable_arguments(): array
     {
         return [
             [CreateEditionCommand::EDITION_ID_PAYLOAD],
@@ -130,10 +126,8 @@ final class CreateEditionCommandTest extends TestCase
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider not_nullable_arguments
-     */
+    #[Test]
+    #[DataProvider('not_nullable_arguments')]
     public function given_null_argument_not_nullable_when_command_is_invoke_then_throws_invalid_argument_exception($notNullableArgument): void
     {
         $this->arguments[$notNullableArgument] = null;
@@ -143,7 +137,7 @@ final class CreateEditionCommandTest extends TestCase
         CreateEditionCommand::fromPayload(Uuid::v4(), $this->arguments);
     }
 
-    private function invalid_arguments(): array
+    public static function invalid_arguments(): array
     {
         return [
             [CreateEditionCommand::EDITION_ID_PAYLOAD, 'false-id'],
@@ -158,10 +152,8 @@ final class CreateEditionCommandTest extends TestCase
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider invalid_arguments
-     */
+    #[Test]
+    #[DataProvider('invalid_arguments')]
     public function given_invalid_argument_when_command_is_invoke_then_throws_invalid_argument_exception($argument, $value): void
     {
         $this->arguments[$argument] = $value;
@@ -171,9 +163,7 @@ final class CreateEditionCommandTest extends TestCase
     }
 
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_edition_in_library_without_condition_when_command_is_invoke_then_throws_invalid_argument_exception(): void
     {
         $this->arguments[CreateEditionCommand::EDITION_IS_ON_LIBRARY_PAYLOAD] = true;
@@ -184,9 +174,7 @@ final class CreateEditionCommandTest extends TestCase
         CreateEditionCommand::fromPayload(Uuid::v4(), $this->arguments);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_edition_not_in_library_with_condition_when_command_is_invoke_then_throws_invalid_argument_exception(): void
     {
         $this->arguments[CreateEditionCommand::EDITION_IS_ON_LIBRARY_PAYLOAD] = false;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Query\Edition\Get;
 
+use PHPUnit\Framework\Attributes\Test;
 use Colybri\Library\Application\Query\Edition\Get\GetEditionQuery;
 use Colybri\Library\Application\Query\Edition\Get\GetEditionQueryHandler;
 use Colybri\Library\Domain\Model\Edition\EditionRepository;
@@ -41,9 +42,7 @@ final class GetEditionQueryHandlerTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_existing_edition_then_retrieve_it(): void
     {
         $editionId = Uuid::v4();
@@ -71,9 +70,7 @@ final class GetEditionQueryHandlerTest extends TestCase
         $this->assertArrayHasKey('condition', $edition);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_not_existing_edition_then_throw_exception(): void
     {
         $this->expectException(EditionDoesNotExistException::class);

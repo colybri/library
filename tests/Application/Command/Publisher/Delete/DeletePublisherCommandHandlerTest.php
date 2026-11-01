@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Tests\Application\Command\Publisher\Delete;
 
+use PHPUnit\Framework\Attributes\Test;
 use Colybri\Library\Application\Command\Publisher\Delete\DeletePublisherCommand;
 use Colybri\Library\Application\Command\Publisher\Delete\DeletePublisherCommandHandler;
 use Colybri\Library\Domain\Model\Publisher\Exception\PublisherDoesNotExistException;
@@ -43,9 +44,7 @@ final class DeletePublisherCommandHandlerTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_existing_publisher_then_delete_it(): void
     {
         $publisherId = Uuid::v4();
@@ -62,9 +61,7 @@ final class DeletePublisherCommandHandlerTest extends TestCase
         ($this->handler)($this->command($publisherId));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_not_existing_publisher_then_throw_exception(): void
     {
         $this->expectException(PublisherDoesNotExistException::class);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Tests\Application\Query\Country\Match;
 
+use PHPUnit\Framework\Attributes\Test;
 use Colybri\Library\Application\Query\Country\Match\MatchCountryQuery;
 use Colybri\Library\Application\Query\Country\Match\MatchCountryQueryHandler;
 use Colybri\Library\Domain\Model\Country\Country;
@@ -27,9 +28,7 @@ final class MatchCountryQueryHandlerTest extends TestCase
     }
 
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_authors_when_search_then_paginate_result(): void
     {
 

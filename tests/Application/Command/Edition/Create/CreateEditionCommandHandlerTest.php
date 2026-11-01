@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Tests\Application\Command\Edition\Create;
 
+use PHPUnit\Framework\Attributes\Test;
 use Colybri\Library\Application\Command\Edition\Create\CreateEditionCommand;
 use Colybri\Library\Application\Command\Edition\Create\CreateEditionCommandHandler;
 use Colybri\Library\Domain\Model\Book\BookRepository;
@@ -70,9 +71,7 @@ final class CreateEditionCommandHandlerTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_non_existing_edition_then_create_it()
     {
 
@@ -104,9 +103,7 @@ final class CreateEditionCommandHandlerTest extends TestCase
         ($this->handler)($this->command($editionId, $bookId, $publisherId));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_existing_edition_then_throw_exception()
     {
         $this->expectException(EditionAlreadyExistException::class);
@@ -124,9 +121,7 @@ final class CreateEditionCommandHandlerTest extends TestCase
         ($this->handler)($this->command($editionId, Uuid::v4(), Uuid::v4()));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_non_existing_publisher_then_throw_exception()
     {
         $this->expectException(PublisherDoesNotExistException::class);
@@ -143,9 +138,7 @@ final class CreateEditionCommandHandlerTest extends TestCase
         ($this->handler)($this->command(Uuid::v4(), Uuid::v4(), $publisherId));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_non_existing_book_then_throw_exception()
     {
         $this->expectException(BookDoesNotExistException::class);

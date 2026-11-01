@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Tests\Application\Command\Book\Update;
 
+use PHPUnit\Framework\Attributes\Test;
 use Colybri\Library\Application\Command\Book\Update\UpdateBookCommand;
 use Colybri\Library\Domain\Model\Book\ValueObject\BookAuthorIds;
 use Colybri\Library\Domain\Model\Book\ValueObject\BookAuthorIsPseudo;
@@ -54,25 +55,19 @@ final class UpdateBookCommandTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_subject_under_test_when_set_up_then_should_return_same_instance_class(): void
     {
         self::assertInstanceOf(UpdateBookCommand::class, $this->command);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_subject_under_test_when_set_up_then_should_return_open_async_standard_name(): void
     {
         self::assertMatchesRegularExpression('/^([a-z|_]+)\.([a-z|_]+)\.([0-9]){1,2}\.([a-z|_]+)\.([a-z|_]+)\.([a-z|_]+)$/', $this->command->messageName());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_book_members_when_command_getters_are_called_then_return_equals_objects_and_values(): void
     {
         self::assertTrue(Uuid::from($this->bookId)->equalTo($this->command->bookId()));
@@ -85,9 +80,7 @@ final class UpdateBookCommandTest extends TestCase
         self::assertEquals(BookIsOnWishList::from($this->isOnWishList), $this->command->isOnWishList());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_invalid_author_id_when_command_is_invoke_then_throws_invalid_argument_exception(): void
     {
         self::expectException(\InvalidArgumentException::class);
@@ -107,9 +100,7 @@ final class UpdateBookCommandTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_null_book_title_when_command_is_invoke_then_throws_invalid_argument_exception(): void
     {
         self::expectException(\InvalidArgumentException::class);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Tests\Application\Command\Book\Update;
 
+use PHPUnit\Framework\Attributes\Test;
 use Colybri\Library\Application\Command\Book\Update\UpdateBookCommand;
 use Colybri\Library\Application\Command\Book\Update\UpdateBookCommandHandler;
 use Colybri\Library\Domain\Model\Author\AuthorRepository;
@@ -60,9 +61,7 @@ final class UpdateBookCommandHandlerTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_existing_book_then_update_it()
     {
         $this->repository->expects($this->once())->method('update');
@@ -85,9 +84,7 @@ final class UpdateBookCommandHandlerTest extends TestCase
         ($this->handler)($this->command($bookId, $authorId));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_non_existing_book_then_throw_exception(): void
     {
         $this->expectException(BookDoesNotExistException::class);
@@ -106,9 +103,7 @@ final class UpdateBookCommandHandlerTest extends TestCase
         ($this->handler)($this->command($bookId, $authorId));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_non_existing_author_then_throw_exception(): void
     {
         $this->expectException(AuthorDoesNotExistException::class);

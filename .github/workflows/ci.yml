@@ -16,8 +16,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # 8.2 is what the Docker image runs. Add 8.4 in the PHP upgrade phase.
-        php: [ '8.1', '8.2' ]
+        # Same version as the Docker image.
+        php: [ '8.4' ]
     steps:
       - uses: actions/checkout@v4
 
@@ -61,7 +61,7 @@ jobs:
 
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: '8.4'
           extensions: amqp, ctype, curl, iconv, intl, json, pdo_pgsql, redis, zip
           coverage: none
           tools: composer:v2
@@ -90,10 +90,10 @@ jobs:
       - name: Build the PHP image
         run: docker build --target library_php -t library-php:ci .
 
-      - name: PHP is at least 8.2.35 and FPM upload progress is off
+      - name: PHP is at least 8.4.27 and FPM upload progress is off
         run: |
           docker run --rm --entrypoint php library-php:ci -r '
-            if (version_compare(PHP_VERSION, "8.2.35", "<")) {
+            if (version_compare(PHP_VERSION, "8.4.27", "<")) {
                 fwrite(STDERR, "PHP " . PHP_VERSION . " is missing the 21 Oct 2026 security fixes\n");
                 exit(1);
             }
@@ -110,7 +110,7 @@ jobs:
 
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: '8.4'
           coverage: none
           tools: composer:v2
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Tests\Application\Command\Edition\Delete;
 
+use PHPUnit\Framework\Attributes\Test;
 use Colybri\Library\Application\Command\Edition\Delete\DeleteEditionCommand;
 use Colybri\Library\Application\Command\Edition\Delete\DeleteEditionCommandHandler;
 use Colybri\Library\Domain\Model\Edition\EditionRepository;
@@ -43,9 +44,7 @@ final class DeleteEditionCommandHandlerTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_existing_edition_then_delete_it(): void
     {
         $editionId = Uuid::v4();
@@ -62,9 +61,7 @@ final class DeleteEditionCommandHandlerTest extends TestCase
         ($this->handler)($this->command($editionId));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_not_existing_edition_then_throw_exception(): void
     {
         $this->expectException(EditionDoesNotExistException::class);

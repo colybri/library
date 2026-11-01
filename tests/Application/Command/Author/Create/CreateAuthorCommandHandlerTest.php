@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Tests\Application\Command\Author\Create;
 
+use PHPUnit\Framework\Attributes\Test;
 use Colybri\Library\Application\Command\Author\Create\CreateAuthorCommand;
 use Colybri\Library\Application\Command\Author\Create\CreateAuthorCommandHandler;
 use Colybri\Library\Domain\Model\Author\AuthorRepository;
@@ -53,9 +54,7 @@ final class CreateAuthorCommandHandlerTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_non_existing_author_then_create_it()
     {
         $this->repository->expects($this->once())->method('insert');
@@ -67,9 +66,7 @@ final class CreateAuthorCommandHandlerTest extends TestCase
         $this->assertInstanceOf(AuthorCreated::class, $events[0]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_existing_author_then_throw_exception()
     {
         $this->expectException(AuthorAlreadyExistsException::class);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Tests\Application\Command\Author\Delete;
 
+use PHPUnit\Framework\Attributes\Test;
 use Colybri\Library\Application\Command\Author\Delete\DeleteAuthorCommand;
 use Colybri\Library\Application\Command\Author\Delete\DeleteAuthorCommandHandler;
 use Colybri\Library\Domain\Model\Author\AuthorRepository;
@@ -49,9 +50,7 @@ final class DeleteAuthorCommandHandlerTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_existing_author_then_delete_it(): void
     {
         $authorId = Uuid::v4();
@@ -71,9 +70,7 @@ final class DeleteAuthorCommandHandlerTest extends TestCase
         $this->assertInstanceOf(AuthorDeleted::class, $this->bus->events()[0]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_not_existing_author_then_throw_exception(): void
     {
         $this->expectException(AuthorDoesNotExistException::class);

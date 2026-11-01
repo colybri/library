@@ -1,6 +1,6 @@
-# PHP 8.2.35 is the first 8.2 release that fixes CVE-2026-109618 and
+# PHP 8.4.27 is the first 8.4 release that fixes CVE-2026-109618 and
 # CVE-2026-109619 (RCE, 21 Oct 2026). Do not go below it.
-ARG PHP_VERSION=8.2.35
+ARG PHP_VERSION=8.4.27
 
 FROM php:${PHP_VERSION}-fpm-alpine AS library_php
 # the different stages of this Dockerfile are meant to be built into separate images
@@ -32,7 +32,7 @@ RUN apk add --no-cache \
 # see https://github.com/docker-library/php/issues/240#issuecomment-763112749
 ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so
 
-ARG APCU_VERSION=5.1.21
+ARG APCU_VERSION=5.1.24
 RUN set -eux; \
 	apk add --no-cache --virtual .build-deps \
 		$PHPIZE_DEPS \
@@ -49,7 +49,6 @@ RUN set -eux; \
 	docker-php-ext-install -j$(nproc) \
 		intl \
 		zip \
-        mysqli \
         pdo \
         pdo_pgsql \
 	; \

@@ -46,4 +46,4 @@ grumphp:
       memory_limit: "-1"
     phpunit: ~
     phpversion:
-      project: '8.1'
+      project: '8.4'

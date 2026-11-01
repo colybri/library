@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Tests\Application\Query\Publisher\Match;
 
+use PHPUnit\Framework\Attributes\Test;
 use Colybri\Library\Application\Query\Publisher\Macth\MatchPublisherQuery;
 use Colybri\Library\Application\Query\Publisher\Macth\MatchPublisherQueryHandler;
 use Colybri\Library\Domain\Model\Publisher\Publisher;
@@ -27,9 +28,7 @@ final class MatchPublisherQueryHandlerTest extends TestCase
     }
 
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_publishers_when_search_then_paginate_result(): void
     {
 

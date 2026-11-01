@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Tests\Application\Query\Shared;
 
+use PHPUnit\Framework\Attributes\Test;
 use Assert\InvalidArgumentException;
 use Colybri\Library\Application\Query\Shared\ListResponse;
 use PHPUnit\Framework\TestCase;
 
 final class ListResponseTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function given_unpaginated_list_when_is_created_then_should_return_paginate_result(): void
     {
         $list = ListResponse::fromUnpaginatedList([1, 2, 3, 4, 5, 6, 7], 2, 3);
@@ -24,9 +23,7 @@ final class ListResponseTest extends TestCase
         self::assertSame(5, $list->items()[count($list->items()) - 1]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_paginated_list_when_is_created_then_should_return_same_values(): void
     {
         $list = ListResponse::fromPaginatedList([1, 2, 3, 4, 5], 200, 0, 5);
@@ -37,18 +34,14 @@ final class ListResponseTest extends TestCase
         self::assertSame(5, $list->limit());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_invalid_paginated_list_when_is_created_then_should_throws_exception(): void
     {
         self::expectException(InvalidArgumentException::class);
         ListResponse::fromPaginatedList([1, 2, 3, 4, 5], 200, 0, 2);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_paginated_list_when_is_serializated_then_should_should_contains_list_keys(): void
     {
         $list = (array)json_decode(json_encode(ListResponse::fromPaginatedList([1, 2, 3, 4, 5], 200, 0, 5)));

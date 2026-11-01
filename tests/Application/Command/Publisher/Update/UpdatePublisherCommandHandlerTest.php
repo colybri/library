@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Tests\Application\Command\Publisher\Update;
 
+use PHPUnit\Framework\Attributes\Test;
 use Colybri\Library\Application\Command\Publisher\Update\UpdatePublisherCommand;
 use Colybri\Library\Application\Command\Publisher\Update\UpdatePublisherCommandHandler;
 use Colybri\Library\Domain\Model\Publisher\Exception\PublisherDoesNotExistException;
@@ -49,9 +50,7 @@ final class UpdatePublisherCommandHandlerTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_existing_publisher_then_update_it()
     {
         $publisherId = Uuid::v4();
@@ -67,9 +66,7 @@ final class UpdatePublisherCommandHandlerTest extends TestCase
         ($this->handler)($this->command($publisherId));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_non_existing_publisher_then_throw_exception()
     {
         $this->expectException(PublisherDoesNotExistException::class);

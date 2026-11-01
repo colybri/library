@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Command\Edition\Update;
 
+use PHPUnit\Framework\Attributes\Test;
 use Colybri\Library\Application\Command\Edition\Update\UpdateEditionCommand;
 use Colybri\Library\Application\Command\Edition\Update\UpdateEditionHandler;
 use Colybri\Library\Domain\Model\Book\BookRepository;
@@ -72,9 +73,7 @@ final class UpdateEditionCommandHandlerTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_existing_edition_then_update_it()
     {
         $editionId = Uuid::v4();
@@ -105,9 +104,7 @@ final class UpdateEditionCommandHandlerTest extends TestCase
         ($this->handler)($this->command($editionId, $bookId, $publisherId));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_not_existing_edition_then_throw_exception()
     {
         $this->expectException(EditionDoesNotExistException::class);
@@ -124,9 +121,7 @@ final class UpdateEditionCommandHandlerTest extends TestCase
         ($this->handler)($this->command($editionId, Uuid::v4(), Uuid::v4()));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_non_existing_publisher_then_throw_exception()
     {
         $this->expectException(PublisherDoesNotExistException::class);
@@ -150,9 +145,7 @@ final class UpdateEditionCommandHandlerTest extends TestCase
         ($this->handler)($this->command($editionId, Uuid::v4(), $publisherId));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_non_existing_book_then_throw_exception()
     {
         $this->expectException(BookDoesNotExistException::class);

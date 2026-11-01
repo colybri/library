@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Tests\Application\Query\Country\Get;
 
+use PHPUnit\Framework\Attributes\Test;
 use Colybri\Library\Application\Query\Country\Get\GetCountryQuery;
 use Colybri\Library\Application\Query\Country\Get\GetCountryQueryHandler;
 use Colybri\Library\Domain\Model\Country\CountryRepository;
@@ -42,9 +43,7 @@ final class GetCountryQueryHandlerTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_existing_country_then_retrieve_it(): void
     {
         $countryId = Uuid::v4();
@@ -64,9 +63,7 @@ final class GetCountryQueryHandlerTest extends TestCase
         $this->assertArrayHasKey('nationality', $country);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_not_existing_country_then_throw_exception(): void
     {
         $this->expectException(CountryDoesNotExistException::class);

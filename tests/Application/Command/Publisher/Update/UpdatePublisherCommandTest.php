@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Tests\Application\Command\Publisher\Update;
 
+use PHPUnit\Framework\Attributes\Test;
 use Assert\InvalidArgumentException;
 use Colybri\Library\Application\Command\Publisher\Update\UpdatePublisherCommand;
 use Colybri\Library\Domain\Model\Publisher\ValueObject\PublisherCity;
@@ -42,25 +43,19 @@ final class UpdatePublisherCommandTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_subject_under_test_when_set_up_then_should_return_same_instance_class(): void
     {
         self::assertInstanceOf(UpdatePublisherCommand::class, $this->command);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_subject_under_test_when_set_up_then_should_return_open_async_standard_name(): void
     {
         self::assertMatchesRegularExpression('/^([a-z|_]+)\.([a-z|_]+)\.([0-9]){1,2}\.([a-z|_]+)\.([a-z|_]+)\.([a-z|_]+)$/', $this->command->messageName());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_publisher_members_when_command_getters_are_called_then_return_equals_objects_and_values(): void
     {
         self::assertTrue(Uuid::from($this->publisherId)->equalTo($this->command->publisherId()));
@@ -70,9 +65,7 @@ final class UpdatePublisherCommandTest extends TestCase
         self::assertTrue(PublisherFoundationYear::from($this->foundationYear)->equalTo($this->command->foundation()));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_invalid_publisher_id_when_command_is_invoke_then_throws_invalid_argument_exception(): void
     {
         self::expectException(InvalidArgumentException::class);
@@ -89,9 +82,7 @@ final class UpdatePublisherCommandTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_null_publisher_name_when_command_is_invoke_then_throws_invalid_argument_exception(): void
     {
         self::expectException(InvalidArgumentException::class);
@@ -108,9 +99,7 @@ final class UpdatePublisherCommandTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_invalid_country_id_when_command_is_invoke_then_throws_invalid_argument_exception(): void
     {
         self::expectException(InvalidArgumentException::class);
