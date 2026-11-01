@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class UpdatePublisherController extends CommandController
+final class UpdatePublisherController extends CommandController
 {
     public function __invoke(Request $request)
     {
@@ -32,7 +32,7 @@ class UpdatePublisherController extends CommandController
 
         return new JsonResponse(
             '',
-            Response::HTTP_CREATED
+            Response::HTTP_NO_CONTENT
         );
     }
 }

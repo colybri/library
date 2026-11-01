@@ -6,6 +6,7 @@ namespace Colybri\Library\Tests\Smoke;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Yaml\Yaml;
 
 final class KernelBootTest extends KernelTestCase
 {
@@ -32,7 +33,8 @@ final class KernelBootTest extends KernelTestCase
         $apiRoutes = 0;
 
         foreach ($routes as $name => $route) {
-            if (!str_starts_with($route->getPath(), '/v1/')) {
+            // The login check is answered by the JWT firewall, not by a controller.
+            if ($name === 'api_login_check' || !str_starts_with($route->getPath(), '/api/v1/')) {
                 continue;
             }
 
@@ -44,6 +46,17 @@ final class KernelBootTest extends KernelTestCase
             self::assertNotEmpty($route->getMethods(), sprintf('Route "%s" accepts any HTTP method', $name));
         }
 
-        self::assertSame(18, $apiRoutes);
+        // A route name reused in two files silently replaces the first route.
+        self::assertSame($this->declaredApiRoutes(), $apiRoutes);
+    }
+
+    private function declaredApiRoutes(): int
+    {
+        $count = 0;
+        foreach (glob(dirname(__DIR__, 2) . '/config/routes/prod/*/routes.yaml') as $file) {
+            $count += count(Yaml::parseFile($file));
+        }
+
+        return $count;
     }
 }

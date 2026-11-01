@@ -34,7 +34,7 @@ final class SeekEditionQueryHandlerTest extends TestCase
                 SeekEditionQuery::EDITION_AUTHOR_PAYLOAD => 'Autor',
                 SeekEditionQuery::EDITION_ISBN_PAYLOAD => '234820348',
                 SeekEditionQuery::EDITION_PUBLISHER_PAYLOAD => 'Publicador',
-                SeekEditionQuery::EDITION_TITLE_PAYLOAD => 'Algún título',
+                SeekEditionQuery::EDITION_TITLE_PAYLOAD => 'Algen totulo',
             ],
         );
         return $query;
@@ -62,8 +62,9 @@ final class SeekEditionQueryHandlerTest extends TestCase
         $response = ($this->handler)($this->query());
 
         self::assertInstanceOf(Edition::class, $response[0]);
+        self::assertInstanceOf(Edition::class, $response[1]);
 
-        $edition = (array) json_decode(json_encode($response[0]));
+        $edition = ((array) json_decode(json_encode($response[0])));
 
         $this->assertArrayHasKey('id', $edition);
         $this->assertArrayHasKey('title', $edition);

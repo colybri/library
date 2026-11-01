@@ -17,7 +17,8 @@ final class UpdateAuthorCommandHandler implements MessageHandlerInterface
     {
         $this->updater->execute(
             $cmd->authorId(),
-            $cmd->name(),
+            $cmd->firstName(),
+            $cmd->lastName(),
             $cmd->countryId(),
             $cmd->isPseudonymOf(),
             $cmd->bornAt(),

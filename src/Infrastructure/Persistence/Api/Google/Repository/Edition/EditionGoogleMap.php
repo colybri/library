@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Colybri\Library\Infrastructure\Persistence\Api\Google\Repository\Edition;
 
 use Colybri\Criteria\Infrastructure\Adapter\EntityMap;
-use Colybri\Library\Domain\Model\Author\ValueObject\AuthorName;
+use Colybri\Library\Domain\Model\Author\ValueObject\AuthorFirstName;
 use Colybri\Library\Domain\Model\Book\ValueObject\BookTitle;
 use Colybri\Library\Domain\Model\Edition\ValueObject\EditionISBN;
 use Colybri\Library\Domain\Model\Publisher\ValueObject\PublisherName;
@@ -14,7 +14,7 @@ final class EditionGoogleMap implements EntityMap
 {
     private const FIELDS = [
         BookTitle::class => 'intitle',
-        AuthorName::class => 'inauthor',
+        AuthorFirstName::class => 'inauthor',
         PublisherName::class => 'inpublisher',
         //subject
         EditionISBN::class => 'isbn',

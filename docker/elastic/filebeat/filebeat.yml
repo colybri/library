@@ -1,0 +1,47 @@
+# Set custom paths for the log files. If left empty,
+# Filebeat will choose the paths depending on your OS.
+#var.paths:
+filebeat.inputs:
+  - type: log
+    enabled: true
+    paths:
+      - /var/log/*/*.log
+    json.add_error_key: true
+    json.keys_under_root: true
+    json_message_key: log
+
+output.elasticsearch:
+  enabled: true
+  hosts: ["${ELASTICSEARCH_HOST}:9200"]
+  password: ${ELASTICSEARCH_PASSWORD}
+  pipeline: library_logs
+  indices:
+    - index: "library-events"
+      when.contains:
+        channel: "library-event-published"
+    - index: "library-commands"
+      when.contains:
+        channel: "library-simple-message"
+    - index: "webserver"
+      when.contains:
+        msg: "handled request"
+
+setup.dashboards:
+  enabled: true
+
+setup.kibana:
+  host: ${KIBANA_HOST}
+  password: ${ELASTICSEARCH_PASSWORD}
+
+xpack.monitoring:
+  enabled: true
+  elasticsearch:
+#setup.template:
+#  enabled: true
+#  name: 'library'
+#  pattern: 'library-*'
+#  overwrite: false
+#  json:
+#    enabled: true
+#    path: "template.json"
+#    name: "library"

@@ -57,7 +57,8 @@ final class GetAuthorQueryHandlerTest extends TestCase
         $author = (array) json_decode(json_encode(($this->handler)($this->query($authorId))));
 
         $this->assertArrayHasKey('id', $author);
-        $this->assertArrayHasKey('name', $author);
+        $this->assertArrayHasKey('firstName', $author);
+        $this->assertArrayHasKey('lastName', $author);
         $this->assertArrayHasKey('countryId', $author);
         $this->assertArrayHasKey('isPseudonymOf', $author);
         $this->assertArrayHasKey('bornAt', $author);
@@ -67,7 +68,7 @@ final class GetAuthorQueryHandlerTest extends TestCase
     /**
      * @test
      */
-    public function given_not_existing_author_then_throw_exception(): void
+    public function given_not_existing_author_then_throw_author_does_not_exist_exception(): void
     {
         $this->expectException(AuthorDoesNotExistException::class);
 

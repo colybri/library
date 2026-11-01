@@ -7,18 +7,15 @@ namespace Colybri\Library\Infrastructure\Persistence\Doctrine\Repository\Author;
 use Colybri\Criteria\Infrastructure\Adapter\EntityMap;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorBornAt;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorDeathAt;
-use Colybri\Library\Domain\Model\Author\ValueObject\AuthorName;
+use Colybri\Library\Domain\Model\Author\ValueObject\AuthorFirstName;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorIsPseudonymOf;
-use Colybri\Library\Domain\Model\Book\Book;
-use Colybri\Library\Domain\Model\Book\ValueObject\BookTitle;
-use Colybri\Library\Infrastructure\Persistence\Doctrine\Repository\Book\BookDbalMap;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 
 final class AuthorDbalMap implements EntityMap
 {
     private const FIELDS = [
         Uuid::class => 'id',
-        AuthorName::class => 'name',
+        AuthorFirstName::class => 'name',
         AuthorIsPseudonymOf::class => 'is_pseudonym_of',
         AuthorBornAt::class => 'born_year',
         AuthorDeathAt::class => 'death_year'

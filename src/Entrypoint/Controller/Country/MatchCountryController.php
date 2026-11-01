@@ -10,7 +10,7 @@ use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-class MatchCountryController extends QueryController
+final class MatchCountryController extends QueryController
 {
     public function __invoke(Request $request)
     {

@@ -1,21 +1,31 @@
-Author:
-  required:
-    - id
-    - name
-    - countryId
-    - isPseudonumOf
-    - bornYear
-    - deathYear
-  properties:
-    id:
-      type: string
-    name:
-      type: string
-    countryId:
-      type: string
-    isPseudonymOf:
-      type: [ string, "null" ]
-    bornYear:
+type: object
+properties:
+  id:
+    type: string
+    format: uuid
+    example: 19424912-a0fc-4a94-869e-5b02d9965aa9
+  firstName:
+    type: string
+    example: Gershom
+  lastName:
+    type: [ string, "null" ]
+    example: Scholem
+  countryId:
+    type: string
+    format: uuid
+    example: a28cf9dc-4a77-466a-b3c5-2987f50e2d28
+  isPseudonymOf:
+    type: [ string, "null" ]
+    format: uuid
+    example: 28873063-44e5-4908-862c-356604428a86
+  bornYear:
       type: integer
-    deathYear:
+      example: 1897
+  deathYear:
       type: [ integer, "null" ]
+      example: 1982
+required: 
+  -  id
+  - firstName
+  - countryId
+  - bornYear

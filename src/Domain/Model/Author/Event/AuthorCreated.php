@@ -4,32 +4,34 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Domain\Model\Author\Event;
 
-use Colybri\Library\Domain\CompanyName;
+use Colybri\Library\Domain\VendorName;
+use Colybri\Library\Domain\ServiceName;
+use Colybri\Library\Domain\Messaging\DomainEvent;
+use Colybri\Library\Domain\Messaging\Message\ValueObject\MessageName;
 use Colybri\Library\Domain\Model\Author\Author;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorBornAt;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorDeathAt;
-use Colybri\Library\Domain\Model\Author\ValueObject\AuthorName;
-use Colybri\Library\Domain\ServiceName;
-use Forkrefactor\Ddd\Domain\Model\DomainEvent;
+use Colybri\Library\Domain\Model\Author\ValueObject\AuthorFirstName;
+use Colybri\Library\Domain\Model\Author\ValueObject\AuthorLastName;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\DateTimeValueObject;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
-use PcComponentes\TopicGenerator\Topic;
 
 final class AuthorCreated extends DomainEvent
 {
     public const AUTHOR_ID_PAYLOAD = 'id';
     public const AUTHOR_NAME_PAYLOAD = 'name';
+    public const AUTHOR_LAST_NAME_PAYLOAD = 'lastName';
     public const AUTHOR_COUNTRY_ID_PAYLOAD = 'countryId';
     public const AUTHOR_IS_PSEUDONYM_OF_PAYLOAD = 'isPseudonymOf';
     public const AUTHOR_BORN_AT_PAYLOAD = 'bornAt';
     public const AUTHOR_DEATH_AT_PAYLOAD = 'deathAt';
 
-
     private const NAME = 'created';
     private const VERSION = '1';
 
     private Uuid $authorId;
-    private AuthorName $name;
+    private AuthorFirstName $name;
+    private ?AuthorLastName $lastName;
     private Uuid $countryId;
     private ?Uuid $isPseudonymOf;
     private AuthorBornAt $bornAt;
@@ -37,7 +39,8 @@ final class AuthorCreated extends DomainEvent
 
     public static function from(
         Uuid $id,
-        AuthorName $name,
+        AuthorFirstName $name,
+        ?AuthorLastName $lastName,
         Uuid $countryId,
         ?Uuid $isPseudonymOf,
         AuthorBornAt $bornAt,
@@ -50,6 +53,7 @@ final class AuthorCreated extends DomainEvent
             [
                 self::AUTHOR_ID_PAYLOAD => $id->value(),
                 self::AUTHOR_NAME_PAYLOAD => $name->value(),
+                self::AUTHOR_LAST_NAME_PAYLOAD => $lastName?->value(),
                 self::AUTHOR_COUNTRY_ID_PAYLOAD => $countryId->value(),
                 self::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD => $isPseudonymOf?->value(),
                 self::AUTHOR_BORN_AT_PAYLOAD => $bornAt->value(),
@@ -64,7 +68,9 @@ final class AuthorCreated extends DomainEvent
         $payload = $this->messagePayload();
 
         $this->authorId = Uuid::from((string)$payload[self::AUTHOR_ID_PAYLOAD]);
-        $this->name = AuthorName::from((string)$payload[self::AUTHOR_NAME_PAYLOAD]);
+        $this->name = AuthorFirstName::from((string)$payload[self::AUTHOR_NAME_PAYLOAD]);
+        $this->lastName = null === $payload[self::AUTHOR_LAST_NAME_PAYLOAD]
+            ? null : AuthorLastName::from((string)$payload[self::AUTHOR_LAST_NAME_PAYLOAD]);
         $this->countryId = Uuid::from((string)$payload[self::AUTHOR_COUNTRY_ID_PAYLOAD]);
         $this->isPseudonymOf = null === $payload[self::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD]
             ? null : Uuid::from((string)$payload[self::AUTHOR_IS_PSEUDONYM_OF_PAYLOAD]);
@@ -75,8 +81,8 @@ final class AuthorCreated extends DomainEvent
 
     public static function messageName(): string
     {
-        return Topic::generate(
-            CompanyName::instance(),
+        return MessageName::generate(
+            VendorName::instance(),
             ServiceName::instance(),
             self::messageVersion(),
             self::messageType(),
@@ -95,9 +101,14 @@ final class AuthorCreated extends DomainEvent
         return $this->authorId;
     }
 
-    public function name(): AuthorName
+    public function firstName(): AuthorFirstName
     {
         return $this->name;
+    }
+
+    public function lastName(): ?AuthorLastName
+    {
+        return $this->lastName;
     }
 
     public function countryId(): Uuid

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Entrypoint\Controller;
 
-use Forkrefactor\Ddd\Application\Command;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Colybri\Library\Application\Command\Command;
 
 abstract class CommandController
 {

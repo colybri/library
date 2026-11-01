@@ -8,7 +8,8 @@ use Colybri\Library\Domain\Model\Author\Author;
 use Colybri\Library\Domain\Model\Author\AuthorRepository;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorBornAt;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorDeathAt;
-use Colybri\Library\Domain\Model\Author\ValueObject\AuthorName;
+use Colybri\Library\Domain\Model\Author\ValueObject\AuthorFirstName;
+use Colybri\Library\Domain\Model\Author\ValueObject\AuthorLastName;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 
 final class AuthorUpdater
@@ -17,11 +18,11 @@ final class AuthorUpdater
     {
     }
 
-    public function execute(Uuid $id, AuthorName $name, Uuid $countryId, ?Uuid $isPseudonymOf, AuthorBornAt $bornAt, ?AuthorDeathAt $deathAt): Author
+    public function execute(Uuid $id, AuthorFirstName $firstName, AuthorLastName $lastName, Uuid $countryId, ?Uuid $isPseudonymOf, AuthorBornAt $bornAt, ?AuthorDeathAt $deathAt): Author
     {
         $this->ensureAuthorExist($id);
 
-        $author = Author::hydrate($id, $name, $countryId, $isPseudonymOf, $bornAt, $deathAt);
+        $author = Author::reconstitute($id, $firstName, $lastName, $countryId, $isPseudonymOf, $bornAt, $deathAt);
 
         $this->repo->update($author);
 

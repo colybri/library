@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Domain;
 
-use PcComponentes\TopicGenerator\Service;
+use Colybri\Library\Domain\Messaging\Message\ValueObject\ServiceValueObject;
 
-class ServiceName extends Service
+class ServiceName extends ServiceValueObject
 {
     private const NAME = 'library';
 

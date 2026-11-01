@@ -9,7 +9,7 @@
     }
 }
 
-{$SERVER_NAME}
+{exit$SERVER_NAME}
 
 log {
         level info
@@ -41,5 +41,10 @@ route {
     push
     php_fastcgi unix//var/run/php/php-fpm.sock
     encode zstd gzip
+    file_server
+}
+
+172.20.10.91 {
+    root * /srv/app/public
     file_server
 }

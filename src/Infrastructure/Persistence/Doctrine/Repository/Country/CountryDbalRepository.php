@@ -51,6 +51,7 @@ class CountryDbalRepository extends DbalRepository implements CountryRepository
         );
     }
 
+
     public function count(Criteria $criteria): int
     {
         $queryBuilder = $this->connectionRead->createQueryBuilder()

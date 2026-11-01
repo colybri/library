@@ -1,19 +1,22 @@
+api_login_check:
+    path: api/v1/login_check
+
 author_routes:
     resource: prod/author/routes.yaml
-    prefix: v1
+    prefix: api/v1
 
 country_routes:
     resource: prod/country/routes.yaml
-    prefix: v1
+    prefix: api/v1
 
 publisher_routes:
     resource: prod/publisher/routes.yaml
-    prefix: v1
+    prefix: api/v1
 
 book_routes:
     resource: prod/book/routes.yaml
-    prefix: v1
+    prefix: api/v1
 
 edition_routes:
     resource: prod/edition/routes.yaml
-    prefix: v1
+    prefix: api/v1

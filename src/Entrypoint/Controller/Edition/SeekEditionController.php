@@ -4,18 +4,16 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Entrypoint\Controller\Edition;
 
-use Colybri\Library\Application\Query\Book\Match\MatchBookQuery;
 use Colybri\Library\Application\Query\Edition\Seek\SeekEditionQuery;
 use Colybri\Library\Entrypoint\Controller\QueryController;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-class SeekEditionController extends QueryController
+final class SeekEditionController extends QueryController
 {
     public function __invoke(Request $request)
     {
-
         $result = $this->ask(
             SeekEditionQuery::fromPayload(
                 Uuid::v4(),

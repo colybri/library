@@ -9,7 +9,7 @@ use Forkrefactor\Ddd\Domain\Model\ValueObject\StringValueObject;
 
 final class EditionLocale extends StringValueObject
 {
-    private const LOCALES = ['es', 'en', 'fr', 'pt'];
+    private const LOCALES = ['es', 'en', 'fr', 'pt', 'ru'];
 
     public static function from(string $value): static
     {

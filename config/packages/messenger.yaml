@@ -5,10 +5,10 @@ framework:
       command.bus:
         default_middleware: true
         middleware:
-          - middleware.trace.request
-          - middleware.trace.message
-          - middleware.logging.command
-          - middleware.execution_time
+          #- middleware.trace.request
+          #- middleware.trace.message
+          #- middleware.logging.command
+          #- middleware.execution_time
           #- middleware.doctrine.transactional
       query.bus:
         # disable the default middleware
@@ -18,5 +18,3 @@ framework:
           # failed: 'doctrine://default?queue_name=failed'
           # sync: 'sync://'
 
-      event-broker.bus:
-        default_middleware: allow_no_handlers

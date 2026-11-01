@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Colybri\Library\Application\Command\Book\Update;
 
 use Assert\Assert;
-use Colybri\Library\Domain\CompanyName;
+use Colybri\Library\Application\Command\Command;
+use Colybri\Library\Domain\Messaging\Message\ValueObject\MessageName;
+use Colybri\Library\Domain\VendorName;
+use Colybri\Library\Domain\ServiceName;
 use Colybri\Library\Domain\Model\Book\Book;
 use Colybri\Library\Domain\Model\Book\ValueObject\BookAuthorIds;
 use Colybri\Library\Domain\Model\Book\ValueObject\BookAuthorIsPseudo;
@@ -14,10 +17,7 @@ use Colybri\Library\Domain\Model\Book\ValueObject\BookPublishYear;
 use Colybri\Library\Domain\Model\Book\ValueObject\BookPublishYearIsEstimated;
 use Colybri\Library\Domain\Model\Book\ValueObject\BookSubtitle;
 use Colybri\Library\Domain\Model\Book\ValueObject\BookTitle;
-use Colybri\Library\Domain\ServiceName;
-use Forkrefactor\Ddd\Application\Command;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
-use PcComponentes\TopicGenerator\Topic;
 
 final class UpdateBookCommand extends Command
 {
@@ -44,8 +44,8 @@ final class UpdateBookCommand extends Command
 
     public static function messageName(): string
     {
-        return Topic::generate(
-            CompanyName::instance(),
+        return MessageName::generate(
+            VendorName::instance(),
             ServiceName::instance(),
             self::messageVersion(),
             self::messageType(),

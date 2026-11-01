@@ -22,7 +22,7 @@ final class CreateEditionCommandTest extends TestCase
 {
     private $editionId;
     private $year;
-    private $publiserId;
+    private $publisherId;
     private $bookId;
     private $googleId;
     private $isbn;
@@ -30,19 +30,19 @@ final class CreateEditionCommandTest extends TestCase
     private $subtitle;
     private $locale;
     private $image;
-    private $resource;
     private $condition;
     private $city;
     private $pages;
     private $isOnLibrary;
 
     private $command;
+    private $arguments;
 
     public function setUp(): void
     {
         $this->editionId = (Uuid::v4())->value();
         $this->year = 2021;
-        $this->publiserId = (Uuid::v4())->value();
+        $this->publisherId = (Uuid::v4())->value();
         $this->bookId = (Uuid::v4())->value();
         $this->googleId = 'fedFEAAAQBAJ';
         $this->isbn = '978-607-16-2271-6';
@@ -50,31 +50,31 @@ final class CreateEditionCommandTest extends TestCase
         $this->subtitle = 'Magia y religión';
         $this->locale = 'es';
         $this->image = null;
-        $this->resource = null;
-        $this->condition = 'new';
         $this->city = 'México D.F.';
         $this->pages = 690;
         $this->isOnLibrary = true;
+        $this->condition = 'new';
+
+        $this->arguments = [
+            CreateEditionCommand::EDITION_ID_PAYLOAD => $this->editionId,
+            CreateEditionCommand::EDITION_YEAR_PAYLOAD => $this->year,
+            CreateEditionCommand::EDITION_PUBLISHER_ID_PAYLOAD => $this->publisherId,
+            CreateEditionCommand::EDITION_BOOK_ID_PAYLOAD => $this->bookId,
+            CreateEditionCommand::EDITION_GOOGLE_ID_PAYLOAD => $this->googleId,
+            CreateEditionCommand::EDITION_ISBN_PAYLOAD => $this->isbn,
+            CreateEditionCommand::EDITION_TITLE_PAYLOAD => $this->title,
+            CreateEditionCommand::EDITION_SUBTITLE_PAYLOAD => $this->subtitle,
+            CreateEditionCommand::EDITION_LANGUAGE_PAYLOAD => $this->locale,
+            CreateEditionCommand::EDITION_IMAGE_PAYLOAD => $this->image,
+            CreateEditionCommand::EDITION_CITY_PAYLOAD => $this->city,
+            CreateEditionCommand::EDITION_PAGES_PAYLOAD => $this->pages,
+            CreateEditionCommand::EDITION_IS_ON_LIBRARY_PAYLOAD => $this->isOnLibrary,
+            CreateEditionCommand::EDITION_CONDITION_PAYLOAD => $this->condition,
+        ];
 
         $this->command = CreateEditionCommand::fromPayload(
             Uuid::v4(),
-            [
-                CreateEditionCommand::EDITION_ID_PAYLOAD => $this->editionId,
-                CreateEditionCommand::EDITION_YEAR_PAYLOAD => $this->year,
-                CreateEditionCommand::EDITION_PUBLISHER_ID_PAYLOAD => $this->publiserId,
-                CreateEditionCommand::EDITION_BOOK_ID_PAYLOAD => $this->bookId,
-                CreateEditionCommand::EDITION_GOOGLE_ID_PAYLOAD => $this->googleId,
-                CreateEditionCommand::EDITION_ISBN_PAYLOAD => $this->isbn,
-                CreateEditionCommand::EDITION_TITLE_PAYLOAD => $this->title,
-                CreateEditionCommand::EDITION_SUBTITLE_PAYLOAD => $this->subtitle,
-                CreateEditionCommand::EDITION_LANGUAGE_PAYLOAD => $this->locale,
-                CreateEditionCommand::EDITION_IMAGE_PAYLOAD => $this->image,
-                CreateEditionCommand::EDITION_RESOURCES_PAYLOAD => $this->resource,
-                CreateEditionCommand::EDITION_CONDITION_PAYLOAD => $this->condition,
-                CreateEditionCommand::EDITION_CITY_PAYLOAD => $this->city,
-                CreateEditionCommand::EDITION_PAGES_PAYLOAD => $this->pages,
-                CreateEditionCommand::EDITION_IS_ON_LIBRARY => $this->isOnLibrary,
-            ]
+            $this->arguments
         );
     }
 
@@ -101,7 +101,7 @@ final class CreateEditionCommandTest extends TestCase
     {
         self::assertTrue(Uuid::from($this->bookId)->equalTo($this->command->bookId()));
         self::assertTrue(EditionYear::from($this->year)->equalTo($this->command->year()));
-        self::assertTrue(Uuid::from($this->publiserId)->equalTo($this->command->publisherId()));
+        self::assertTrue(Uuid::from($this->publisherId)->equalTo($this->command->publisherId()));
         self::assertTrue(Uuid::from($this->bookId)->equalTo($this->command->bookId()));
         self::assertTrue(EditionGoogleBooksId::from($this->googleId)->equalTo($this->command->googleBooksId()));
         self::assertTrue(EditionISBN::from($this->isbn)->equalTo($this->command->isbn()));
@@ -109,126 +109,79 @@ final class CreateEditionCommandTest extends TestCase
         self::assertTrue(EditionSubtitle::from($this->subtitle)->equalTo($this->command->subtitle()));
         self::assertTrue(EditionLocale::from($this->locale)->equalTo($this->command->locale()));
         self::assertEquals($this->image, $this->command->image());
-        self::assertEquals($this->resource, $this->command->resource());
         self::assertTrue(EditionCondition::from($this->condition)->equalTo($this->command->condition()));
         self::assertTrue(EditionCity::from($this->city)->equalTo($this->command->city()));
         self::assertTrue(EditionPages::from($this->pages)->equalTo($this->command->pages()));
         self::assertEquals(EditionIsOnLibrary::from($this->isOnLibrary), $this->command->isOnLibrary());
     }
 
-    /**
-     * @test
-     */
-    public function given_invalid_edition_id_when_command_is_invoke_then_throws_invalid_argument_exception(): void
+    private function not_nullable_arguments(): array
     {
-        self::expectException(\InvalidArgumentException::class);
-
-        CreateEditionCommand::fromPayload(
-            Uuid::v4(),
-            [
-                CreateEditionCommand::EDITION_ID_PAYLOAD => 'false-id',
-                CreateEditionCommand::EDITION_YEAR_PAYLOAD => $this->year,
-                CreateEditionCommand::EDITION_PUBLISHER_ID_PAYLOAD => $this->publiserId,
-                CreateEditionCommand::EDITION_BOOK_ID_PAYLOAD => $this->bookId,
-                CreateEditionCommand::EDITION_GOOGLE_ID_PAYLOAD => $this->googleId,
-                CreateEditionCommand::EDITION_ISBN_PAYLOAD => $this->isbn,
-                CreateEditionCommand::EDITION_TITLE_PAYLOAD => $this->title,
-                CreateEditionCommand::EDITION_SUBTITLE_PAYLOAD => $this->subtitle,
-                CreateEditionCommand::EDITION_LANGUAGE_PAYLOAD => $this->locale,
-                CreateEditionCommand::EDITION_IMAGE_PAYLOAD => $this->image,
-                CreateEditionCommand::EDITION_RESOURCES_PAYLOAD => $this->resource,
-                CreateEditionCommand::EDITION_CONDITION_PAYLOAD => $this->condition,
-                CreateEditionCommand::EDITION_CITY_PAYLOAD => $this->city,
-                CreateEditionCommand::EDITION_PAGES_PAYLOAD => $this->pages,
-                CreateEditionCommand::EDITION_IS_ON_LIBRARY => $this->isOnLibrary,
-            ]
-        );
+        return [
+            [CreateEditionCommand::EDITION_ID_PAYLOAD],
+            [CreateEditionCommand::EDITION_YEAR_PAYLOAD],
+            [CreateEditionCommand::EDITION_PUBLISHER_ID_PAYLOAD],
+            [CreateEditionCommand::EDITION_BOOK_ID_PAYLOAD],
+            [CreateEditionCommand::EDITION_ISBN_PAYLOAD],
+            [CreateEditionCommand::EDITION_TITLE_PAYLOAD],
+            [CreateEditionCommand::EDITION_LANGUAGE_PAYLOAD],
+            [CreateEditionCommand::EDITION_CITY_PAYLOAD],
+            [CreateEditionCommand::EDITION_IS_ON_LIBRARY_PAYLOAD],
+        ];
     }
 
     /**
      * @test
+     * @dataProvider not_nullable_arguments
      */
-    public function given_invalid_publisher_id_when_command_is_invoke_then_throws_invalid_argument_exception(): void
+    public function given_null_argument_not_nullable_when_command_is_invoke_then_throws_invalid_argument_exception($notNullableArgument): void
     {
+        $this->arguments[$notNullableArgument] = null;
+
         self::expectException(\InvalidArgumentException::class);
 
-        CreateEditionCommand::fromPayload(
-            Uuid::v4(),
-            [
-                CreateEditionCommand::EDITION_ID_PAYLOAD => $this->editionId,
-                CreateEditionCommand::EDITION_YEAR_PAYLOAD => $this->year,
-                CreateEditionCommand::EDITION_PUBLISHER_ID_PAYLOAD => '42342342sfdsf',
-                CreateEditionCommand::EDITION_BOOK_ID_PAYLOAD => $this->bookId,
-                CreateEditionCommand::EDITION_GOOGLE_ID_PAYLOAD => $this->googleId,
-                CreateEditionCommand::EDITION_ISBN_PAYLOAD => $this->isbn,
-                CreateEditionCommand::EDITION_TITLE_PAYLOAD => $this->title,
-                CreateEditionCommand::EDITION_SUBTITLE_PAYLOAD => $this->subtitle,
-                CreateEditionCommand::EDITION_LANGUAGE_PAYLOAD => $this->locale,
-                CreateEditionCommand::EDITION_IMAGE_PAYLOAD => $this->image,
-                CreateEditionCommand::EDITION_RESOURCES_PAYLOAD => $this->resource,
-                CreateEditionCommand::EDITION_CONDITION_PAYLOAD => $this->condition,
-                CreateEditionCommand::EDITION_CITY_PAYLOAD => $this->city,
-                CreateEditionCommand::EDITION_PAGES_PAYLOAD => $this->pages,
-                CreateEditionCommand::EDITION_IS_ON_LIBRARY => $this->isOnLibrary,
-            ]
-        );
+        CreateEditionCommand::fromPayload(Uuid::v4(), $this->arguments);
+    }
+
+    private function invalid_arguments(): array
+    {
+        return [
+            [CreateEditionCommand::EDITION_ID_PAYLOAD, 'false-id'],
+            [CreateEditionCommand::EDITION_YEAR_PAYLOAD, false],
+            [CreateEditionCommand::EDITION_BOOK_ID_PAYLOAD, '2342342sdf234'],
+            [CreateEditionCommand::EDITION_PUBLISHER_ID_PAYLOAD, '42342342sfdsf'],
+            [CreateEditionCommand::EDITION_ISBN_PAYLOAD, '401234567890'],
+            [CreateEditionCommand::EDITION_TITLE_PAYLOAD, 34.56],
+            [CreateEditionCommand::EDITION_LANGUAGE_PAYLOAD, 'IT'],
+            [CreateEditionCommand::EDITION_CITY_PAYLOAD, 45],
+            [CreateEditionCommand::EDITION_IS_ON_LIBRARY_PAYLOAD, 'no-soy-un-booleano'],
+        ];
     }
 
     /**
      * @test
+     * @dataProvider invalid_arguments
      */
-    public function given_invalid_book_id_when_command_is_invoke_then_throws_invalid_argument_exception(): void
+    public function given_invalid_argument_when_command_is_invoke_then_throws_invalid_argument_exception($argument, $value): void
     {
+        $this->arguments[$argument] = $value;
         self::expectException(\InvalidArgumentException::class);
 
-        CreateEditionCommand::fromPayload(
-            Uuid::v4(),
-            [
-                CreateEditionCommand::EDITION_ID_PAYLOAD => $this->editionId,
-                CreateEditionCommand::EDITION_YEAR_PAYLOAD => $this->year,
-                CreateEditionCommand::EDITION_PUBLISHER_ID_PAYLOAD => $this->publiserId,
-                CreateEditionCommand::EDITION_BOOK_ID_PAYLOAD => '2342342sdf234',
-                CreateEditionCommand::EDITION_GOOGLE_ID_PAYLOAD => $this->googleId,
-                CreateEditionCommand::EDITION_ISBN_PAYLOAD => $this->isbn,
-                CreateEditionCommand::EDITION_TITLE_PAYLOAD => $this->title,
-                CreateEditionCommand::EDITION_SUBTITLE_PAYLOAD => $this->subtitle,
-                CreateEditionCommand::EDITION_LANGUAGE_PAYLOAD => $this->locale,
-                CreateEditionCommand::EDITION_IMAGE_PAYLOAD => $this->image,
-                CreateEditionCommand::EDITION_RESOURCES_PAYLOAD => $this->resource,
-                CreateEditionCommand::EDITION_CONDITION_PAYLOAD => $this->condition,
-                CreateEditionCommand::EDITION_CITY_PAYLOAD => $this->city,
-                CreateEditionCommand::EDITION_PAGES_PAYLOAD => $this->pages,
-                CreateEditionCommand::EDITION_IS_ON_LIBRARY => $this->isOnLibrary,
-            ]
-        );
+        CreateEditionCommand::fromPayload(Uuid::v4(), $this->arguments);
     }
+
+
     /**
      * @test
      */
     public function given_edition_in_library_without_condition_when_command_is_invoke_then_throws_invalid_argument_exception(): void
     {
+        $this->arguments[CreateEditionCommand::EDITION_IS_ON_LIBRARY_PAYLOAD] = true;
+        $this->arguments[CreateEditionCommand::EDITION_CONDITION_PAYLOAD] = null;
+
         self::expectException(\InvalidArgumentException::class);
 
-        CreateEditionCommand::fromPayload(
-            Uuid::v4(),
-            [
-                CreateEditionCommand::EDITION_ID_PAYLOAD => $this->bookId,
-                CreateEditionCommand::EDITION_YEAR_PAYLOAD => $this->year,
-                CreateEditionCommand::EDITION_PUBLISHER_ID_PAYLOAD => $this->publiserId,
-                CreateEditionCommand::EDITION_BOOK_ID_PAYLOAD => $this->bookId,
-                CreateEditionCommand::EDITION_GOOGLE_ID_PAYLOAD => $this->googleId,
-                CreateEditionCommand::EDITION_ISBN_PAYLOAD => $this->isbn,
-                CreateEditionCommand::EDITION_TITLE_PAYLOAD => $this->title,
-                CreateEditionCommand::EDITION_SUBTITLE_PAYLOAD => $this->subtitle,
-                CreateEditionCommand::EDITION_LANGUAGE_PAYLOAD => $this->locale,
-                CreateEditionCommand::EDITION_IMAGE_PAYLOAD => $this->image,
-                CreateEditionCommand::EDITION_RESOURCES_PAYLOAD => $this->resource,
-                CreateEditionCommand::EDITION_CONDITION_PAYLOAD => null,
-                CreateEditionCommand::EDITION_CITY_PAYLOAD => $this->city,
-                CreateEditionCommand::EDITION_PAGES_PAYLOAD => $this->pages,
-                CreateEditionCommand::EDITION_IS_ON_LIBRARY => true,
-            ]
-        );
+        CreateEditionCommand::fromPayload(Uuid::v4(), $this->arguments);
     }
 
     /**
@@ -236,56 +189,11 @@ final class CreateEditionCommandTest extends TestCase
      */
     public function given_edition_not_in_library_with_condition_when_command_is_invoke_then_throws_invalid_argument_exception(): void
     {
+        $this->arguments[CreateEditionCommand::EDITION_IS_ON_LIBRARY_PAYLOAD] = false;
+        $this->arguments[CreateEditionCommand::EDITION_CONDITION_PAYLOAD] = 'used';
+
         self::expectException(\InvalidArgumentException::class);
 
-        CreateEditionCommand::fromPayload(
-            Uuid::v4(),
-            [
-                CreateEditionCommand::EDITION_ID_PAYLOAD => $this->bookId,
-                CreateEditionCommand::EDITION_YEAR_PAYLOAD => $this->year,
-                CreateEditionCommand::EDITION_PUBLISHER_ID_PAYLOAD => $this->publiserId,
-                CreateEditionCommand::EDITION_BOOK_ID_PAYLOAD => $this->bookId,
-                CreateEditionCommand::EDITION_GOOGLE_ID_PAYLOAD => $this->googleId,
-                CreateEditionCommand::EDITION_ISBN_PAYLOAD => $this->isbn,
-                CreateEditionCommand::EDITION_TITLE_PAYLOAD => $this->title,
-                CreateEditionCommand::EDITION_SUBTITLE_PAYLOAD => $this->subtitle,
-                CreateEditionCommand::EDITION_LANGUAGE_PAYLOAD => $this->locale,
-                CreateEditionCommand::EDITION_IMAGE_PAYLOAD => $this->image,
-                CreateEditionCommand::EDITION_RESOURCES_PAYLOAD => $this->resource,
-                CreateEditionCommand::EDITION_CONDITION_PAYLOAD => 'used',
-                CreateEditionCommand::EDITION_CITY_PAYLOAD => $this->city,
-                CreateEditionCommand::EDITION_PAGES_PAYLOAD => $this->pages,
-                CreateEditionCommand::EDITION_IS_ON_LIBRARY => false,
-            ]
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function given_edition_with_invalid_isbn_when_command_is_invoke_then_throws_invalid_argument_exception(): void
-    {
-        self::expectException(\InvalidArgumentException::class);
-
-        CreateEditionCommand::fromPayload(
-            Uuid::v4(),
-            [
-                CreateEditionCommand::EDITION_ID_PAYLOAD => $this->bookId,
-                CreateEditionCommand::EDITION_YEAR_PAYLOAD => $this->year,
-                CreateEditionCommand::EDITION_PUBLISHER_ID_PAYLOAD => $this->publiserId,
-                CreateEditionCommand::EDITION_BOOK_ID_PAYLOAD => $this->bookId,
-                CreateEditionCommand::EDITION_GOOGLE_ID_PAYLOAD => $this->googleId,
-                CreateEditionCommand::EDITION_ISBN_PAYLOAD => '401234567890',
-                CreateEditionCommand::EDITION_TITLE_PAYLOAD => $this->title,
-                CreateEditionCommand::EDITION_SUBTITLE_PAYLOAD => $this->subtitle,
-                CreateEditionCommand::EDITION_LANGUAGE_PAYLOAD => $this->locale,
-                CreateEditionCommand::EDITION_IMAGE_PAYLOAD => $this->image,
-                CreateEditionCommand::EDITION_RESOURCES_PAYLOAD => $this->resource,
-                CreateEditionCommand::EDITION_CONDITION_PAYLOAD => $this->condition,
-                CreateEditionCommand::EDITION_CITY_PAYLOAD => $this->city,
-                CreateEditionCommand::EDITION_PAGES_PAYLOAD => $this->pages,
-                CreateEditionCommand::EDITION_IS_ON_LIBRARY => $this->isOnLibrary,
-            ]
-        );
+        CreateEditionCommand::fromPayload(Uuid::v4(), $this->arguments);
     }
 }

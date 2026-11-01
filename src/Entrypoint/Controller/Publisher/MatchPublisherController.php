@@ -9,7 +9,7 @@ use Colybri\Library\Entrypoint\Controller\QueryController;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 use Symfony\Component\HttpFoundation\Request;
 
-class MatchPublisherController extends QueryController
+final class MatchPublisherController extends QueryController
 {
     public function __invoke(Request $request)
     {

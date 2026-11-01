@@ -4,6 +4,8 @@ DOCKER_COMP = docker-compose
 # Docker containers
 PHP_CONT = @docker exec -it library
 DATABASE_CONT = @docker exec -it library_postgres
+PG_ADMIN_CONT_IP = $$(docker inspect --format="{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" library_pgadmin)
+RABBIT_CONT_IP = $$(docker inspect --format="{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" library_rabbit)
 
 # Executables
 PHP      = $(PHP_CONT) php
@@ -30,21 +32,21 @@ help: ## Outputs this help screen
 
 ## —— Docker ————————————————————————————————————————————————————————————————
 build: ## Builds the Docker images
-	@$(DOCKER_COMP) build --pull --no-cache
+	@USER_ID=$(id -g) GROUP_ID=$(id -g) $(DOCKER_COMP) build --pull --no-cache
 
 up: ## Start the docker hub in detached mode (no logs)
-	@$(DOCKER_COMP) up --detach
+	@USER_ID=$(id -g) GROUP_ID=$(id -g) $(DOCKER_COMP) up --detach
 
 start: build up ## Build and start the containers
 
 stop: ## Stop the docker hub
-	@$(DOCKER_COMP) stop
+	@USER_ID=$(id -g) GROUP_ID=$(id -g) $(DOCKER_COMP) stop
 
 down: ## Remove the docker hub
-	@$(DOCKER_COMP) down --remove-orphans
+	@USER_ID=$(id -g) GROUP_ID=$(id -g) $(DOCKER_COMP) down --remove-orphans
 
 logs: ## Show live logs
-	@$(DOCKER_COMP) logs --tail=0 --follow
+	@USER_ID=$(id -g) GROUP_ID=$(id -g) $(DOCKER_COMP) logs --tail=0 --follow
 
 sh: ## Connect to the PHP FPM container
 	@$(PHP_CONT) sh
@@ -52,6 +54,14 @@ sh: ## Connect to the PHP FPM container
 ## —— Phpunit ————————————————————————————————————————————————————————————————
 test: ## Builds the Docker images
 	@$(DOCKER_COMP) exec library ./vendor/bin/phpunit
+
+## —— Behat ————————————————————————————————————————————————————————————————
+behat: ## Fix errors according to code standard
+	@$(DOCKER_COMP) exec library ./vendor/bin/behat --colors
+
+## —— GrumPHP ————————————————————————————————————————————————————————————————
+grumphp: ## Fix errors according to code standard
+	@$(DOCKER_COMP) exec library ./vendor/bin/grumphp run
 
 ## —— Static analysis —————————————————————————————————————————————————————————
 lint: ## Run stactic quality analisys tools
@@ -63,11 +73,16 @@ lint: ## Run stactic quality analisys tools
 fix: ## Fix errors according to code standard
 	@$(DOCKER_COMP) exec library ./vendor/bin/phpcbf --standard=./phpcs.xml --error-severity=1 --warning-severity=8
 
+
+
 report: ## Generate static code reports
 	@$(DOCKER_COMP) exec library ./vendor/bin/phpunit --coverage-html ./gen/coverage ./tests
 	@$(DOCKER_COMP) exec library ./vendor/bin/phpmetrics --junit=./gen/coverage/index.xml --report-html=./gen/metrics/index.html ./src
 
 ## —— Postgres ————————————————————————————————————————————————————————————————
+
+pgadmin: ## Open pgadmin on browser
+	@xdg-open http://$(PG_ADMIN_CONT_IP)
 
 dump: ## Dump sql database file on migrations folder
 	$(DATABASE_CONT) /bin/bash -c "PGPASSWORD=${POSTGRES_PASS} pg_dump --username ${POSTGRES_USER} library" > ./migrations/library.sql
@@ -81,14 +96,20 @@ restore: ## Restore database from migrations
 composer: ## Execute composer with parameter "c=" to run a given command, example: make composer c="require vendor/package"
 	@docker exec -it library  \
 		composer $(c)\
-			--ignore-platform-reqs \
 			--no-ansi \
 			--no-interaction
 
 ## —— Symfony ———————————————————————————————————————————————————————————————
-sf: ## List all Symfony commands or pass the parameter "c=" to run a given command, example: make sf c=about
+console: ## List all Symfony commands or pass the parameter "c=" to run a given command, example: make sf c=about
 	@$(eval c ?=)
 	@$(SYMFONY) $(c)
 
 cc: c=c:c ## Clear the cache
-cc: sf
+cc: console
+
+cache: ## See list of console commands avialable
+	@docker exec -it library php bin/console cache:clear && composer dump-autoload
+
+## —— Rabbit ————————————————————————————————————————————————————————————————
+rabbit: ## Open message broker on browser
+	@xdg-open http://$(RABBIT_CONT_IP):15672

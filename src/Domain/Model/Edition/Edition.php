@@ -15,10 +15,10 @@ use Colybri\Library\Domain\Model\Edition\ValueObject\EditionPages;
 use Colybri\Library\Domain\Model\Edition\ValueObject\EditionSubtitle;
 use Colybri\Library\Domain\Model\Edition\ValueObject\EditionTitle;
 use Colybri\Library\Domain\Model\Edition\ValueObject\EditionYear;
-use Forkrefactor\Ddd\Domain\Model\AggregateRoot;
+use Colybri\Library\Domain\Model\SimpleAggregateRoot;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 
-final class Edition extends AggregateRoot
+final class Edition extends SimpleAggregateRoot
 {
     private const NAME = 'edition';
 
@@ -31,8 +31,6 @@ final class Edition extends AggregateRoot
     private ?EditionSubtitle $subtitle;
     private EditionLocale $locale;
     private ?EditionImageUrl $imageSlug;
-    private $resource;
-    private $resourceTypes;
     private ?EditionCondition $condition;
     private EditionCity $city;
     private ?EditionPages $pages;
@@ -50,12 +48,10 @@ final class Edition extends AggregateRoot
         ?EditionSubtitle $subtitle,
         EditionLocale $locale,
         ?EditionImageUrl $image,
-        $resource,
-        $resourceTypes,
-        ?EditionCondition $condition,
         ?EditionPages $pages,
         EditionCity $city,
-        EditionIsOnLibrary $isOnLibrary
+        EditionIsOnLibrary $isOnLibrary,
+        ?EditionCondition $condition
     ): self {
         $self = new self($id);
         $self->year = $year;
@@ -67,12 +63,10 @@ final class Edition extends AggregateRoot
         $self->subtitle = $subtitle;
         $self->locale = $locale;
         $self->imageSlug = $image;
-        $self->resource = $resource;
-        $self->resourceTypes = $resourceTypes;
-        $self->condition = $condition;
         $self->pages = $pages;
         $self->city = $city;
         $self->isOnLibrary = $isOnLibrary;
+        $self->condition = $condition;
 
         return $self;
     }
@@ -88,12 +82,10 @@ final class Edition extends AggregateRoot
         ?EditionSubtitle $subtitle,
         EditionLocale $locale,
         ?EditionImageUrl $image,
-        $resource,
-        $resourceTypes,
-        ?EditionCondition $condition,
         ?EditionPages $pages,
         EditionCity $city,
-        EditionIsOnLibrary $isOnLibrary
+        EditionIsOnLibrary $isOnLibrary,
+        ?EditionCondition $condition
     ): self {
         $self = new self($id);
         $self->year = $year;
@@ -105,12 +97,10 @@ final class Edition extends AggregateRoot
         $self->subtitle = $subtitle;
         $self->locale = $locale;
         $self->imageSlug = $image;
-        $self->resource = $resource;
-        $self->resourceTypes = $resourceTypes;
-        $self->condition = $condition;
         $self->pages = $pages;
         $self->city = $city;
         $self->isOnLibrary = $isOnLibrary;
+        $self->condition = $condition;
 
         return $self;
     }
@@ -169,16 +159,6 @@ final class Edition extends AggregateRoot
     public function imageSlug(): ?EditionImageUrl
     {
         return $this->imageSlug;
-    }
-
-    public function resource()
-    {
-        return $this->resource;
-    }
-
-    public function resourceTypes()
-    {
-        return $this->resourceTypes;
     }
 
     public function condition(): ?EditionCondition

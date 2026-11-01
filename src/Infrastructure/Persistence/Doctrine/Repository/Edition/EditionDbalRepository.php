@@ -63,12 +63,10 @@ final class EditionDbalRepository extends DbalRepository implements EditionRepos
                 subtitle,
                 locale,
                 image,
-                resource,
-                resource_type,
-                condition,
                 pages,
                 city,
-                is_on_library
+                is_on_library,
+                condition
             ) VALUES (
                 :id,
                 :year,
@@ -80,12 +78,10 @@ final class EditionDbalRepository extends DbalRepository implements EditionRepos
                 :subtitle,                      
                 :locale,
                 :image,
-                :resource,
-                :resourceTypes,
-                :condition,
                 :pages,
                 :city,
-                :isOnLibrary
+                :isOnLibrary,
+                :condition
             );
         ";
 
@@ -100,8 +96,6 @@ final class EditionDbalRepository extends DbalRepository implements EditionRepos
         $statement->bindValue('subtitle', $edition->subtitle()?->value());
         $statement->bindValue('locale', $edition->locale()->value());
         $statement->bindValue('image', $edition->imageSlug()?->value());
-        $statement->bindValue('resource', $edition->resource()?->value());
-        $statement->bindValue('resourceTypes', $edition->resourceTypes()?->value());
         $statement->bindValue('condition', $edition->condition()?->value());
         $statement->bindValue('pages', $edition->pages()?->value(), ParameterType::INTEGER);
         $statement->bindValue('city', $edition->city()->value());
@@ -109,6 +103,49 @@ final class EditionDbalRepository extends DbalRepository implements EditionRepos
 
         $statement->executeQuery();
     }
+
+    public function update(Edition $edition): void
+    {
+        $sql = "
+            UPDATE editions SET 
+                year = :year,
+                publisher_id = :publisherId,
+                book_id = :bookId,
+                google_id = :googleId,
+                isbn = :isbn,
+                title = :title,
+                subtitle = :subtitle,
+                locale = :locale,
+                image = :image,
+                pages = :pages,
+                city = :city,
+                is_on_library = :isOnLibrary,
+                condition = :condition,
+                updated_at = CURRENT_TIMESTAMP 
+             WHERE (
+                id = :id
+            );
+        ";
+
+        $statement = $this->connectionWrite->prepare($sql);
+        $statement->bindValue('id', $edition->aggregateId()->value());
+        $statement->bindValue('year', $edition->year()->value(), ParameterType::INTEGER);
+        $statement->bindValue('publisherId', $edition->publisherId()->value());
+        $statement->bindValue('bookId', $edition->bookId()->value());
+        $statement->bindValue('googleId', $edition->googleBooksId()?->value());
+        $statement->bindValue('isbn', $edition->isbn()->value(), ParameterType::INTEGER);
+        $statement->bindValue('title', $edition->title()->value());
+        $statement->bindValue('subtitle', $edition->subtitle()?->value());
+        $statement->bindValue('locale', $edition->locale()->value());
+        $statement->bindValue('image', $edition->imageSlug()?->value());
+        $statement->bindValue('condition', $edition->condition()?->value());
+        $statement->bindValue('pages', $edition->pages()?->value(), ParameterType::INTEGER);
+        $statement->bindValue('city', $edition->city()->value());
+        $statement->bindValue('isOnLibrary', $edition->isOnLibrary()->value(), ParameterType::BOOLEAN);
+
+        $statement->executeQuery();
+    }
+
 
     public function delete(Uuid $id): void
     {
@@ -138,12 +175,10 @@ final class EditionDbalRepository extends DbalRepository implements EditionRepos
             null === $edition['subtitle'] ? null : EditionSubtitle::from((string)$edition['subtitle']),
             EditionLocale::from((string)$edition['locale']),
             null,
-            null,
-            null,
-            null === $edition['condition'] ? null : EditionCondition::from((string)$edition['condition']),
             null === $edition['pages'] ? null : EditionPages::from((int)$edition['pages']),
             EditionCity::from((string)$edition['city']),
-            EditionIsOnLibrary::from((bool)$edition['is_on_library'])
+            EditionIsOnLibrary::from((bool)$edition['is_on_library']),
+            null === $edition['condition'] ? null : EditionCondition::from((string)$edition['condition'])
         );
     }
 }

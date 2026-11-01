@@ -32,7 +32,7 @@ final class MatchCountryQueryHandler implements MessageHandlerInterface
 
         return ListResponse::fromPaginatedList(
             $this->countryRepository->match($this->getCriteria($filters, $query)),
-            $this->countryRepository->count($this->getCriteria($filters, $query)),
+            $this->countryRepository->count($this->getCountCriteria($filters, $query)),
             $query->offset(),
             $query->limit()
         );
@@ -61,6 +61,16 @@ final class MatchCountryQueryHandler implements MessageHandlerInterface
             Order::from(OrderBy::from(CountryName::class), OrderType::Desc),
             $query->offset(),
             $query->limit()
+        );
+    }
+
+    private function getCountCriteria(Disjunction $filters, MatchCountryQuery $query): Criteria
+    {
+        return new Criteria(
+            Filters::from($filters),
+            Order::from(OrderBy::from(CountryName::class), OrderType::Desc),
+            null,
+            null
         );
     }
 }

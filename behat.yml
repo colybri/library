@@ -1,0 +1,23 @@
+default:
+  gherkin:
+    filters:
+      tags: "~@wip&&~@third-party"
+  suites:
+    api:
+      paths: [tests/Entrypoint/http]
+      contexts:
+        - class: Colybri\Library\Tests\Infrastructure\Behat\Context\LibraryApiContext
+        - class: Colybri\Library\Tests\Infrastructure\Behat\Context\FeatureContext
+        - class: Imbo\BehatApiExtension\Context\ApiContext
+  extensions:
+      Imbo\BehatApiExtension:
+        apiClient:
+          base_uri: 'https://library_nginx'
+          timeout: 5.0
+          verify: false
+      FriendsOfBehat\SymfonyExtension:
+        bootstrap: tests/bootstrap.php
+        kernel:
+          path: src/Kernel.php
+          class: Colybri\Library\Kernel
+          environment: test

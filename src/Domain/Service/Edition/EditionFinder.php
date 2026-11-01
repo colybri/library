@@ -22,15 +22,14 @@ final class EditionFinder
     {
         $edition = $this->repo->find($id);
 
-        $this->ensureEditionExist($edition);
-
+        $this->ensureEditionExist($edition, $id);
         return $edition;
     }
 
-    public function ensureEditionExist(?Edition $edition): void
+    public function ensureEditionExist(?Edition $edition, $id): void
     {
         if (null === $edition) {
-            throw new EditionDoesNotExistException(sprintf('Edition whit id:%s does not exist on repository', $edition));
+            throw new EditionDoesNotExistException(sprintf('Edition whit id: %s does not exist on repository', $id));
         }
     }
 }

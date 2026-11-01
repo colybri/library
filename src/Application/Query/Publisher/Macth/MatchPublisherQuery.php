@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Colybri\Library\Application\Query\Publisher\Macth;
 
 use Assert\Assert;
-use Colybri\Library\Domain\CompanyName;
-use Colybri\Library\Domain\Model\Publisher\Publisher;
+use Colybri\Library\Application\Query\Query;
+use Colybri\Library\Domain\Messaging\Message\ValueObject\MessageName;
+use Colybri\Library\Domain\VendorName;
 use Colybri\Library\Domain\ServiceName;
-use Forkrefactor\Ddd\Application\Query;
-use PcComponentes\TopicGenerator\Topic;
+use Colybri\Library\Domain\Model\Publisher\Publisher;
 
 final class MatchPublisherQuery extends Query
 {
@@ -27,8 +27,8 @@ final class MatchPublisherQuery extends Query
 
     public static function messageName(): string
     {
-        return Topic::generate(
-            CompanyName::instance(),
+        return MessageName::generate(
+            VendorName::instance(),
             ServiceName::instance(),
             self::messageVersion(),
             self::messageType(),

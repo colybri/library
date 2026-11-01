@@ -62,11 +62,10 @@ final class CreateEditionCommandHandlerTest extends TestCase
                 CreateEditionCommand::EDITION_SUBTITLE_PAYLOAD => null,
                 CreateEditionCommand::EDITION_LANGUAGE_PAYLOAD => 'es',
                 CreateEditionCommand::EDITION_IMAGE_PAYLOAD => null,
-                CreateEditionCommand::EDITION_RESOURCES_PAYLOAD => null,
-                CreateEditionCommand::EDITION_CONDITION_PAYLOAD => 'second hand',
                 CreateEditionCommand::EDITION_CITY_PAYLOAD => 'Madrrid',
                 CreateEditionCommand::EDITION_PAGES_PAYLOAD => null,
-                CreateEditionCommand::EDITION_IS_ON_LIBRARY => true,
+                CreateEditionCommand::EDITION_IS_ON_LIBRARY_PAYLOAD => true,
+                CreateEditionCommand::EDITION_CONDITION_PAYLOAD => 'second hand',
             ],
         );
     }
@@ -76,9 +75,15 @@ final class CreateEditionCommandHandlerTest extends TestCase
      */
     public function given_non_existing_edition_then_create_it()
     {
+
+        $editionId = Uuid::v4();
+
         $this->repository->expects($this->once())->method('insert');
 
-        $this->repository->expects($this->once())->method('find');
+        $this->repository->expects($this->once())
+            ->method('find')
+            ->with($editionId)
+            ->willReturn(null);
 
         $publisherId = Uuid::v4();
         $publisher = new PublisherObjectMother(id: $publisherId);
@@ -96,7 +101,7 @@ final class CreateEditionCommandHandlerTest extends TestCase
             ->with($bookId)
             ->willReturn($book->build());
 
-        ($this->handler)($this->command(Uuid::v4(), $bookId, $publisherId));
+        ($this->handler)($this->command($editionId, $bookId, $publisherId));
     }
 
     /**

@@ -5,26 +5,24 @@ declare(strict_types=1);
 namespace Colybri\Library\Application\Query\Country\Get;
 
 use Assert\Assert;
-use Colybri\Library\Domain\CompanyName;
-use Colybri\Library\Domain\Model\Author\Author;
+use Colybri\Library\Application\Query\Query;
+use Colybri\Library\Domain\Messaging\Message\ValueObject\MessageName;
+use Colybri\Library\Domain\VendorName;
 use Colybri\Library\Domain\ServiceName;
-use Forkrefactor\Ddd\Application\Query;
+use Colybri\Library\Domain\Model\Author\Author;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
-use PcComponentes\TopicGenerator\Topic;
 
 final class GetCountryQuery extends Query
 {
     protected const NAME = 'get';
     protected const VERSION = '1';
-
     public const COUNTRY_ID_PAYLOAD = 'id';
-
     private Uuid $countryId;
 
     public static function messageName(): string
     {
-        return Topic::generate(
-            CompanyName::instance(),
+        return MessageName::generate(
+            VendorName::instance(),
             ServiceName::instance(),
             self::messageVersion(),
             self::messageType(),

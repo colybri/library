@@ -1,0 +1,50 @@
+services:
+  ## Message Broker
+  broker.connection:
+    class: Colybri\Library\Infrastructure\Messaging\Bus\Event\RabbitMq\RabbitMqConnection
+    autoconfigure: false
+    autowire: false
+    arguments:
+      $configuration:
+        host: '%env(RABBITMQ_HOST)%'
+        port: '%env(RABBITMQ_PORT)%'
+        vhost: '%env(RABBITMQ_VHOST)%'
+        login: '%env(RABBITMQ_LOGIN)%'
+        password: '%env(RABBITMQ_PASSWORD)%'
+        read_timeout: 2
+        write_timeout: 2
+        connect_timeout: 5
+
+  Colybri\Library\Infrastructure\Messaging\Bus\Event\Postgres\PostgresDomainEventBus:
+
+  Colybri\Library\Infrastructure\Messaging\Bus\Event\RabbitMq\RabbitMqDomainEventBus:
+    autowire: false
+    arguments:
+      $exchangeName: '%env(RABBITMQ_EXCHANGE)%'
+      $connection: '@broker.connection'
+      $failoverPublisher: '@Colybri\Library\Infrastructure\Messaging\Bus\Event\Postgres\PostgresDomainEventBus'
+
+  Colybri\Library\Domain\Messaging\EventBus: '@Colybri\Library\Infrastructure\Messaging\Bus\Event\RabbitMq\RabbitMqDomainEventBus'
+
+  Colybri\Library\Infrastructure\Messaging\Bus\Event\DomainEventMapping:
+    autoconfigure: false
+    autowire: false
+    arguments:
+      - !tagged_iterator { tag: library.domain_event_subscribe }
+
+  Colybri\Library\Entrypoint\Console\Messaging\RabbitMq\ConfigureRabbitMqCommand:
+    arguments:
+      - 'Colybri\Library\Infrastructure\Messaging\Bus\Event\RabbitMq\RabbitConfigurator'
+      - '%env(RABBITMQ_EXCHANGE)%'
+      - !tagged library.domain_event_subscriber
+
+
+
+  Colybri\Library\Infrastructure\Messaging\Bus\Event\RabbitMq\RabbitMqDomainEventsConsumer:
+    arguments:
+      $connection: '@broker.connection'
+      $mapping: '@Colybri\Library\Infrastructure\Messaging\Bus\Event\DomainEventMapping'
+      $exchangeName: '%env(RABBITMQ_EXCHANGE)%'
+      $maxRetries: '%env(RABBITMQ_MAX_RETRIES)%'
+
+

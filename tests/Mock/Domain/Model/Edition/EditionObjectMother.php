@@ -31,12 +31,10 @@ final class EditionObjectMother
         private ?EditionSubtitle $subtitle = null,
         private ?EditionLocale $locale = null,
         private ?EditionImageUrl $image = null,
-        private $resource = null,
-        private $resourceType = null,
-        private ?EditionCondition $condition = null,
         private ?EditionCity $city = null,
         private ?EditionPages $pages = null,
-        private ?EditionIsOnLibrary $isOnLibrary = null
+        private ?EditionIsOnLibrary $isOnLibrary = null,
+        private ?EditionCondition $condition = null
     ) {
         $this->id = $id ?? Uuid::v4();
         $this->year = $year ?? EditionYear::from(random_int(701, 2020));
@@ -48,12 +46,10 @@ final class EditionObjectMother
         $this->subtitle = $this->subtitle ?? EditionSubtitle::from('Los ideales de la cultura griega');
         $this->locale = $locale ?? EditionLocale::from('es');
         $this->image = $image ?? EditionImageUrl::from('padeia-los-ideales');
-        $this->resource = $resource ?? null;
-        $this->resourceType = $this->resourceType ?? null;
-        $this->condition = $condition ?? EditionCondition::from('new');
         $this->city = $city ?? EditionCity::from('Mexico D.F.');
         $this->pages = $pages ?? EditionPages::from(random_int(70, 300));
         $this->isOnLibrary = $this->isOnLibrary ?? EditionIsOnLibrary::from(true);
+        $this->condition = $condition ?? EditionCondition::from('new');
     }
 
     public function create(): Edition
@@ -69,12 +65,10 @@ final class EditionObjectMother
             $this->subtitle,
             $this->locale,
             $this->image,
-            $this->resource,
-            $this->resourceType,
-            $this->condition,
             $this->pages,
             $this->city,
-            $this->isOnLibrary
+            $this->isOnLibrary,
+            $this->condition
         );
     }
 
@@ -91,12 +85,10 @@ final class EditionObjectMother
             $this->subtitle,
             $this->locale,
             $this->image,
-            $this->resource,
-            $this->resourceType,
-            $this->condition,
             $this->pages,
             $this->city,
-            $this->isOnLibrary
+            $this->isOnLibrary,
+            $this->condition
         );
     }
 }

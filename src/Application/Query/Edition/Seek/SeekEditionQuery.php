@@ -5,17 +5,16 @@ declare(strict_types=1);
 namespace Colybri\Library\Application\Query\Edition\Seek;
 
 use Assert\Assert;
-use Colybri\Library\Domain\CompanyName;
-use Colybri\Library\Domain\Model\Book\Book;
+use Colybri\Library\Application\Query\Query;
+use Colybri\Library\Domain\Messaging\Message\ValueObject\MessageName;
+use Colybri\Library\Domain\VendorName;
 use Colybri\Library\Domain\ServiceName;
-use Forkrefactor\Ddd\Application\Query;
-use PcComponentes\TopicGenerator\Topic;
+use Colybri\Library\Domain\Model\Edition\Edition;
 
 final class SeekEditionQuery extends Query
 {
     private const VERSION = '1';
-    private const NAME = 'search_book';
-
+    private const NAME = 'seek_edition';
     public const EDITION_TITLE_PAYLOAD = 'title';
     public const EDITION_AUTHOR_PAYLOAD = 'author';
     public const EDITION_PUBLISHER_PAYLOAD = 'publisher';
@@ -28,12 +27,12 @@ final class SeekEditionQuery extends Query
 
     public static function messageName(): string
     {
-        return Topic::generate(
-            CompanyName::instance(),
+        return MessageName::generate(
+            VendorName::instance(),
             ServiceName::instance(),
             self::messageVersion(),
             self::messageType(),
-            Book::modelName(),
+            Edition::modelName(),
             self::NAME
         );
     }

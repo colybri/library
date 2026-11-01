@@ -46,7 +46,10 @@ final class EditionGoogleRepository extends GoogleRepository implements EditionR
     {
         throw new RepositoryMethodNotImplementException('This repository not implement method ' . __FUNCTION__);
     }
-
+    public function update(Edition $edition): void
+    {
+        throw new RepositoryMethodNotImplementException('This repository not implement method ' . __FUNCTION__);
+    }
     public function delete(Uuid $id): void
     {
         throw new RepositoryMethodNotImplementException('This repository not implement method ' . __FUNCTION__);
@@ -65,12 +68,10 @@ final class EditionGoogleRepository extends GoogleRepository implements EditionR
             isset($book->volumeInfo->subtitle) ? EditionSubtitle::from($book->volumeInfo->subtitle) : null,
             EditionLocale::from($book->volumeInfo->language),
             isset($book->volumeInfo->imageLinks) ? EditionImageUrl::from($book->volumeInfo->imageLinks->thumbnail) : null,
-            null,
-            null,
-            null,
             isset($book->volumeInfo->pageCount) ? EditionPages::from((int)$book->volumeInfo->pageCount) : null,
             EditionCity::from(''),
-            EditionIsOnLibrary::from(false)
+            EditionIsOnLibrary::from(false),
+            null,
         );
     }
 }

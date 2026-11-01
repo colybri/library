@@ -1,0 +1,214 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Colybri\Library\Application\Command\Edition\Update;
+
+use Assert\Assert;
+use Colybri\Library\Application\Command\Command;
+use Colybri\Library\Domain\Messaging\Message\ValueObject\MessageName;
+use Colybri\Library\Domain\VendorName;
+use Colybri\Library\Domain\ServiceName;
+use Colybri\Library\Domain\Model\Edition\Edition;
+use Colybri\Library\Domain\Model\Edition\ValueObject\EditionCity;
+use Colybri\Library\Domain\Model\Edition\ValueObject\EditionCondition;
+use Colybri\Library\Domain\Model\Edition\ValueObject\EditionGoogleBooksId;
+use Colybri\Library\Domain\Model\Edition\ValueObject\EditionImageUrl;
+use Colybri\Library\Domain\Model\Edition\ValueObject\EditionISBN;
+use Colybri\Library\Domain\Model\Edition\ValueObject\EditionIsOnLibrary;
+use Colybri\Library\Domain\Model\Edition\ValueObject\EditionLocale;
+use Colybri\Library\Domain\Model\Edition\ValueObject\EditionPages;
+use Colybri\Library\Domain\Model\Edition\ValueObject\EditionSubtitle;
+use Colybri\Library\Domain\Model\Edition\ValueObject\EditionTitle;
+use Colybri\Library\Domain\Model\Edition\ValueObject\EditionYear;
+use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use Isbn\Isbn;
+
+final class UpdateEditionCommand extends Command
+{
+    protected const NAME = 'update';
+    protected const VERSION = '1';
+
+    public const EDITION_ID_PAYLOAD = 'id';
+    public const EDITION_YEAR_PAYLOAD = 'year';
+    public const EDITION_PUBLISHER_ID_PAYLOAD = 'publisherId';
+    public const EDITION_BOOK_ID_PAYLOAD = 'bookId';
+    public const EDITION_GOOGLE_ID_PAYLOAD = 'googleId';
+    public const EDITION_ISBN_PAYLOAD = 'isbn';
+    public const EDITION_TITLE_PAYLOAD = 'title';
+    public const EDITION_SUBTITLE_PAYLOAD = 'subtitle';
+    public const EDITION_LANGUAGE_PAYLOAD = 'language';
+    public const EDITION_IMAGE_PAYLOAD = 'image';
+    public const EDITION_PAGES_PAYLOAD = 'pages';
+    public const EDITION_CITY_PAYLOAD = 'city';
+    public const EDITION_IS_ON_LIBRARY_PAYLOAD = 'isOnLibrary';
+    public const EDITION_CONDITION_PAYLOAD = 'condition';
+    private Uuid $editionId;
+    private EditionYear $year;
+    private Uuid $publisherId;
+    private Uuid $bookId;
+    private ?EditionGoogleBooksId $googleBooksId;
+    private EditionISBN $isbn;
+    private EditionTitle $title;
+    private ?EditionSubtitle $subtitle;
+    private EditionLocale $locale;
+    private ?EditionImageUrl $imageUrl;
+    private ?EditionCondition $condition;
+    private EditionCity $city;
+    private ?EditionPages $pages;
+    private EditionIsOnLibrary $isOnLibrary;
+
+    public static function messageName(): string
+    {
+        return MessageName::generate(
+            VendorName::instance(),
+            ServiceName::instance(),
+            self::messageVersion(),
+            self::messageType(),
+            Edition::modelName(),
+            self::NAME
+        );
+    }
+
+    public static function messageVersion(): string
+    {
+        return self::VERSION;
+    }
+
+    protected function assertPayload(): void
+    {
+        $payload = $this->messagePayload();
+
+
+        Assert::lazy()
+            ->that($payload, 'payload')->isArray()
+            ->keyExists(self::EDITION_ID_PAYLOAD)
+            ->keyExists(self::EDITION_YEAR_PAYLOAD)
+            ->keyExists(self::EDITION_GOOGLE_ID_PAYLOAD)
+            ->keyExists(self::EDITION_ISBN_PAYLOAD)
+            ->keyExists(self::EDITION_PUBLISHER_ID_PAYLOAD)
+            ->keyExists(self::EDITION_TITLE_PAYLOAD)
+            ->keyExists(self::EDITION_SUBTITLE_PAYLOAD)
+            ->keyExists(self::EDITION_LANGUAGE_PAYLOAD)
+            ->keyExists(self::EDITION_IMAGE_PAYLOAD)
+            ->keyExists(self::EDITION_PAGES_PAYLOAD)
+            ->keyExists(self::EDITION_CITY_PAYLOAD)
+            ->keyExists(self::EDITION_IS_ON_LIBRARY_PAYLOAD)
+            ->keyExists(self::EDITION_CONDITION_PAYLOAD)
+            ->verifyNow();
+
+        Assert::lazy()
+            ->that($payload[self::EDITION_ID_PAYLOAD], self::EDITION_ID_PAYLOAD)->notEmpty()->uuid()
+            ->that($payload[self::EDITION_YEAR_PAYLOAD], self::EDITION_YEAR_PAYLOAD)->notEmpty()->integer()
+            ->that($payload[self::EDITION_PUBLISHER_ID_PAYLOAD], self::EDITION_PUBLISHER_ID_PAYLOAD)->notEmpty()->uuid()
+            ->that($payload[self::EDITION_BOOK_ID_PAYLOAD], self::EDITION_BOOK_ID_PAYLOAD)->notEmpty()->uuid()
+            ->that($payload[self::EDITION_GOOGLE_ID_PAYLOAD], self::EDITION_GOOGLE_ID_PAYLOAD)->nullOr()->string()
+            ->that($payload[self::EDITION_ISBN_PAYLOAD], self::EDITION_ISBN_PAYLOAD)->notEmpty()->string()
+            ->that($payload[self::EDITION_TITLE_PAYLOAD], self::EDITION_TITLE_PAYLOAD)->notEmpty()->string()
+            ->that($payload[self::EDITION_SUBTITLE_PAYLOAD], self::EDITION_SUBTITLE_PAYLOAD)->nullOr()->string()
+            ->that($payload[self::EDITION_LANGUAGE_PAYLOAD], self::EDITION_LANGUAGE_PAYLOAD)->notEmpty()->string()
+            ->that($payload[self::EDITION_IMAGE_PAYLOAD], self::EDITION_IMAGE_PAYLOAD)->nullOr()->string()
+            ->that($payload[self::EDITION_PAGES_PAYLOAD], self::EDITION_PAGES_PAYLOAD)->nullOr()->integer()
+            ->that($payload[self::EDITION_CITY_PAYLOAD], self::EDITION_CITY_PAYLOAD)->notEmpty()->string()
+            ->that($payload[self::EDITION_IS_ON_LIBRARY_PAYLOAD], self::EDITION_IS_ON_LIBRARY_PAYLOAD)->boolean()
+            ->that($payload[self::EDITION_CONDITION_PAYLOAD], self::EDITION_CONDITION_PAYLOAD)->nullOr()->string()
+            ->verifyNow();
+
+        Assert::lazy()
+            ->that((new Isbn())->validation->isbn($payload[self::EDITION_ISBN_PAYLOAD]))->true()
+            ->verifyNow();
+
+        if ($payload[self::EDITION_IS_ON_LIBRARY_PAYLOAD] === true) {
+            Assert::that($payload[self::EDITION_CONDITION_PAYLOAD])->string();
+        }
+
+        if ($payload[self::EDITION_IS_ON_LIBRARY_PAYLOAD] === false) {
+            Assert::that($payload[self::EDITION_CONDITION_PAYLOAD])->null();
+        }
+
+        $this->editionId = Uuid::from((string)$payload[self::EDITION_ID_PAYLOAD]);
+        $this->year = EditionYear::from($payload[self::EDITION_YEAR_PAYLOAD]);
+        $this->publisherId = Uuid::from((string)$payload[self::EDITION_PUBLISHER_ID_PAYLOAD]);
+        $this->bookId = Uuid::from((string)$payload[self::EDITION_BOOK_ID_PAYLOAD]);
+        $this->googleBooksId = null === $payload[self::EDITION_GOOGLE_ID_PAYLOAD] ? null : EditionGoogleBooksId::from((string)$payload[self::EDITION_GOOGLE_ID_PAYLOAD]);
+        $this->isbn = EditionISBN::from($payload[self::EDITION_ISBN_PAYLOAD]);
+        $this->title =  EditionTitle::from((string)$payload[self::EDITION_TITLE_PAYLOAD]);
+        $this->subtitle = null === $payload[self::EDITION_SUBTITLE_PAYLOAD] ? null : EditionSubtitle::from((string)$payload[self::EDITION_SUBTITLE_PAYLOAD]);
+        $this->locale = EditionLocale::from((string)$payload[self::EDITION_LANGUAGE_PAYLOAD]);
+        $this->imageUrl = null === $payload[self::EDITION_IMAGE_PAYLOAD] ? null : EditionImageUrl::from((string)$payload[self::EDITION_IMAGE_PAYLOAD]);
+        $this->pages = null === $payload[self::EDITION_PAGES_PAYLOAD] ? null : EditionPages::from((int)$payload[self::EDITION_PAGES_PAYLOAD]);
+        $this->city = EditionCity::from((string)$payload[self::EDITION_CITY_PAYLOAD]);
+        $this->isOnLibrary = EditionIsOnLibrary::from((bool)$payload[self::EDITION_IS_ON_LIBRARY_PAYLOAD]);
+        $this->condition = null === $payload[self::EDITION_CONDITION_PAYLOAD] ? null : EditionCondition::from((string)$payload[self::EDITION_CONDITION_PAYLOAD]);
+    }
+
+    public function editionId(): Uuid
+    {
+        return $this->editionId;
+    }
+
+    public function year(): EditionYear
+    {
+        return $this->year;
+    }
+
+    public function publisherId(): Uuid
+    {
+        return $this->publisherId;
+    }
+
+    public function bookId(): Uuid
+    {
+        return $this->bookId;
+    }
+
+    public function googleBooksId(): ?EditionGoogleBooksId
+    {
+        return $this->googleBooksId;
+    }
+
+    public function isbn(): EditionISBN
+    {
+        return $this->isbn;
+    }
+
+    public function title(): EditionTitle
+    {
+        return $this->title;
+    }
+
+    public function subtitle(): ?EditionSubtitle
+    {
+        return $this->subtitle;
+    }
+
+    public function locale(): EditionLocale
+    {
+        return $this->locale;
+    }
+
+    public function image(): ?EditionImageUrl
+    {
+        return $this->imageUrl;
+    }
+
+    public function condition(): ?EditionCondition
+    {
+        return $this->condition;
+    }
+
+    public function city(): EditionCity
+    {
+        return $this->city;
+    }
+
+    public function pages(): ?EditionPages
+    {
+        return $this->pages;
+    }
+
+    public function isOnLibrary(): EditionIsOnLibrary
+    {
+        return $this->isOnLibrary;
+    }
+}
