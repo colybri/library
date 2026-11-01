@@ -10,7 +10,7 @@ use Colybri\Library\Domain\Model\Country\Country;
 use Colybri\Library\Domain\Model\Country\ValueObject\CountryAlpha2Code;
 use Colybri\Library\Domain\Model\Country\ValueObject\CountryName;
 use Colybri\Library\Domain\Model\Country\ValueObject\CountryNationality;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 
 class CountryObjectMother
 {

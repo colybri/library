@@ -11,7 +11,7 @@ use Colybri\Library\Domain\Model\Publisher\Exception\PublisherAlreadyExistExcept
 use Colybri\Library\Domain\Model\Publisher\PublisherRepository;
 use Colybri\Library\Domain\Service\Publisher\PublisherCreator;
 use Colybri\Library\Tests\Mock\Domain\Model\Publisher\PublisherObjectMother;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 

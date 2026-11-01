@@ -10,7 +10,7 @@ use Colybri\Library\Domain\Model\Country\ValueObject\CountryName;
 use Colybri\Library\Domain\Model\Country\ValueObject\CountryNationality;
 use Colybri\Library\Infrastructure\Fixtures\FixtureRepository;
 use Doctrine\DBAL\Connection;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 
 final class CountryFixtures implements FixtureRepository
 {

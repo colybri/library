@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Infrastructure\Logging\Monolog\Processor;
 
+use Monolog\LogRecord;
 use Monolog\Processor\ProcessorInterface;
 
 final class HostnameProcessor implements ProcessorInterface
@@ -15,9 +16,9 @@ final class HostnameProcessor implements ProcessorInterface
         $this->host = \gethostname();
     }
 
-    public function __invoke(array $record): array
+    public function __invoke(LogRecord $record): LogRecord
     {
-        $record['extra']['hostname'] = $this->host;
+        $record->extra['hostname'] = $this->host;
 
         return $record;
     }

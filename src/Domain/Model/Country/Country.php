@@ -8,7 +8,7 @@ use Colybri\Library\Domain\Model\Country\ValueObject\CountryAlpha2Code;
 use Colybri\Library\Domain\Model\Country\ValueObject\CountryName;
 use Colybri\Library\Domain\Model\Country\ValueObject\CountryNationality;
 use Colybri\Library\Domain\Model\SimpleAggregateRoot;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 
 final class Country extends SimpleAggregateRoot
 {

@@ -10,7 +10,7 @@ use Colybri\Library\Application\Query\Edition\Seek\SeekEditionQueryHandler;
 use Colybri\Library\Domain\Model\Edition\Edition;
 use Colybri\Library\Domain\Model\Edition\EditionRepository;
 use Colybri\Library\Tests\Mock\Domain\Model\Edition\EditionObjectMother;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 

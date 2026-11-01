@@ -16,7 +16,7 @@ use Colybri\Library\Domain\Model\Edition\ValueObject\EditionPages;
 use Colybri\Library\Domain\Model\Edition\ValueObject\EditionSubtitle;
 use Colybri\Library\Domain\Model\Edition\ValueObject\EditionTitle;
 use Colybri\Library\Domain\Model\Edition\ValueObject\EditionYear;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 
 final class EditionObjectMother
 {

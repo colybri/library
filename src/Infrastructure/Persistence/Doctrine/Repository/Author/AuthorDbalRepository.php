@@ -13,7 +13,7 @@ use Colybri\Library\Domain\Model\Author\ValueObject\AuthorLastName;
 use Colybri\Library\Infrastructure\Persistence\Doctrine\Repository\DbalRepository;
 use Colybri\Library\Domain\Model\Author\AuthorRepository;
 use Colybri\Library\Domain\Model\Author\Author;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 
 final class AuthorDbalRepository extends DbalRepository implements AuthorRepository
 {

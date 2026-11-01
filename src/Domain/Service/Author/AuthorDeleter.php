@@ -6,7 +6,7 @@ namespace Colybri\Library\Domain\Service\Author;
 
 use Colybri\Library\Domain\Model\Author\Author;
 use Colybri\Library\Domain\Model\Author\AuthorRepository;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 
 final class AuthorDeleter
 {

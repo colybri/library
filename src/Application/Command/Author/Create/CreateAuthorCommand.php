@@ -14,7 +14,7 @@ use Colybri\Library\Domain\Model\Author\ValueObject\AuthorFirstName;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorLastName;
 use Colybri\Library\Domain\ServiceName;
 use Colybri\Library\Domain\VendorName;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 
 final class CreateAuthorCommand extends Command
 {

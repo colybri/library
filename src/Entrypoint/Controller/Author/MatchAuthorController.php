@@ -6,7 +6,7 @@ namespace Colybri\Library\Entrypoint\Controller\Author;
 
 use Colybri\Library\Application\Query\Author\Match\MatchAuthorQuery;
 use Colybri\Library\Entrypoint\Controller\QueryController;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 

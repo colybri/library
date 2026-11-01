@@ -6,7 +6,7 @@ namespace Colybri\Library\Tests\Application\Command\Book\Delete;
 
 use PHPUnit\Framework\Attributes\Test;
 use Colybri\Library\Application\Command\Book\Delete\DeleteBookCommand;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use PHPUnit\Framework\TestCase;
 
 final class DeleteBookCommandTest extends TestCase

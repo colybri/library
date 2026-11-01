@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Colybri\Library\Domain\Model\Country\ValueObject;
 
 use Assert\Assert;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\StringValueObject;
+use PcComponentes\Ddd\Domain\Model\ValueObject\StringValueObject;
 
 class CountryAlpha2Code extends StringValueObject
 {

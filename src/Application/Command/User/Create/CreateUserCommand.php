@@ -13,7 +13,7 @@ use Colybri\Library\Domain\Model\User\User;
 use Colybri\Library\Domain\Model\User\ValueObject\UserEmail;
 use Colybri\Library\Domain\Model\User\ValueObject\UserIsActive;
 use Colybri\Library\Domain\Model\User\ValueObject\UserPassword;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 
 final class CreateUserCommand extends Command
 {

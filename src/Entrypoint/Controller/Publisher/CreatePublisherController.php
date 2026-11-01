@@ -6,7 +6,7 @@ namespace Colybri\Library\Entrypoint\Controller\Publisher;
 
 use Colybri\Library\Application\Command\Publisher\Create\CreatePublisherCommand;
 use Colybri\Library\Entrypoint\Controller\CommandController;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

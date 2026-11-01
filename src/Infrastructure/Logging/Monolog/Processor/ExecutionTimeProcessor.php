@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Infrastructure\Logging\Monolog\Processor;
 
-use Forkrefactor\Ddd\Util\Message\Message;
+use PcComponentes\Ddd\Util\Message\Message;
+use Monolog\LogRecord;
 use Monolog\Processor\ProcessorInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 
@@ -17,19 +18,19 @@ final class ExecutionTimeProcessor implements ProcessorInterface
         $this->stopwatch = $stopwatch;
     }
 
-    public function __invoke(array $record): array
+    public function __invoke(LogRecord $record): LogRecord
     {
-        if (false === \array_key_exists('message', $record['context'])) {
+        if (false === \array_key_exists('message', $record->context)) {
             return $record;
         }
 
-        $message = $record['context']['message'];
+        $message = $record->context['message'];
 
         if (false === $message instanceof Message) {
             return $record;
         }
 
-        $record['extra']['execution_time'] = $this->getExecutionTime($message);
+        $record->extra['execution_time'] = $this->getExecutionTime($message);
 
         return $record;
     }

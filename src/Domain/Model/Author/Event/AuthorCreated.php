@@ -13,8 +13,8 @@ use Colybri\Library\Domain\Model\Author\ValueObject\AuthorBornAt;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorDeathAt;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorFirstName;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorLastName;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\DateTimeValueObject;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\DateTimeValueObject;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 
 final class AuthorCreated extends DomainEvent
 {
@@ -49,7 +49,7 @@ final class AuthorCreated extends DomainEvent
         return static::fromPayload(
             Uuid::v4(),
             $id,
-            new DateTimeValueObject(),
+            DateTimeValueObject::now(),
             [
                 self::AUTHOR_ID_PAYLOAD => $id->value(),
                 self::AUTHOR_NAME_PAYLOAD => $name->value(),

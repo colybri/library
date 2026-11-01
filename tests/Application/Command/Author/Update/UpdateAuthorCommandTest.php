@@ -10,7 +10,7 @@ use Colybri\Library\Application\Command\Author\Update\UpdateAuthorCommand;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorBornAt;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorDeathAt;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorFirstName;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use Monolog\Test\TestCase;
 
 final class UpdateAuthorCommandTest extends TestCase

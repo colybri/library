@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Colybri\Library\Domain\Model\Edition\ValueObject;
 
 use Assert\Assert;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\StringValueObject;
+use PcComponentes\Ddd\Domain\Model\ValueObject\StringValueObject;
 
 class EditionImageUrl extends StringValueObject
 {

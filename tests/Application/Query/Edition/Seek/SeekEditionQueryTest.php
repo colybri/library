@@ -6,7 +6,7 @@ namespace Colybri\Library\Tests\Application\Query\Edition\Seek;
 
 use PHPUnit\Framework\Attributes\Test;
 use Colybri\Library\Application\Query\Edition\Seek\SeekEditionQuery;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use PHPUnit\Framework\TestCase;
 
 final class SeekEditionQueryTest extends TestCase

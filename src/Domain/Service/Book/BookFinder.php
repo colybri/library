@@ -7,7 +7,7 @@ namespace Colybri\Library\Domain\Service\Book;
 use Colybri\Library\Domain\Model\Book\Book;
 use Colybri\Library\Domain\Model\Book\BookRepository;
 use Colybri\Library\Domain\Model\Book\Exception\BookDoesNotExistException;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 
 final class BookFinder
 {

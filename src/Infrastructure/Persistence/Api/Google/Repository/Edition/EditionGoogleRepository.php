@@ -22,7 +22,7 @@ use Colybri\Library\Domain\Model\Edition\ValueObject\EditionTitle;
 use Colybri\Library\Domain\Model\Edition\ValueObject\EditionYear;
 use Colybri\Library\Infrastructure\Exception\RepositoryMethodNotImplementException;
 use Colybri\Library\Infrastructure\Persistence\Api\Google\GoogleRepository;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use phpDocumentor\Reflection\DocBlock\Tags\Throws;
 
 final class EditionGoogleRepository extends GoogleRepository implements EditionRepository

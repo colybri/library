@@ -14,7 +14,7 @@ use Colybri\Library\Domain\Service\Author\AuthorDeleter;
 use Colybri\Library\Domain\Service\Author\AuthorFinder;
 use Colybri\Library\Tests\Mock\Domain\Model\Author\AuthorObjectMother;
 use Colybri\Library\Tests\Mock\Infrastructure\Bus\FakeEventBus;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 

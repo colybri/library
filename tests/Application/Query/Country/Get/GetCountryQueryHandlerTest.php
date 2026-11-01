@@ -12,7 +12,7 @@ use Colybri\Library\Domain\Model\Country\Exception\CountryDoesNotExistException;
 use Colybri\Library\Domain\Service\Country\CountryFinder;
 use Colybri\Library\Domain\Service\Country\CountrySearcher;
 use Colybri\Library\Tests\Mock\Domain\Model\Country\CountryObjectMother;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 

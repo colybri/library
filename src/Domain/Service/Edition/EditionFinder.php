@@ -7,7 +7,7 @@ namespace Colybri\Library\Domain\Service\Edition;
 use Colybri\Library\Domain\Model\Edition\Edition;
 use Colybri\Library\Domain\Model\Edition\EditionRepository;
 use Colybri\Library\Domain\Model\Edition\Exception\EditionDoesNotExistException;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 
 final class EditionFinder
 {

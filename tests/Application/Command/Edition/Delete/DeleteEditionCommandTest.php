@@ -6,7 +6,7 @@ namespace Colybri\Library\Tests\Application\Command\Edition\Delete;
 
 use PHPUnit\Framework\Attributes\Test;
 use Colybri\Library\Application\Command\Edition\Delete\DeleteEditionCommand;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use PHPUnit\Framework\TestCase;
 
 final class DeleteEditionCommandTest extends TestCase

@@ -6,7 +6,7 @@ namespace Colybri\Library\Tests\Application\Command\Author\Delete;
 
 use PHPUnit\Framework\Attributes\Test;
 use Colybri\Library\Application\Command\Author\Delete\DeleteAuthorCommand;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use Monolog\Test\TestCase;
 use Assert\InvalidArgumentException;
 

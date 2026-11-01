@@ -6,7 +6,7 @@ namespace Colybri\Library\Domain\Service\Country;
 
 use Colybri\Library\Domain\Model\Country\Country;
 use Colybri\Library\Domain\Model\Country\Exception\CountryDoesNotExistException;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 
 final class CountryFinder
 {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Domain\Messaging;
 
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 
 interface ProcessorRepository
 {

@@ -14,7 +14,7 @@ use Colybri\Library\Domain\Model\Author\ValueObject\AuthorLastName;
 use Colybri\Library\Domain\Service\Author\AuthorMatcher;
 use Colybri\Library\Domain\Service\Shared\SimilarityAligner;
 use Colybri\Library\Tests\Mock\Domain\Model\Author\AuthorObjectMother;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 

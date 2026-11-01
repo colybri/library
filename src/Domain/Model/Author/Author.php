@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Colybri\Library\Domain\Model\Author;
 
 use Colybri\Library\Domain\Model\SimpleAggregateRoot;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use Colybri\Library\Domain\Model\Author\Event\AuthorDeleted;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorLastName;
 use Colybri\Library\Domain\Model\Author\Event\AuthorCreated;

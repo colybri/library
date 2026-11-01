@@ -6,7 +6,7 @@ namespace Colybri\Library\Entrypoint\Controller\Publisher;
 
 use Colybri\Library\Application\Query\Publisher\Macth\MatchPublisherQuery;
 use Colybri\Library\Entrypoint\Controller\QueryController;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use Symfony\Component\HttpFoundation\Request;
 
 final class MatchPublisherController extends QueryController
