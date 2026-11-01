@@ -60,8 +60,8 @@ final class GenerateSupervisorRabbitMqConsumerFilesCommand extends Command
                 $subscriberName,
                 $queueName,
                 $path,
-                self::NUMBERS_OF_PROCESSES_PER_SUBSCRIBER,
-                self::EVENTS_TO_PROCESS_AT_TIME
+                (string) self::NUMBERS_OF_PROCESSES_PER_SUBSCRIBER,
+                (string) self::EVENTS_TO_PROCESS_AT_TIME
             ],
             $this->template()
         );

@@ -32,7 +32,7 @@ final class UpdateAuthorCommand extends Command
 
     private Uuid $authorId;
     private AuthorFirstName $firstName;
-    private AuthorLastName $lastName;
+    private ?AuthorLastName $lastName;
     private Uuid $countryId;
     private ?Uuid $isPseudonymOf;
     private AuthorBornAt $bornAt;

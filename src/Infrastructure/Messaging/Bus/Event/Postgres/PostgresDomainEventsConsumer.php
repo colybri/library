@@ -6,6 +6,7 @@ namespace Colybri\Library\Infrastructure\Messaging\Bus\Event\Postgres;
 
 use Colybri\Library\Domain\Messaging\DomainEvent;
 use Colybri\Library\Infrastructure\Messaging\Bus\Event\DomainEventMapping;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 
 class PostgresDomainEventsConsumer
@@ -52,7 +53,7 @@ class PostgresDomainEventsConsumer
             $this->connectionWrite->executeStatement(
                 'DELETE FROM events_pending_queue WHERE id IN (:ids)',
                 ['ids' => $ids],
-                ['ids' => Connection::PARAM_STR_ARRAY]
+                ['ids' => ArrayParameterType::STRING]
             );
         }
     }
