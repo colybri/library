@@ -16,8 +16,7 @@ final class ConsumePostgresDomainEventsCommand extends Command
 
     public function __construct(
         private PostgresDomainEventsConsumer $consumer,
-    )
-    {
+    ) {
         parent::__construct();
     }
 

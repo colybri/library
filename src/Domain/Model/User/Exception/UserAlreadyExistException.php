@@ -8,5 +8,4 @@ use Colybri\Library\Domain\Exception\ExistsException;
 
 final class UserAlreadyExistException extends ExistsException
 {
-
 }

@@ -16,8 +16,7 @@ final class ConsumeRabbitMqDomainEventsCommand extends Command
 
     public function __construct(
         private RabbitMqDomainEventsConsumer $consumer
-    )
-    {
+    ) {
         parent::__construct();
     }
 
@@ -35,5 +34,4 @@ final class ConsumeRabbitMqDomainEventsCommand extends Command
 
         return Command::SUCCESS;
     }
-
 }

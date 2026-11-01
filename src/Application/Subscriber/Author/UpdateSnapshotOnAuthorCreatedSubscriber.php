@@ -23,7 +23,6 @@ final class UpdateSnapshotOnAuthorCreatedSubscriber implements DomainEventSubscr
     public function __invoke(DomainEvent $event): void
     {
         if ($this->processedSubscribers->isNotAlreadyProcessed($event->messageId(), get_class())) {
-
             $this->processor->execute();
 
 

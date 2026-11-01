@@ -6,7 +6,7 @@ namespace Colybri\Library\Domain\Messaging\Message\ValueObject;
 
 abstract class ServiceValueObject extends MessageValueObjectMultiton
 {
-    public static function instance(): ServiceValueObject
+    public static function instance(): static
     {
         return parent::instance();
     }

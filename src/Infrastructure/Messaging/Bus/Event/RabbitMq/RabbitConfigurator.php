@@ -37,8 +37,7 @@ final class RabbitConfigurator
         string $retryExchangeName,
         string $deadLetterExchangeName,
         DomainEventSubscriber $subscriber
-    )
-    {
+    ) {
         $queueName           = RabbitMqQueueNameFormatter::format($subscriber);
         $retryQueueName      = RabbitMqQueueNameFormatter::formatRetry($subscriber);
         $deadLetterQueueName = RabbitMqQueueNameFormatter::formatDeadLetter($subscriber);
@@ -70,9 +69,8 @@ final class RabbitConfigurator
         string $name,
         string $deadLetterExchange = null,
         string $deadLetterRoutingKey = null,
-        int    $messageTtl = null
-    ): \AMQPQueue
-    {
+        int $messageTtl = null
+    ): \AMQPQueue {
         $queue = $this->connection->queue($name);
 
         if (null !== $deadLetterExchange) {
@@ -92,6 +90,4 @@ final class RabbitConfigurator
 
         return $queue;
     }
-
-
 }

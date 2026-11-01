@@ -30,5 +30,4 @@ final class UserDbalMap implements EntityMap
     {
         return self::TABLE;
     }
-
 }
