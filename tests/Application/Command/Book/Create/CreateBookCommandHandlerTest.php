@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Tests\Application\Command\Book\Create;
 
+use PHPUnit\Framework\Attributes\Test;
 use Colybri\Library\Application\Command\Book\Create\CreateBookCommand;
 use Colybri\Library\Application\Command\Book\Create\CreateBookCommandHandler;
 use Colybri\Library\Domain\Model\Author\AuthorRepository;
@@ -62,9 +63,7 @@ final class CreateBookCommandHandlerTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_non_existing_book_then_create_it()
     {
         $this->repository->expects($this->once())->method('insert');
@@ -87,9 +86,7 @@ final class CreateBookCommandHandlerTest extends TestCase
         $this->assertInstanceOf(BookCreated::class, $events[0]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_existing_book_then_throw_exception(): void
     {
         $this->expectException(BookAlreadyExistException::class);
@@ -115,9 +112,7 @@ final class CreateBookCommandHandlerTest extends TestCase
         ($this->handler)($this->command($bookId, $authorId));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_non_existing_author_then_throw_exception(): void
     {
         $this->expectException(AuthorDoesNotExistException::class);

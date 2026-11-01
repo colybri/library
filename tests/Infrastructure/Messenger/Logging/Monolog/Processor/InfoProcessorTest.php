@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Tests\Infrastructure\Messenger\Logging\Monolog\Processor;
 
+use PHPUnit\Framework\Attributes\Test;
 use Colybri\Library\Infrastructure\Logging\Monolog\Processor\InfoProcessor;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\DateTimeValueObject;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
@@ -13,9 +14,7 @@ use PHPUnit\Framework\TestCase;
 
 class InfoProcessorTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function given_context_without_message_key_then_return_same_record()
     {
         $record = [
@@ -27,9 +26,7 @@ class InfoProcessorTest extends TestCase
         $this->assertEquals($record, $result);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_context_without_domain_message_then_return_same_record()
     {
         $record = [
@@ -43,9 +40,7 @@ class InfoProcessorTest extends TestCase
         $this->assertEquals($record, $result);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_context_with_domain_message_then_return_record_with_message_info()
     {
 
@@ -71,9 +66,7 @@ class InfoProcessorTest extends TestCase
         $this->assertArrayHasKey('payload', $result['extra']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_context_with_domain_aggregate_message_then_return_record_with_message_info()
     {
         $aggregateMessageUuid = Uuid::from('3c2c23f9-423d-4a87-ae42-4e05bb55926c');

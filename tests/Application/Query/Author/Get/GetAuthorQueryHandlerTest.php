@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Tests\Application\Query\Author\Get;
 
+use PHPUnit\Framework\Attributes\Test;
 use Colybri\Library\Application\Query\Author\Get\GetAuthorQuery;
 use Colybri\Library\Application\Query\Author\Get\GetAuthorQueryHandler;
 use Colybri\Library\Domain\Model\Author\AuthorRepository;
@@ -41,9 +42,7 @@ final class GetAuthorQueryHandlerTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_existing_author_then_retrieve_it(): void
     {
         $authorId = Uuid::v4();
@@ -65,9 +64,7 @@ final class GetAuthorQueryHandlerTest extends TestCase
         $this->assertArrayHasKey('deathAt', $author);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_not_existing_author_then_throw_author_does_not_exist_exception(): void
     {
         $this->expectException(AuthorDoesNotExistException::class);

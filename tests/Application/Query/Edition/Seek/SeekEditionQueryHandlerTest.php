@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Tests\Application\Query\Edition\Seek;
 
+use PHPUnit\Framework\Attributes\Test;
 use Colybri\Library\Application\Query\Edition\Seek\SeekEditionQuery;
 use Colybri\Library\Application\Query\Edition\Seek\SeekEditionQueryHandler;
 use Colybri\Library\Domain\Model\Edition\Edition;
@@ -47,9 +48,7 @@ final class SeekEditionQueryHandlerTest extends TestCase
         return [$mockOne->build(), $mockTwo->build()];
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_search_parameters_when_query_is_invoke_then_retrieve_result(): void
     {
 

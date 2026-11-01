@@ -67,9 +67,9 @@ final class RabbitConfigurator
 
     private function declareQueue(
         string $name,
-        string $deadLetterExchange = null,
-        string $deadLetterRoutingKey = null,
-        int $messageTtl = null
+        ?string $deadLetterExchange = null,
+        ?string $deadLetterRoutingKey = null,
+        ?int $messageTtl = null
     ): \AMQPQueue {
         $queue = $this->connection->queue($name);
 

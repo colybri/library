@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Tests\Application\Command\Author\Update;
 
+use PHPUnit\Framework\Attributes\Test;
 use Colybri\Library\Application\Command\Author\Update\UpdateAuthorCommand;
 use Colybri\Library\Application\Command\Author\Update\UpdateAuthorCommandHandler;
 use Colybri\Library\Domain\Model\Author\AuthorRepository;
@@ -51,9 +52,7 @@ final class UpdateAuthorCommandHandlerTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_existing_author_then_update_it()
     {
         $authorId = Uuid::v4();
@@ -69,9 +68,7 @@ final class UpdateAuthorCommandHandlerTest extends TestCase
         ($this->handler)($this->command($authorId));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_non_existing_author_then_throw_exception()
     {
         $this->expectException(AuthorDoesNotExistException::class);

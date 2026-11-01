@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Tests\Application\Query\Author\Match;
 
+use PHPUnit\Framework\Attributes\Test;
 use Colybri\Library\Application\Query\Author\Match\MatchAuthorQuery;
 use Colybri\Library\Application\Query\Author\Match\MatchAuthorQueryHandler;
 use Colybri\Library\Domain\Model\Author\Author;
@@ -30,9 +31,7 @@ final class MatchAuthorQueryHandlerTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_authors_when_search_then_order_result(): void
     {
         list($mockOne, $mockTwo) = $this->authors();
@@ -52,9 +51,7 @@ final class MatchAuthorQueryHandlerTest extends TestCase
         self::assertSame($response->items()[0]->lastName(), $mockTwo->lastName());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_authors_when_search_then_paginate_result(): void
     {
 

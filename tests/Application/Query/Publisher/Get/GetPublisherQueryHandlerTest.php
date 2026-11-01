@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Tests\Application\Query\Publisher\Get;
 
+use PHPUnit\Framework\Attributes\Test;
 use Colybri\Library\Application\Query\Publisher\Get\GetPublisherQuery;
 use Colybri\Library\Application\Query\Publisher\Get\GetPublisherQueryHandler;
 use Colybri\Library\Domain\Model\Publisher\Exception\PublisherDoesNotExistException;
@@ -41,9 +42,7 @@ final class GetPublisherQueryHandlerTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_existing_publisher_then_retrieve_it(): void
     {
         $publisherId = Uuid::v4();
@@ -63,9 +62,7 @@ final class GetPublisherQueryHandlerTest extends TestCase
         $this->assertArrayHasKey('foundationYear', $publisher);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_not_existing_publisher_then_throw_exception(): void
     {
         $this->expectException(PublisherDoesNotExistException::class);

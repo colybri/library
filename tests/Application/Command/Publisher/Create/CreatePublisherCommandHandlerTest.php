@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Tests\Application\Command\Publisher\Create;
 
+use PHPUnit\Framework\Attributes\Test;
 use Colybri\Library\Application\Command\Publisher\Create\CreatePublisherCommand;
 use Colybri\Library\Application\Command\Publisher\Create\CreatePublisherCommandHandler;
 use Colybri\Library\Domain\Model\Publisher\Exception\PublisherAlreadyExistException;
@@ -45,9 +46,7 @@ final class CreatePublisherCommandHandlerTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_non_existing_publisher_then_create_it()
     {
         $this->repository->expects($this->once())->method('insert');
@@ -55,9 +54,7 @@ final class CreatePublisherCommandHandlerTest extends TestCase
         ($this->handler)($this->command(Uuid::v4()));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_existing_publisher_then_throw_exception()
     {
         $this->expectException(PublisherAlreadyExistException::class);

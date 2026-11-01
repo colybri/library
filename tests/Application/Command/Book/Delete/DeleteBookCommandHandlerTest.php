@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Tests\Application\Command\Book\Delete;
 
+use PHPUnit\Framework\Attributes\Test;
 use Colybri\Library\Application\Command\Book\Delete\DeleteBookCommand;
 use Colybri\Library\Application\Command\Book\Delete\DeleteBookCommandHandler;
 use Colybri\Library\Domain\Model\Book\BookRepository;
@@ -49,9 +50,7 @@ final class DeleteBookCommandHandlerTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_existing_book_then_delete_it(): void
     {
         $bookId = Uuid::v4();
@@ -71,9 +70,7 @@ final class DeleteBookCommandHandlerTest extends TestCase
         $this->assertInstanceOf(BookDeleted::class, $this->bus->events()[0]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function given_not_existing_book_then_throw_exception(): void
     {
         $this->expectException(BookDoesNotExistException::class);

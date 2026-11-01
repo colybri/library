@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Tests\Smoke;
 
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Yaml\Yaml;
 
 final class KernelBootTest extends KernelTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function kernel_boots_and_builds_the_buses(): void
     {
         $kernel = self::bootKernel();
@@ -22,9 +21,7 @@ final class KernelBootTest extends KernelTestCase
         self::assertTrue(self::getContainer()->has('query.bus'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function every_api_route_points_to_an_existing_controller(): void
     {
         self::bootKernel();
