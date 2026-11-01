@@ -97,7 +97,7 @@
         },
         "post-install-cmd": [
             "@auto-scripts",
-            "./vendor/bin/grumphp git:init"
+            "[ ! -x vendor/bin/grumphp ] || vendor/bin/grumphp git:init"
         ],
         "post-update-cmd": [
             "@auto-scripts"
