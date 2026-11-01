@@ -6,9 +6,8 @@ namespace Colybri\Library\Application\Query\Author\Match;
 
 use Colybri\Library\Application\Query\Shared\ListResponse;
 use Colybri\Library\Domain\Service\Author\AuthorMatcher;
-use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
-final class MatchAuthorQueryHandler implements MessageHandlerInterface
+final class MatchAuthorQueryHandler
 {
     public function __construct(private AuthorMatcher $matcher)
     {

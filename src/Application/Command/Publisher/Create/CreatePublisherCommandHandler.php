@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Colybri\Library\Application\Command\Publisher\Create;
 
 use Colybri\Library\Domain\Service\Publisher\PublisherCreator;
-use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
-final class CreatePublisherCommandHandler implements MessageHandlerInterface
+final class CreatePublisherCommandHandler
 {
     public function __construct(private PublisherCreator $creator)
     {

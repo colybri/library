@@ -32,7 +32,7 @@ final class GenerateSupervisorRabbitMqConsumerFilesCommand extends Command
         parent::__construct();
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $path = (string)$input->getArgument('command-path');
 

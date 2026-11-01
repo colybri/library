@@ -6,9 +6,8 @@ namespace Colybri\Library\Application\Command\Author\Delete;
 
 use Colybri\Library\Domain\Messaging\EventBus;
 use Colybri\Library\Domain\Service\Author\AuthorDeleter;
-use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
-final class DeleteAuthorCommandHandler implements MessageHandlerInterface
+final class DeleteAuthorCommandHandler
 {
     public function __construct(private AuthorDeleter $deleter, private EventBus $brokerBus)
     {

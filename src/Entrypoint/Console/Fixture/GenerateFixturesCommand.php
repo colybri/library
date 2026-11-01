@@ -17,7 +17,7 @@ class GenerateFixturesCommand extends Command
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setDescription('generate fixtures')
             ->setName(self::NAME)

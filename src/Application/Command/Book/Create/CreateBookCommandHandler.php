@@ -6,9 +6,8 @@ namespace Colybri\Library\Application\Command\Book\Create;
 
 use Colybri\Library\Domain\Messaging\EventBus;
 use Colybri\Library\Domain\Service\Book\BookCreator;
-use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
-final class CreateBookCommandHandler implements MessageHandlerInterface
+final class CreateBookCommandHandler
 {
     public function __construct(private BookCreator $creator, private EventBus $brokerBus)
     {

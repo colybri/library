@@ -4,7 +4,6 @@ includes:
 	- ./phpstan-baseline.neon
 parameters:
     level: 3
-    checkMissingIterableValueType: false
     paths:
         - src
         - tests

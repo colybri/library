@@ -6,9 +6,8 @@ namespace Colybri\Library\Application\Command\Author\Create;
 
 use Colybri\Library\Domain\Messaging\EventBus;
 use Colybri\Library\Domain\Service\Author\AuthorCreator;
-use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
-final class CreateAuthorCommandHandler implements MessageHandlerInterface
+final class CreateAuthorCommandHandler
 {
     public function __construct(private AuthorCreator $creator, private EventBus $brokerBus)
     {

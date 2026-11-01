@@ -6,9 +6,8 @@ namespace Colybri\Library\Application\Command\Book\Delete;
 
 use Colybri\Library\Domain\Messaging\EventBus;
 use Colybri\Library\Domain\Service\Book\BookDeleter;
-use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
-final class DeleteBookCommandHandler implements MessageHandlerInterface
+final class DeleteBookCommandHandler
 {
     public function __construct(private BookDeleter $deleter, private EventBus $brokerBus)
     {

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Colybri\Library\Application\Query\Country\Match;
 
 use Colybri\Library\Application\Query\Shared\ListResponse;
-use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Colybri\Criteria\Domain\Criteria;
 use Colybri\Criteria\Domain\Filters;
 use Colybri\Criteria\Domain\Disjunction;
@@ -20,7 +19,7 @@ use Colybri\Library\Domain\Model\Country\CountryRepository;
 use Colybri\Library\Domain\Model\Country\ValueObject\CountryAlpha2Code;
 use Colybri\Library\Domain\Model\Country\ValueObject\CountryName;
 
-final class MatchCountryQueryHandler implements MessageHandlerInterface
+final class MatchCountryQueryHandler
 {
     public function __construct(private CountryRepository $countryRepository)
     {
