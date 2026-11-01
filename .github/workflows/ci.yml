@@ -84,8 +84,6 @@ jobs:
   security:
     name: Dependency audit
     runs-on: ubuntu-latest
-    # Report-only until the migration updates the 2022-era dependencies.
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
 
@@ -95,5 +93,15 @@ jobs:
           coverage: none
           tools: composer:v2
 
+      # Report-only until the migration updates the 2022-era dependencies:
+      # advisories show up as a warning and in the job summary, but the check
+      # stays green. Make it blocking once the dependencies are up to date.
       - name: Audit composer.lock
-        run: composer audit --locked --no-dev
+        run: |
+          if composer audit --locked --no-dev --format=plain > audit.txt 2>&1; then
+            echo "No known advisories." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "::warning title=Dependency audit::composer audit reported advisories, see the job summary"
+            { echo '```'; cat audit.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          fi
+          cat audit.txt
