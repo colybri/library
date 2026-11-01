@@ -7,7 +7,7 @@ namespace Colybri\Library\Tests\Application\Command\Publisher\Delete;
 use PHPUnit\Framework\Attributes\Test;
 use Assert\InvalidArgumentException;
 use Colybri\Library\Application\Command\Publisher\Delete\DeletePublisherCommand;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use PHPUnit\Framework\TestCase;
 
 final class DeletePublisherCommandTest extends TestCase

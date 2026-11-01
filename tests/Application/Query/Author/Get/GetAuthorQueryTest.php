@@ -7,7 +7,7 @@ namespace Colybri\Library\Tests\Application\Query\Author\Get;
 use PHPUnit\Framework\Attributes\Test;
 use Assert\InvalidArgumentException;
 use Colybri\Library\Application\Query\Author\Get\GetAuthorQuery;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use Monolog\Test\TestCase;
 
 final class GetAuthorQueryTest extends TestCase

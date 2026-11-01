@@ -9,7 +9,7 @@ use Colybri\Library\Domain\Model\Author\ValueObject\AuthorBornAt;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorDeathAt;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorFirstName;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorIsPseudonymOf;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 
 final class AuthorDbalMap implements EntityMap
 {

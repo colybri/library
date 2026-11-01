@@ -7,7 +7,7 @@ namespace Colybri\Library\Tests\Application\Query\Publisher\Match;
 use PHPUnit\Framework\Attributes\Test;
 use Assert\InvalidArgumentException;
 use Colybri\Library\Application\Query\Publisher\Macth\MatchPublisherQuery;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use PHPUnit\Framework\TestCase;
 
 final class MatchPublisherQueryTest extends TestCase

@@ -12,7 +12,7 @@ use Colybri\Library\Domain\Model\Edition\Exception\EditionDoesNotExistException;
 use Colybri\Library\Domain\Service\Edition\EditionDeleter;
 use Colybri\Library\Domain\Service\Edition\EditionFinder;
 use Colybri\Library\Tests\Mock\Domain\Model\Edition\EditionObjectMother;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 

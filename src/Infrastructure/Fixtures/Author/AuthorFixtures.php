@@ -11,7 +11,7 @@ use Colybri\Library\Domain\Model\Author\ValueObject\AuthorDeathAt;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorFirstName;
 use Colybri\Library\Infrastructure\Fixtures\Country\CountryFixtures;
 use Colybri\Library\Infrastructure\Fixtures\FixtureRepository;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 
 final class AuthorFixtures implements FixtureRepository
 {

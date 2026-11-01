@@ -8,7 +8,7 @@ use Colybri\Library\Domain\Model\Publisher\ValueObject\PublisherCity;
 use Colybri\Library\Domain\Model\Publisher\ValueObject\PublisherFoundationYear;
 use Colybri\Library\Domain\Model\Publisher\ValueObject\PublisherName;
 use Colybri\Library\Domain\Model\SimpleAggregateRoot;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 
 class Publisher extends SimpleAggregateRoot
 {

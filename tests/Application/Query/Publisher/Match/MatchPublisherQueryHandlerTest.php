@@ -10,7 +10,7 @@ use Colybri\Library\Application\Query\Publisher\Macth\MatchPublisherQueryHandler
 use Colybri\Library\Domain\Model\Publisher\Publisher;
 use Colybri\Library\Domain\Model\Publisher\PublisherRepository;
 use Colybri\Library\Tests\Mock\Domain\Model\Publisher\PublisherObjectMother;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 

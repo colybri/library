@@ -8,7 +8,7 @@ use Colybri\Library\Domain\Model\Journal\ValueObject\JournalFoundationYear;
 use Colybri\Library\Domain\Model\Journal\ValueObject\JournalImage;
 use Colybri\Library\Domain\Model\Journal\ValueObject\JournalName;
 use Colybri\Library\Domain\Model\SimpleAggregateRoot;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 
 final class Journal extends SimpleAggregateRoot
 {

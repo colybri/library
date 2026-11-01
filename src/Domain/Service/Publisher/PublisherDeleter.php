@@ -6,7 +6,7 @@ namespace Colybri\Library\Domain\Service\Publisher;
 
 use Colybri\Library\Domain\Model\Publisher\Publisher;
 use Colybri\Library\Domain\Model\Publisher\PublisherRepository;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 
 class PublisherDeleter
 {

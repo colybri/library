@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Colybri\Library\Infrastructure\Messaging\Event\Redis;
 
 use Colybri\Library\Domain\Messaging\ProcessorRepository;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 
 class RedisProcessorRepository implements ProcessorRepository
 {

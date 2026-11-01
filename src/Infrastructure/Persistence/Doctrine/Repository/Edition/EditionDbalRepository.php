@@ -20,7 +20,7 @@ use Colybri\Library\Domain\Model\Edition\ValueObject\EditionYear;
 use Colybri\Library\Infrastructure\Exception\RepositoryMethodNotImplementException;
 use Colybri\Library\Infrastructure\Persistence\Doctrine\Repository\DbalRepository;
 use Doctrine\DBAL\ParameterType;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use Isbn\Isbn;
 
 final class EditionDbalRepository extends DbalRepository implements EditionRepository

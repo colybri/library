@@ -10,7 +10,7 @@ use Colybri\Library\Domain\Messaging\Message\ValueObject\MessageName;
 use Colybri\Library\Domain\VendorName;
 use Colybri\Library\Domain\ServiceName;
 use Colybri\Library\Domain\Model\Book\Book;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 
 final class DeleteBookCommand extends Command
 {

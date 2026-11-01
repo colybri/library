@@ -12,7 +12,7 @@ use Colybri\Library\Domain\Model\Publisher\ValueObject\PublisherCity;
 use Colybri\Library\Domain\Model\Publisher\ValueObject\PublisherFoundationYear;
 use Colybri\Library\Domain\Model\Publisher\ValueObject\PublisherName;
 use Colybri\Library\Infrastructure\Persistence\Doctrine\Repository\DbalRepository;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 
 class PublisherDbalRepository extends DbalRepository implements PublisherRepository
 {

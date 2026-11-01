@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Infrastructure\Logging\Monolog\Processor;
 
-use Forkrefactor\Ddd\Util\Message\AggregateMessage;
-use Forkrefactor\Ddd\Util\Message\Message;
+use PcComponentes\Ddd\Util\Message\AggregateMessage;
+use PcComponentes\Ddd\Util\Message\Message;
+use Monolog\LogRecord;
 use Monolog\Processor\ProcessorInterface;
 
 final class InfoProcessor implements ProcessorInterface
 {
-    public function __invoke(array $record): array
+    public function __invoke(LogRecord $record): LogRecord
     {
-        if (false === \array_key_exists('message', $record['context'])) {
+        if (false === \array_key_exists('message', $record->context)) {
             return $record;
         }
 
@@ -22,33 +23,33 @@ final class InfoProcessor implements ProcessorInterface
         return $record;
     }
 
-    private function messageInfo(array $record): array
+    private function messageInfo(LogRecord $record): LogRecord
     {
-        $message = $record['context']['message'];
+        $message = $record->context['message'];
 
         if (false === $message instanceof Message) {
             return $record;
         }
 
-        $record['extra']['message_id'] = $message->messageId()->value();
-        $record['extra']['name'] = $message::messageName();
-        $record['extra']['type'] = $message::messageType();
-        $record['extra']['payload'] = \json_encode($record['context']['message']);
+        $record->extra['message_id'] = $message->messageId()->value();
+        $record->extra['name'] = $message::messageName();
+        $record->extra['type'] = $message::messageType();
+        $record->extra['payload'] = \json_encode($record->context['message']);
 
         return $record;
     }
 
-    private function aggregateInfo(array $record): array
+    private function aggregateInfo(LogRecord $record): LogRecord
     {
-        $message = $record['context']['message'];
+        $message = $record->context['message'];
 
         if (false === $message instanceof AggregateMessage) {
             return $record;
         }
 
-        $record['extra']['aggregate_id'] = $message->aggregateId();
-        $record['extra']['aggregate_version'] = $message->aggregateVersion();
-        $record['extra']['occurred_on'] = $message->occurredOn()->format(\DateTime::ATOM);
+        $record->extra['aggregate_id'] = $message->aggregateId()->value();
+        $record->extra['aggregate_version'] = $message->aggregateVersion();
+        $record->extra['occurred_on'] = $message->occurredOn()->format(\DateTime::ATOM);
 
         return $record;
     }

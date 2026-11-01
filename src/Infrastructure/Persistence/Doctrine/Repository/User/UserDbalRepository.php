@@ -10,7 +10,7 @@ use Colybri\Library\Domain\Model\User\ValueObject\UserEmail;
 use Colybri\Library\Domain\Model\User\ValueObject\UserIsActive;
 use Colybri\Library\Domain\Model\User\ValueObject\UserPassword;
 use Colybri\Library\Infrastructure\Persistence\Doctrine\Repository\DbalRepository;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 
 final class UserDbalRepository extends DbalRepository implements UserRepository
 {

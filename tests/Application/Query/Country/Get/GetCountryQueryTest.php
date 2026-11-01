@@ -7,7 +7,7 @@ namespace Colybri\Library\Tests\Application\Query\Country\Get;
 use PHPUnit\Framework\Attributes\Test;
 use Assert\InvalidArgumentException;
 use Colybri\Library\Application\Query\Country\Get\GetCountryQuery;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use PHPUnit\Framework\TestCase;
 
 final class GetCountryQueryTest extends TestCase

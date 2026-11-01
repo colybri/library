@@ -12,24 +12,24 @@ services:
 
   # Trace Middleware
   middleware.trace.request:
-    class: Forkrefactor\DddLogging\DomainTrace\RequestTraceMiddleware
+    class: PcComponentes\DddLogging\DomainTrace\RequestTraceMiddleware
     autowire: true
 
   middleware.trace.message:
-    class: Forkrefactor\DddLogging\DomainTrace\MessageTraceMiddleware
+    class: PcComponentes\DddLogging\DomainTrace\MessageTraceMiddleware
     autowire: true
 
 
   # Execution Time Middleware
   middleware.execution_time:
-    class: Forkrefactor\DddLogging\ExecutionTime\ExecutionTimeMiddleware
+    class: PcComponentes\DddLogging\ExecutionTime\ExecutionTimeMiddleware
     autowire: true
 
 
   # Logging Middleware
   middleware.logging.command:
     autowire: true
-    class: Forkrefactor\DddLogging\MessageLogger\MessageLoggerMiddleware
+    class: PcComponentes\DddLogging\MessageLogger\MessageLoggerMiddleware
     arguments:
       $action: '@middleware.logging.action.process'
     tags:
@@ -37,13 +37,13 @@ services:
 
 
   middleware.logging.action.publish:
-    class: Forkrefactor\DddLogging\MessageLogger\Action\PublishAction
+    class: PcComponentes\DddLogging\MessageLogger\Action\PublishAction
 
   middleware.logging.action.process:
-    class: Forkrefactor\DddLogging\MessageLogger\Action\ProcessAction
+    class: PcComponentes\DddLogging\MessageLogger\Action\ProcessAction
 
   middleware.logging.action.persist:
-    class: Forkrefactor\DddLogging\MessageLogger\Action\PersistAction
+    class: PcComponentes\DddLogging\MessageLogger\Action\PersistAction
 
 
 

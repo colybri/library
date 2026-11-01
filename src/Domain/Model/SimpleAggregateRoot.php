@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Colybri\Library\Domain\Model;
 
 use Colybri\Library\Domain\Messaging\Message\AggregateMessage;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 
 abstract class SimpleAggregateRoot implements \JsonSerializable
 {

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Domain\Model\Book\ValueObject;
 
-use Forkrefactor\Ddd\Domain\Model\ValueObject\CollectionValueObject;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\CollectionValueObject;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 
 final class BookAuthorIds extends CollectionValueObject
 {

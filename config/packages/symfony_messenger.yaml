@@ -1,0 +1,6 @@
+# pccomponentes/messenger-bundle. 'U' (seconds) keeps the occurred_on format
+# the forkrefactor bundle used.
+symfony_messenger:
+    aggregate_message:
+        occurred_on:
+            format: 'U'

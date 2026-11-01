@@ -6,7 +6,7 @@ namespace Application\Query\Edition\Get;
 
 use PHPUnit\Framework\Attributes\Test;
 use Colybri\Library\Application\Query\Edition\Get\GetEditionQuery;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use PHPUnit\Framework\TestCase;
 
 final class GetEditionQueryTest extends TestCase

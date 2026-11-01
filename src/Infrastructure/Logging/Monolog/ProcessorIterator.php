@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Infrastructure\Logging\Monolog;
 
+use Monolog\LogRecord;
 use Monolog\Processor\ProcessorInterface;
 
 final class ProcessorIterator implements ProcessorInterface
@@ -15,9 +16,8 @@ final class ProcessorIterator implements ProcessorInterface
         $this->processors = $processors;
     }
 
-    public function __invoke(array $record): array
+    public function __invoke(LogRecord $record): LogRecord
     {
-
         foreach ($this->processors as $processor) {
             $record = $processor($record);
         }

@@ -16,8 +16,8 @@ use Colybri\Library\Domain\Model\Book\ValueObject\BookPublishYear;
 use Colybri\Library\Domain\Model\Book\ValueObject\BookPublishYearIsEstimated;
 use Colybri\Library\Domain\Model\Book\ValueObject\BookSubtitle;
 use Colybri\Library\Domain\Model\Book\ValueObject\BookTitle;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\DateTimeValueObject;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\DateTimeValueObject;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 
 final class BookCreated extends DomainEvent
 {
@@ -67,7 +67,7 @@ final class BookCreated extends DomainEvent
         return static::fromPayload(
             Uuid::v4(),
             $id,
-            new DateTimeValueObject(),
+            DateTimeValueObject::now(),
             [
                 self::BOOK_ID_PAYLOAD => $id->value(),
                 self::BOOK_TITLE_PAYLOAD => $title->value(),

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Colybri\Library\Entrypoint\Console\User;
 
 use Colybri\Library\Application\Command\User\Create\CreateUserCommand;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

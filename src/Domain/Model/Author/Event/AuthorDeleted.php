@@ -9,8 +9,8 @@ use Colybri\Library\Domain\ServiceName;
 use Colybri\Library\Domain\Messaging\DomainEvent;
 use Colybri\Library\Domain\Messaging\Message\ValueObject\MessageName;
 use Colybri\Library\Domain\Model\Author\Author;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\DateTimeValueObject;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\DateTimeValueObject;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 
 class AuthorDeleted extends DomainEvent
 {
@@ -26,7 +26,7 @@ class AuthorDeleted extends DomainEvent
         return static::fromPayload(
             Uuid::v4(),
             $id,
-            new DateTimeValueObject(),
+            DateTimeValueObject::now(),
             [
                 self::AUTHOR_ID => $id->value(),
             ]

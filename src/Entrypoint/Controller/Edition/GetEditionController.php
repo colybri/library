@@ -7,7 +7,7 @@ namespace Colybri\Library\Entrypoint\Controller\Edition;
 use Colybri\Library\Application\Query\Country\Get\GetCountryQuery;
 use Colybri\Library\Application\Query\Edition\Get\GetEditionQuery;
 use Colybri\Library\Entrypoint\Controller\QueryController;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use Symfony\Component\HttpFoundation\Request;
 
 final class GetEditionController extends QueryController

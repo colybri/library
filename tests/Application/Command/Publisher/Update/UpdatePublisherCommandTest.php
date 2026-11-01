@@ -10,7 +10,7 @@ use Colybri\Library\Application\Command\Publisher\Update\UpdatePublisherCommand;
 use Colybri\Library\Domain\Model\Publisher\ValueObject\PublisherCity;
 use Colybri\Library\Domain\Model\Publisher\ValueObject\PublisherFoundationYear;
 use Colybri\Library\Domain\Model\Publisher\ValueObject\PublisherName;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use Monolog\Test\TestCase;
 
 final class UpdatePublisherCommandTest extends TestCase

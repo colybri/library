@@ -11,7 +11,7 @@ use Colybri\Library\Domain\Model\Paper\ValueObject\PaperPublishYear;
 use Colybri\Library\Domain\Model\Paper\ValueObject\PaperTitle;
 use Colybri\Library\Domain\Model\Paper\ValueObject\PaperJournalVolume;
 use Colybri\Library\Domain\Model\SimpleAggregateRoot;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 
 class Paper extends SimpleAggregateRoot
 {

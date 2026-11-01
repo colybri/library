@@ -8,7 +8,7 @@ use Colybri\Library\Domain\Model\SimpleAggregateRoot;
 use Colybri\Library\Domain\Model\User\ValueObject\UserEmail;
 use Colybri\Library\Domain\Model\User\ValueObject\UserIsActive;
 use Colybri\Library\Domain\Model\User\ValueObject\UserPassword;
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 
 class User extends SimpleAggregateRoot
 {

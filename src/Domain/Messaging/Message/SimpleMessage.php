@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Domain\Messaging\Message;
 
-use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 
 abstract class SimpleMessage extends Message
 {
