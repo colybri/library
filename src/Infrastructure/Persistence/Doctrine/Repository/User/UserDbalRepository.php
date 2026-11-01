@@ -14,7 +14,6 @@ use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 
 final class UserDbalRepository extends DbalRepository implements UserRepository
 {
-
     public function findByEmail(UserEmail $email): ?User
     {
         $sql = "
@@ -70,5 +69,4 @@ final class UserDbalRepository extends DbalRepository implements UserRepository
             UserIsActive::from($user['is_active'])
         );
     }
-
 }

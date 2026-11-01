@@ -10,5 +10,4 @@ use Colybri\Library\Domain\Model\User\ValueObject\UserPassword;
 interface PasswordGenerator
 {
     public function generate(User $user, UserPassword $password): UserPassword;
-
 }

@@ -19,7 +19,7 @@ final class RabbitMqQueueNameFormatter
             end($subscriberClassPaths)
         ];
 
-        return implode('.', array_map(function(string $text){
+        return implode('.', array_map(function (string $text) {
             return  self::toSnakeCase($text);
         }, $queueNameParts));
     }

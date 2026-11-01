@@ -7,6 +7,7 @@ namespace Colybri\Library\Infrastructure\Messaging\Bus\Event\Postgres;
 use Doctrine\DBAL\Connection;
 use Colybri\Library\Domain\Messaging\DomainEvent;
 use Colybri\Library\Domain\Messaging\EventBus;
+
 final class PostgresDomainEventBus implements EventBus
 {
     private const ATOM = 'Y-m-d H:i:s';

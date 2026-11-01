@@ -1,0 +1,11 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Access to an undefined property Colybri\\\\Library\\\\Tests\\\\Infrastructure\\\\Behat\\\\Context\\\\LibraryApiContext\\:\\:\\$password\\.$#"
+			count: 1
+			path: tests/Infrastructure/Behat/Context/LibraryApiContext.php
+
+		-
+			message: "#^Access to an undefined property Colybri\\\\Library\\\\Tests\\\\Infrastructure\\\\Behat\\\\Context\\\\LibraryApiContext\\:\\:\\$user\\.$#"
+			count: 1
+			path: tests/Infrastructure/Behat/Context/LibraryApiContext.php

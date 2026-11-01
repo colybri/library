@@ -18,10 +18,9 @@ final class RabbitMqDomainEventsConsumer
     public function __construct(
         private readonly RabbitMqConnection $connection,
         private readonly DomainEventMapping $mapping,
-        private readonly string             $exchangeName,
-        private readonly int                $maxRetries
-    )
-    {
+        private readonly string $exchangeName,
+        private readonly int $maxRetries
+    ) {
     }
 
     public function consume(string $queueName): void

@@ -30,6 +30,5 @@ final class ConfigureRabbitMqCommand extends Command
         $this->configurer->configure($this->exchangeName, ...iterator_to_array($this->subscribers));
 
         return Command::SUCCESS;
-
     }
 }

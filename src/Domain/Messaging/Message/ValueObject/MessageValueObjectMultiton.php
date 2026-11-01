@@ -8,14 +8,18 @@ class MessageValueObjectMultiton
 {
     private static array $instances = [];
 
-    protected static function instance(): self
+    final protected function __construct()
+    {
+    }
+
+    protected static function instance(): static
     {
         $key = static::class;
 
         if (false === \array_key_exists($key, self::$instances)) {
-            static::$instances[$key] = new static();
+            self::$instances[$key] = new static();
         }
 
-        return static::$instances[$key];
+        return self::$instances[$key];
     }
 }

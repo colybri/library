@@ -15,7 +15,7 @@ use Colybri\Library\Domain\Service\Author\AuthorFinder;
 use Colybri\Library\Domain\Service\Book\BookCreator;
 use Colybri\Library\Tests\Mock\Domain\Model\Author\AuthorObjectMother;
 use Colybri\Library\Tests\Mock\Domain\Model\Book\BookObjectMother;
-use Colybri\Library\Tests\Mock\Infrastructure\Bus\FakeMessageBus;
+use Colybri\Library\Tests\Mock\Infrastructure\Bus\FakeEventBus;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -26,13 +26,13 @@ final class CreateBookCommandHandlerTest extends TestCase
 
     private MockObject $authorRepository;
 
-    private FakeMessageBus $bus;
+    private FakeEventBus $bus;
 
     private CreateBookCommandHandler $handler;
 
     protected function setUp(): void
     {
-        $this->bus = new FakeMessageBus();
+        $this->bus = new FakeEventBus();
         $this->repository = $this->createMock(BookRepository::class);
         $this->authorRepository = $this->createMock(AuthorRepository::class);
 

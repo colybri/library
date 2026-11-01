@@ -6,7 +6,7 @@ namespace Colybri\Library\Domain\Messaging\Message\ValueObject;
 
 abstract class VendorValueObject extends MessageValueObjectMultiton
 {
-    public static function instance(): VendorValueObject
+    public static function instance(): static
     {
         return parent::instance();
     }

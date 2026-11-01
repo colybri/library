@@ -34,5 +34,4 @@ final class AuthenticationProvider implements UserInterface, PasswordAuthenticat
     {
         return $this->email->value();
     }
-
 }

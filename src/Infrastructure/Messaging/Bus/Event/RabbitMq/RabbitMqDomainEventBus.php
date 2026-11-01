@@ -10,7 +10,6 @@ use Colybri\Library\Domain\Messaging\EventBus;
 
 final class RabbitMqDomainEventBus implements EventBus
 {
-
     public function __construct(private string $exchangeName, private RabbitMqConnection $connection, private readonly PostgresDomainEventBus $failoverPublisher)
     {
     }

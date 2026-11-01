@@ -103,10 +103,5 @@ services:
   Colybri\Library\Infrastructure\Fixtures\FixtureRegistry:
     class: Colybri\Library\Infrastructure\Fixtures\FixtureRegistry
 
-
-imports:
-  - { resource: context/connections.yaml }
-  - { resource: context/buses.yaml }
-  - { resource: context/middleware.yaml }
-  - { resource: context/repositories.yaml }
-  - { resource: context/message-broker.yaml }
+# config/context/*.yaml is loaded by Kernel::configureContainer() after this
+# file, so its explicit definitions are not replaced by the resource above.
