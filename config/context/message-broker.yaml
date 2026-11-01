@@ -44,7 +44,7 @@ services:
     arguments:
       - '@Colybri\Library\Infrastructure\Messaging\Bus\Event\RabbitMq\RabbitConfigurator'
       - '%env(RABBITMQ_EXCHANGE)%'
-      - !tagged library.domain_event_subscriber
+      - !tagged_iterator library.domain_event_subscriber
 
 
 

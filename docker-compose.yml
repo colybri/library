@@ -5,7 +5,7 @@ services:
       context: .
       target: library_php
       args:
-        SYMFONY_VERSION: ${SYMFONY_VERSION:-6.4}
+        SYMFONY_VERSION: ${SYMFONY_VERSION:-7.4}
         SKELETON: ${SKELETON:-symfony/skeleton}
         STABILITY: ${STABILITY:-stable}
         PHP_VERSION: 8.4.27
