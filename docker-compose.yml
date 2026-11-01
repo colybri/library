@@ -1,4 +1,3 @@
-version: "3.4"
 services:
   library:
     container_name: library
@@ -6,7 +5,7 @@ services:
       context: .
       target: library_php
       args:
-        SYMFONY_VERSION: ${SYMFONY_VERSION:-6.0}
+        SYMFONY_VERSION: ${SYMFONY_VERSION:-6.4}
         SKELETON: ${SKELETON:-symfony/skeleton}
         STABILITY: ${STABILITY:-stable}
         PHP_VERSION: 8.2.35

@@ -22,6 +22,8 @@
 bin/*
 !bin/console
 docker/db/data/
+postgres_data/
+redis_data/
 helm/
 public/bundles/
 var/
