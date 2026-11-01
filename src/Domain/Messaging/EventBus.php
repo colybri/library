@@ -6,5 +6,5 @@ namespace Colybri\Library\Domain\Messaging;
 
 interface EventBus
 {
-    public function dispatch(DomainEvent... $events): void;
+    public function dispatch(DomainEvent ...$events): void;
 }

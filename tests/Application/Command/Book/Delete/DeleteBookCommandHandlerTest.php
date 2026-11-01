@@ -12,7 +12,7 @@ use Colybri\Library\Domain\Model\Book\Exception\BookDoesNotExistException;
 use Colybri\Library\Domain\Service\Book\BookDeleter;
 use Colybri\Library\Domain\Service\Book\BookFinder;
 use Colybri\Library\Tests\Mock\Domain\Model\Book\BookObjectMother;
-use Colybri\Library\Tests\Mock\Infrastructure\Bus\FakeMessageBus;
+use Colybri\Library\Tests\Mock\Infrastructure\Bus\FakeEventBus;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -21,13 +21,13 @@ final class DeleteBookCommandHandlerTest extends TestCase
 {
     private MockObject $repository;
 
-    private FakeMessageBus $bus;
+    private FakeEventBus $bus;
 
     private DeleteBookCommandHandler $handler;
 
     protected function setUp(): void
     {
-        $this->bus = new FakeMessageBus();
+        $this->bus = new FakeEventBus();
         $this->repository = $this->createMock(BookRepository::class);
 
         $this->handler = new DeleteBookCommandHandler(

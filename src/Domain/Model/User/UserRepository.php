@@ -11,5 +11,4 @@ interface UserRepository
     public function insert(User $user): void;
 
     public function findByEmail(UserEmail $email): ?User;
-
 }

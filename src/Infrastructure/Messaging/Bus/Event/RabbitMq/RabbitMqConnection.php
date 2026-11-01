@@ -8,10 +8,11 @@ use AMQPConnection;
 use AMQPChannel;
 use AMQPExchange;
 use AMQPQueue;
+
 class RabbitMqConnection
 {
     private static $connection;
-    private static  $channel;
+    private static $channel;
     /** @var AMQPExchange[] */
     private static $exchanges = [];
     /** @var AMQPQueue[] */

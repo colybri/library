@@ -10,7 +10,6 @@ use Imbo\BehatApiExtension\Context\ApiContext;
 
 final class LibraryApiContext extends ApiContext implements Context
 {
-
     /*region Description
     public function __construct(private string $user, private string $password)
     {

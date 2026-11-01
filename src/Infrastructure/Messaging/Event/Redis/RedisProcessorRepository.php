@@ -9,7 +9,7 @@ use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 
 class RedisProcessorRepository implements ProcessorRepository
 {
-    public function isNotAlreadyProcessed(Uuid $messageId, string $subscriberClassName) : bool
+    public function isNotAlreadyProcessed(Uuid $messageId, string $subscriberClassName): bool
     {
         return true;
     }

@@ -12,7 +12,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class CleanFixturesCommand extends Command
 {
-
     private const NAME = 'library:fixtures:clean';
     public function __construct(private FixtureRegistry $fixturesRegistry)
     {

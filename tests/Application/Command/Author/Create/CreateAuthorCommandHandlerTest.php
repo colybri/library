@@ -11,7 +11,7 @@ use Colybri\Library\Domain\Model\Author\Event\AuthorCreated;
 use Colybri\Library\Domain\Model\Author\Exception\AuthorAlreadyExistsException;
 use Colybri\Library\Domain\Service\Author\AuthorCreator;
 use Colybri\Library\Tests\Mock\Domain\Model\Author\AuthorObjectMother;
-use Colybri\Library\Tests\Mock\Infrastructure\Bus\FakeMessageBus;
+use Colybri\Library\Tests\Mock\Infrastructure\Bus\FakeEventBus;
 use Forkrefactor\Ddd\Domain\Model\ValueObject\Uuid;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -20,13 +20,13 @@ final class CreateAuthorCommandHandlerTest extends TestCase
 {
     private MockObject $repository;
 
-    private FakeMessageBus $bus;
+    private FakeEventBus $bus;
 
     private CreateAuthorCommandHandler $handler;
 
     protected function setUp(): void
     {
-        $this->bus = new FakeMessageBus();
+        $this->bus = new FakeEventBus();
         $this->repository = $this->createMock(AuthorRepository::class);
 
         $this->handler = new CreateAuthorCommandHandler(

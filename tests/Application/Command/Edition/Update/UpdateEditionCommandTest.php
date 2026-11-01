@@ -113,7 +113,6 @@ final class UpdateEditionCommandTest extends TestCase
         self::assertTrue(EditionCity::from($this->city)->equalTo($this->command->city()));
         self::assertTrue(EditionPages::from($this->pages)->equalTo($this->command->pages()));
         self::assertEquals(EditionIsOnLibrary::from($this->isOnLibrary), $this->command->isOnLibrary());
-
     }
 
     private function not_nullable_arguments(): array

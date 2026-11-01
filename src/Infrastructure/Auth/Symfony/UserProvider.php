@@ -35,5 +35,4 @@ class UserProvider implements UserProviderInterface
 
         return new AuthenticationProvider($user->email(), $user->password());
     }
-
 }

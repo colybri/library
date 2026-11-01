@@ -24,10 +24,10 @@ class PostgresDomainEventsConsumer
         $query = $this->connectionWrite->prepare($sql);
         $query->bindValue('eventsToConsume', $eventsToConsume);
 
-        $events = $query->executeQuery()->fetchAssociative();
+        $events = $query->executeQuery()->fetchAllAssociative();
+        $ids = [];
 
         foreach ($events as $event) {
-
             $domainEventClass = $this->eventMapping->eventFor($event['name']);
 
             $domainEvent = $domainEventClass::fromPayload(
@@ -44,13 +44,16 @@ class PostgresDomainEventsConsumer
             } catch (\RuntimeException $exception) {
                 $this->publishOnFailedQueue($domainEvent);
             }
+
+            $ids[] = $event['id'];
         }
 
         if (!empty($ids)) {
-            $sql = "DELETE FROM events_pending_queue WHERE id IN (:ids)";
-            $query = $this->connectionWrite->prepare($sql);
-            $query->bindValue(':ids', $ids);
-            $this->connectionWrite->executeQuery();
+            $this->connectionWrite->executeStatement(
+                'DELETE FROM events_pending_queue WHERE id IN (:ids)',
+                ['ids' => $ids],
+                ['ids' => Connection::PARAM_STR_ARRAY]
+            );
         }
     }
 

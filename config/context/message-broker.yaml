@@ -1,4 +1,10 @@
 services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    bind:
+      Doctrine\DBAL\Connection $connectionWrite: '@connection_write.dbal'
+
   ## Message Broker
   broker.connection:
     class: Colybri\Library\Infrastructure\Messaging\Bus\Event\RabbitMq\RabbitMqConnection
@@ -15,6 +21,8 @@ services:
         write_timeout: 2
         connect_timeout: 5
 
+  Colybri\Library\Infrastructure\Messaging\Bus\Event\RabbitMq\RabbitMqConnection: '@broker.connection'
+
   Colybri\Library\Infrastructure\Messaging\Bus\Event\Postgres\PostgresDomainEventBus:
 
   Colybri\Library\Infrastructure\Messaging\Bus\Event\RabbitMq\RabbitMqDomainEventBus:
@@ -30,11 +38,11 @@ services:
     autoconfigure: false
     autowire: false
     arguments:
-      - !tagged_iterator { tag: library.domain_event_subscribe }
+      - !tagged_iterator { tag: library.domain_event_subscriber }
 
   Colybri\Library\Entrypoint\Console\Messaging\RabbitMq\ConfigureRabbitMqCommand:
     arguments:
-      - 'Colybri\Library\Infrastructure\Messaging\Bus\Event\RabbitMq\RabbitConfigurator'
+      - '@Colybri\Library\Infrastructure\Messaging\Bus\Event\RabbitMq\RabbitConfigurator'
       - '%env(RABBITMQ_EXCHANGE)%'
       - !tagged library.domain_event_subscriber
 
@@ -47,4 +55,6 @@ services:
       $exchangeName: '%env(RABBITMQ_EXCHANGE)%'
       $maxRetries: '%env(RABBITMQ_MAX_RETRIES)%'
 
-
+  Colybri\Library\Entrypoint\Console\Messaging\RabbitMq\GenerateSupervisorRabbitMqConsumerFilesCommand:
+    arguments:
+      $subscribers: !tagged_iterator library.domain_event_subscriber

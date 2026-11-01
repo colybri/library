@@ -37,7 +37,6 @@ final class GenerateSupervisorRabbitMqConsumerFilesCommand extends Command
         $path = (string)$input->getArgument('command-path');
 
         foreach ($this->subscribers as $subscriber) {
-
             $this->configCreator($path, $subscriber);
         }
 
@@ -89,5 +88,4 @@ final class GenerateSupervisorRabbitMqConsumerFilesCommand extends Command
     {
         return sprintf('%s/%s.ini', self::SUPERVISOR_PATH, $queue);
     }
-
 }

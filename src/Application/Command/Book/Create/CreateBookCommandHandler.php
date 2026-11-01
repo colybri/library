@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Colybri\Library\Application\Command\Book\Create;
 
+use Colybri\Library\Domain\Messaging\EventBus;
 use Colybri\Library\Domain\Service\Book\BookCreator;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
-use Symfony\Component\Messenger\MessageBusInterface;
 
 final class CreateBookCommandHandler implements MessageHandlerInterface
 {
-    public function __construct(private BookCreator $creator, private MessageBusInterface $brokerBus)
+    public function __construct(private BookCreator $creator, private EventBus $brokerBus)
     {
     }
 
