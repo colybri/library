@@ -16,8 +16,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Add 8.4 here once the migration reaches the PHP upgrade phase.
-        php: [ '8.1' ]
+        # 8.2 is what the Docker image runs. Add 8.4 in the PHP upgrade phase.
+        php: [ '8.1', '8.2' ]
     steps:
       - uses: actions/checkout@v4
 
@@ -80,6 +80,27 @@ jobs:
 
       - name: Routes are loadable
         run: bin/console debug:router
+
+  docker:
+    name: Docker image runs a patched PHP
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the PHP image
+        run: docker build --target library_php -t library-php:ci .
+
+      - name: PHP is at least 8.2.35 and FPM upload progress is off
+        run: |
+          docker run --rm --entrypoint php library-php:ci -r '
+            if (version_compare(PHP_VERSION, "8.2.35", "<")) {
+                fwrite(STDERR, "PHP " . PHP_VERSION . " is missing the 21 Oct 2026 security fixes\n");
+                exit(1);
+            }
+            echo "PHP ", PHP_VERSION, " OK\n";'
+          docker run --rm --entrypoint php-fpm library-php:ci -tt > fpm.txt 2>&1 || { cat fpm.txt; exit 1; }
+          grep -E "session.upload_progress.enabled\]? *= *(off|0|'')? *$" fpm.txt \
+            || { cat fpm.txt; echo "session.upload_progress.enabled is not off in the FPM pool"; exit 1; }
 
   security:
     name: Dependency audit

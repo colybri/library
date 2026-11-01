@@ -1,4 +1,8 @@
-FROM php:8.2-fpm-alpine AS library_php
+# PHP 8.2.35 is the first 8.2 release that fixes CVE-2026-109618 and
+# CVE-2026-109619 (RCE, 21 Oct 2026). Do not go below it.
+ARG PHP_VERSION=8.2.35
+
+FROM php:${PHP_VERSION}-fpm-alpine AS library_php
 # the different stages of this Dockerfile are meant to be built into separate images
 # https://docs.docker.com/develop/develop-images/multistage-build/#stop-at-a-specific-build-stage
 # https://docs.docker.com/compose/compose-file/#target
