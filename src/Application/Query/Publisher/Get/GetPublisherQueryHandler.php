@@ -6,9 +6,8 @@ namespace Colybri\Library\Application\Query\Publisher\Get;
 
 use Colybri\Library\Domain\Model\Publisher\Publisher;
 use Colybri\Library\Domain\Service\Publisher\PublisherFinder;
-use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
-final class GetPublisherQueryHandler implements MessageHandlerInterface
+final class GetPublisherQueryHandler
 {
     public function __construct(private PublisherFinder $finder)
     {

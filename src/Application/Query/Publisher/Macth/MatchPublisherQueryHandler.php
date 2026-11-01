@@ -18,9 +18,8 @@ use Colybri\Library\Application\Query\Shared\ListResponse;
 use Colybri\Library\Domain\Model\Publisher\PublisherRepository;
 use Colybri\Library\Domain\Model\Publisher\ValueObject\PublisherCity;
 use Colybri\Library\Domain\Model\Publisher\ValueObject\PublisherName;
-use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
-final class MatchPublisherQueryHandler implements MessageHandlerInterface
+final class MatchPublisherQueryHandler
 {
     public function __construct(private PublisherRepository $publisherRepository)
     {

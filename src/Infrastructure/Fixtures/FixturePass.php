@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\Reference;
 
 class FixturePass implements CompilerPassInterface
 {
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         if (false === $container->has(FixtureRegistry::class)) {
             throw new \InvalidArgumentException(FixtureRegistry::class . ' has to be defined as a service');

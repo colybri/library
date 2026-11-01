@@ -6,9 +6,8 @@ namespace Colybri\Library\Application\Query\Country\Get;
 
 use Colybri\Library\Domain\Model\Country\Country;
 use Colybri\Library\Domain\Service\Country\CountryFinder;
-use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
-final class GetCountryQueryHandler implements MessageHandlerInterface
+final class GetCountryQueryHandler
 {
     public function __construct(private CountryFinder $finder)
     {

@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Colybri\Library\Application\Command\Author\Update;
 
 use Colybri\Library\Domain\Service\Author\AuthorUpdater;
-use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
-final class UpdateAuthorCommandHandler implements MessageHandlerInterface
+final class UpdateAuthorCommandHandler
 {
     public function __construct(private AuthorUpdater $updater)
     {

@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Colybri\Library\Application\Command\Publisher\Delete;
 
 use Colybri\Library\Domain\Service\Publisher\PublisherDeleter;
-use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
-final class DeletePublisherCommandHandler implements MessageHandlerInterface
+final class DeletePublisherCommandHandler
 {
     public function __construct(private PublisherDeleter $deleter)
     {

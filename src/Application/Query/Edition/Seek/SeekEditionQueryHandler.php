@@ -17,9 +17,8 @@ use Colybri\Library\Domain\Model\Book\ValueObject\BookTitle;
 use Colybri\Library\Domain\Model\Edition\EditionRepository;
 use Colybri\Library\Domain\Model\Edition\ValueObject\EditionISBN;
 use Colybri\Library\Domain\Model\Publisher\ValueObject\PublisherName;
-use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
-final class SeekEditionQueryHandler implements MessageHandlerInterface
+final class SeekEditionQueryHandler
 {
     public function __construct(private readonly EditionRepository $seekEditionRepository)
     {

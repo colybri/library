@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Colybri\Library\Application\Command\User\Create;
 
 use Colybri\Library\Domain\Service\User\UserCreator;
-use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
-final class CreateUserCommandHandler implements MessageHandlerInterface
+final class CreateUserCommandHandler
 {
     public function __construct(private UserCreator $creator)
     {

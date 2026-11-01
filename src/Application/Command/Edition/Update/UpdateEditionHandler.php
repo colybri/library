@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Colybri\Library\Application\Command\Edition\Update;
 
 use Colybri\Library\Domain\Service\Edition\EditionUpdater;
-use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
-final class UpdateEditionHandler implements MessageHandlerInterface
+final class UpdateEditionHandler
 {
     public function __construct(private EditionUpdater $creator)
     {

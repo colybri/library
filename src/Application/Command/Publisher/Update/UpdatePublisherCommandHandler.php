@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Colybri\Library\Application\Command\Publisher\Update;
 
 use Colybri\Library\Domain\Service\Publisher\PublisherUpdater;
-use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
-final class UpdatePublisherCommandHandler implements MessageHandlerInterface
+final class UpdatePublisherCommandHandler
 {
     public function __construct(private PublisherUpdater $updater)
     {

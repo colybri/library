@@ -10,7 +10,7 @@ use Monolog\Processor\ProcessorInterface;
 
 final class InfoProcessor implements ProcessorInterface
 {
-    public function __invoke(array $record)
+    public function __invoke(array $record): array
     {
         if (false === \array_key_exists('message', $record['context'])) {
             return $record;

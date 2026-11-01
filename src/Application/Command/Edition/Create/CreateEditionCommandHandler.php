@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Colybri\Library\Application\Command\Edition\Create;
 
 use Colybri\Library\Domain\Service\Edition\EditionCreator;
-use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
-final class CreateEditionCommandHandler implements MessageHandlerInterface
+final class CreateEditionCommandHandler
 {
     public function __construct(private EditionCreator $creator)
     {
