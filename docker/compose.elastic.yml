@@ -1,0 +1,113 @@
+# Elastic stack for observability: Elasticsearch and Kibana (APM Server,
+# Filebeat and Metricbeat come in later phases). Every service is in the
+# "elastic" profile, so `make up` does not start them: use `make elastic-up`.
+# Security is on, with TLS everywhere: elastic_setup creates a local CA and the
+# certificates in the elastic_certs volume (`make elastic-ca` copies the CA out).
+# Paths are relative to this directory (docker/).
+x-elastic-image: &elastic_image docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION:-9.5.5}
+
+services:
+  # One-shot: certificates, kibana_system password, retention. Then it exits.
+  elastic_setup:
+    image: *elastic_image
+    profiles: [elastic]
+    user: "0"
+    command: ["bash", "/setup/setup.sh"]
+    restart: "no"
+    volumes:
+      - elastic_certs:/usr/share/elasticsearch/config/certs
+      - ./elastic/setup:/setup:ro
+    environment:
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
+      KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
+      # Only checked here: compose must not fail without them when the profile is off
+      KIBANA_ENCRYPTION_KEY: ${KIBANA_ENCRYPTION_KEY:-}
+      ELASTIC_RETENTION: ${ELASTIC_RETENTION:-7d}
+    # Healthy once the certificates exist: Elasticsearch waits for that.
+    healthcheck:
+      test: ["CMD-SHELL", "[ -f config/certs/elasticsearch/elasticsearch.crt ]"]
+      interval: 2s
+      timeout: 5s
+      retries: 120
+
+  elasticsearch:
+    image: *elastic_image
+    profiles: [elastic]
+    restart: unless-stopped
+    depends_on:
+      elastic_setup:
+        condition: service_healthy
+    ports:
+      # Only reachable from this machine
+      - 127.0.0.1:${ELASTICSEARCH_PORT:-9200}:9200
+    volumes:
+      - elastic_certs:/usr/share/elasticsearch/config/certs:ro
+      - elastic_data:/usr/share/elasticsearch/data
+    environment:
+      node.name: elasticsearch
+      cluster.name: library
+      discovery.type: single-node
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
+      ES_JAVA_OPTS: -Xms${ES_HEAP:-1g} -Xmx${ES_HEAP:-1g}
+      # As before: a nearly full laptop disk must not turn the indices read-only
+      cluster.routing.allocation.disk.threshold_enabled: "false"
+      xpack.security.enabled: "true"
+      xpack.security.http.ssl.enabled: "true"
+      xpack.security.http.ssl.key: certs/elasticsearch/elasticsearch.key
+      xpack.security.http.ssl.certificate: certs/elasticsearch/elasticsearch.crt
+      xpack.security.http.ssl.certificate_authorities: certs/ca/ca.crt
+      xpack.security.transport.ssl.enabled: "true"
+      xpack.security.transport.ssl.key: certs/elasticsearch/elasticsearch.key
+      xpack.security.transport.ssl.certificate: certs/elasticsearch/elasticsearch.crt
+      xpack.security.transport.ssl.certificate_authorities: certs/ca/ca.crt
+      xpack.security.transport.ssl.verification_mode: certificate
+      xpack.license.self_generated.type: basic
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s --cacert config/certs/ca/ca.crt https://localhost:9200 | grep -q 'missing authentication credentials'"]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+      start_period: 30s
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:${ELASTIC_VERSION:-9.5.5}
+    profiles: [elastic]
+    restart: unless-stopped
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    ports:
+      - 127.0.0.1:${KIBANA_PORT:-5601}:5601
+    volumes:
+      - elastic_certs:/usr/share/kibana/config/certs:ro
+      - kibana_data:/usr/share/kibana/data
+    environment:
+      SERVERNAME: kibana
+      SERVER_PUBLICBASEURL: https://localhost:${KIBANA_PORT:-5601}
+      SERVER_SSL_ENABLED: "true"
+      SERVER_SSL_CERTIFICATE: config/certs/kibana/kibana.crt
+      SERVER_SSL_KEY: config/certs/kibana/kibana.key
+      ELASTICSEARCH_HOSTS: https://elasticsearch:9200
+      ELASTICSEARCH_USERNAME: kibana_system
+      ELASTICSEARCH_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
+      ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES: config/certs/ca/ca.crt
+      # Saved objects, alerting and sessions need these keys (32+ characters)
+      XPACK_SECURITY_ENCRYPTIONKEY: ${KIBANA_ENCRYPTION_KEY:-}
+      XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY: ${KIBANA_ENCRYPTION_KEY:-}
+      XPACK_REPORTING_ENCRYPTIONKEY: ${KIBANA_ENCRYPTION_KEY:-}
+      TELEMETRY_OPTIN: "false"
+    healthcheck:
+      # 302 to the login page once Kibana is ready
+      test: ["CMD-SHELL", "curl -s -I --cacert config/certs/ca/ca.crt https://localhost:5601 | grep -q 'HTTP/1.1 302 Found'"]
+      interval: 10s
+      timeout: 10s
+      retries: 60
+      start_period: 60s
+
+volumes:
+  elastic_certs:
+    driver: local
+  elastic_data:
+    driver: local
+  kibana_data:
+    driver: local

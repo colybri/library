@@ -1,0 +1,128 @@
+name: Elastic
+
+# CI of the Elastic stack (docker/compose.elastic.yml, profile "elastic").
+# It runs only when the stack's configuration or this workflow change.
+#   validate  compose files and the setup script (seconds)
+#   smoke     starts the stack and checks it end to end (a few minutes)
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - 'docker/elastic/**'
+      - 'docker/compose.elastic.yml'
+      - 'docker-compose.yml'
+      - '.env.dist'
+      - '.github/workflows/elastic.yml'
+  pull_request:
+    paths:
+      - 'docker/elastic/**'
+      - 'docker/compose.elastic.yml'
+      - 'docker-compose.yml'
+      - '.env.dist'
+      - '.github/workflows/elastic.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: elastic-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate configuration
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compose without the elastic profile (the stack must not be required)
+        run: |
+          cp .env.dist .env
+          # The new variables are optional while the profile is off
+          sed -i '/^ELASTIC_\|^KIBANA_\|^ES_HEAP\|^ELASTICSEARCH_PORT/d' .env
+          docker compose config --quiet
+          ! docker compose config --services | grep -x elasticsearch > /dev/null
+
+      - name: Compose with the elastic profile
+        run: |
+          cp .env.dist .env
+          docker compose --profile elastic config --quiet
+          docker compose --profile elastic config --services | grep -x kibana > /dev/null
+
+      - name: ShellCheck the setup script
+        run: shellcheck docker/elastic/setup/setup.sh
+
+  smoke:
+    name: Start Elasticsearch and Kibana
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare .env with random secrets
+        run: |
+          cp .env.dist .env
+          # The double quote checks the JSON escaping of setup.sh
+          elastic_password="ci-$(openssl rand -hex 8)"
+          kibana_password="ci-$(openssl rand -hex 8)\"q"
+          echo "::add-mask::${elastic_password}"
+          sed -i "s|^ELASTIC_PASSWORD=.*|ELASTIC_PASSWORD=${elastic_password}|" .env
+          sed -i "s|^KIBANA_SYSTEM_PASSWORD=.*|KIBANA_SYSTEM_PASSWORD='${kibana_password}'|" .env
+          sed -i "s|^KIBANA_ENCRYPTION_KEY=.*|KIBANA_ENCRYPTION_KEY=$(openssl rand -hex 32)|" .env
+          echo "ELASTIC_PASSWORD=${elastic_password}" >> "$GITHUB_ENV"
+
+      - name: Start the stack
+        run: docker compose --profile elastic up --detach elasticsearch kibana
+
+      - name: Wait until Kibana is healthy
+        run: |
+          for i in $(seq 1 90); do
+            status=$(docker inspect --format '{{.State.Health.Status}}' "$(docker compose --profile elastic ps -q kibana)" 2>/dev/null || true)
+            echo "kibana: ${status:-starting}"
+            [ "$status" = "healthy" ] && exit 0
+            sleep 10
+          done
+          exit 1
+
+      - name: elastic_setup finished without errors
+        run: |
+          code=$(docker inspect --format '{{.State.ExitCode}}' "$(docker compose --profile elastic ps -aq elastic_setup)")
+          docker compose --profile elastic logs elastic_setup
+          test "$code" = "0"
+
+      - name: Copy the CA with make elastic-ca
+        run: make elastic-ca && test -s var/elastic-ca.crt
+
+      - name: Elasticsearch answers over verified HTTPS and is not red
+        run: |
+          health=$(curl --silent --show-error --fail --cacert var/elastic-ca.crt -u "elastic:${ELASTIC_PASSWORD}" \
+            "https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=60s")
+          echo "$health" | jq .
+          echo "$health" | jq -e '.status != "red"'
+
+      - name: Anonymous requests are rejected
+        run: |
+          code=$(curl --silent --output /dev/null --write-out '%{http_code}' --cacert var/elastic-ca.crt https://localhost:9200)
+          test "$code" = "401"
+
+      - name: Retention is 7 days
+        run: |
+          curl --silent --show-error --fail --cacert var/elastic-ca.crt -u "elastic:${ELASTIC_PASSWORD}" \
+            "https://localhost:9200/_cluster/settings?flat_settings=true" \
+            | jq -e '.persistent["data_streams.lifecycle.retention.max"] == "7d" and .persistent["data_streams.lifecycle.retention.default"] == "7d"'
+
+      - name: Kibana answers over verified HTTPS and is available
+        run: |
+          curl --silent --show-error --fail --cacert var/elastic-ca.crt -u "elastic:${ELASTIC_PASSWORD}" \
+            https://localhost:5601/api/status \
+            | jq -e '.status.overall.level == "available"'
+
+      - name: elastic_setup can run again (idempotent)
+        run: docker compose --profile elastic run --rm --no-deps elastic_setup
+
+      - name: Logs of the stack
+        if: failure()
+        run: docker compose --profile elastic logs --no-color elastic_setup elasticsearch kibana
+
+      - name: Clean up
+        if: always()
+        run: docker compose --profile elastic down --volumes --remove-orphans

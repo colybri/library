@@ -1,0 +1,109 @@
+#!/usr/bin/env bash
+# One-shot setup of the Elastic stack (service elastic_setup, profile elastic).
+# Runs in the Elasticsearch image as root and is idempotent: every
+# `make elastic-up` runs it again and it only creates what is missing.
+#
+#   1. Certificates: a local CA plus one certificate per service, in the
+#      elastic_certs volume. Generated only once; delete the volume to renew.
+#   2. Waits until Elasticsearch answers over HTTPS.
+#   3. Sets the password of the built-in kibana_system user.
+#   4. Retention: data streams keep 7 days of data at most.
+set -euo pipefail
+
+: "${ELASTIC_PASSWORD:?Set ELASTIC_PASSWORD in .env}"
+: "${KIBANA_SYSTEM_PASSWORD:?Set KIBANA_SYSTEM_PASSWORD in .env}"
+if [ "${#KIBANA_ENCRYPTION_KEY}" -lt 32 ]; then
+	echo "[elastic_setup] KIBANA_ENCRYPTION_KEY in .env must have at least 32 characters" >&2
+	exit 1
+fi
+RETENTION="${ELASTIC_RETENTION:-7d}"
+
+CERTS=config/certs
+ES_URL=https://elasticsearch:9200
+
+log() { echo "[elastic_setup] $*"; }
+
+# JSON string with the value escaped (passwords may hold " or \)
+json_string() {
+	local value=${1//\\/\\\\}
+	value=${value//\"/\\\"}
+	printf '"%s"' "$value"
+}
+
+# Request to Elasticsearch as the elastic superuser: es METHOD PATH [JSON]
+es() {
+	local args=(--silent --show-error --fail-with-body
+		--cacert "$CERTS/ca/ca.crt"
+		-u "elastic:${ELASTIC_PASSWORD}"
+		-H 'Content-Type: application/json'
+		-X "$1" "${ES_URL}$2")
+	if [ $# -ge 3 ]; then
+		args+=(-d "$3")
+	fi
+	curl "${args[@]}"
+}
+
+# 1. Certificates ------------------------------------------------------------
+if [ ! -f "$CERTS/ca/ca.crt" ]; then
+	log "Creating the certificate authority"
+	bin/elasticsearch-certutil ca --silent --pem -out "$CERTS/ca.zip"
+	unzip -q -o "$CERTS/ca.zip" -d "$CERTS"
+	rm "$CERTS/ca.zip"
+fi
+
+if [ ! -f "$CERTS/elasticsearch/elasticsearch.crt" ]; then
+	log "Creating the service certificates"
+	# One certificate per service, valid for its compose name and for
+	# localhost, so the host can reach the published ports over HTTPS.
+	cat > "$CERTS/instances.yml" <<-'YAML'
+		instances:
+		  - name: elasticsearch
+		    dns: [elasticsearch, localhost]
+		    ip: [127.0.0.1]
+		  - name: kibana
+		    dns: [kibana, localhost]
+		    ip: [127.0.0.1]
+		  - name: apm_server
+		    dns: [apm_server, localhost]
+		    ip: [127.0.0.1]
+	YAML
+	bin/elasticsearch-certutil cert --silent --pem \
+		--in "$CERTS/instances.yml" \
+		--ca-cert "$CERTS/ca/ca.crt" --ca-key "$CERTS/ca/ca.key" \
+		-out "$CERTS/certs.zip"
+	unzip -q -o "$CERTS/certs.zip" -d "$CERTS"
+	rm "$CERTS/certs.zip"
+fi
+
+# The Elastic images run as uid 1000, gid 0: group root must read the files.
+chown -R root:root "$CERTS"
+find "$CERTS" -type d -exec chmod 750 {} +
+find "$CERTS" -type f -exec chmod 640 {} +
+
+# 2. Wait for Elasticsearch --------------------------------------------------
+log "Waiting for Elasticsearch"
+until curl --silent --cacert "$CERTS/ca/ca.crt" "$ES_URL" | grep -q 'missing authentication credentials'; do
+	sleep 5
+done
+
+# 3. kibana_system password --------------------------------------------------
+log "Setting the kibana_system password"
+# Retried while the security index starts. A 401 that never ends means that
+# Elasticsearch rejects ELASTIC_PASSWORD: check it in .env.
+attempt=0
+until es POST /_security/user/kibana_system/_password "{\"password\":$(json_string "$KIBANA_SYSTEM_PASSWORD")}" > /dev/null; do
+	attempt=$((attempt + 1))
+	if [ "$attempt" -ge 30 ]; then
+		log "Could not set the kibana_system password: check ELASTIC_PASSWORD in .env"
+		exit 1
+	fi
+	sleep 5
+done
+
+# 4. Retention ---------------------------------------------------------------
+# Global retention of data stream lifecycles: every data stream managed by a
+# lifecycle (APM, and the Beats from phase 3) keeps $RETENTION at most.
+log "Setting the data retention to ${RETENTION}"
+es PUT /_cluster/settings "{\"persistent\":{\"data_streams.lifecycle.retention.default\":\"${RETENTION}\",\"data_streams.lifecycle.retention.max\":\"${RETENTION}\"}}" > /dev/null
+
+log "Done"
