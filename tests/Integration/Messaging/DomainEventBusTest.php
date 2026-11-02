@@ -133,8 +133,9 @@ final class DomainEventBusTest extends KernelTestCase
 
         self::getContainer()->get(RabbitMqDomainEventsConsumer::class)->consume($subscriberQueue);
 
-        self::assertFalse($this->rabbit->queue($subscriberQueue)->get(), 'The event was not acknowledged');
-        self::assertFalse(
+        self::assertNotInstanceOf(\AMQPEnvelope::class, $this->rabbit->queue($subscriberQueue)->get(), 'The event was not acknowledged');
+        self::assertNotInstanceOf(
+            \AMQPEnvelope::class,
             $this->rabbit->queue(RabbitMqQueueNameFormatter::formatDeadLetter($this->subscriber()))->get(),
             'The event ended in the dead letter queue'
         );
@@ -208,7 +209,7 @@ final class DomainEventBusTest extends KernelTestCase
         $spy = $this->rabbit->queue(self::SPY_QUEUE);
         for ($attempt = 0; $attempt < 20; $attempt++) {
             $envelope = $spy->get(AMQP_AUTOACK);
-            if (false !== $envelope) {
+            if ($envelope instanceof \AMQPEnvelope) {
                 return \json_decode($envelope->getBody(), true, 512, JSON_THROW_ON_ERROR);
             }
             \usleep(100_000);
