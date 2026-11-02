@@ -5,12 +5,15 @@ name: Elastic
 #   validate  compose files and the setup script (seconds)
 #   smoke     starts everything (stack + API) and checks it end to end:
 #             TLS, users, retention, Kibana, traces of a real request that
-#             crosses RabbitMQ to the consumers, the logs Filebeat ships and
-#             the metrics of every Metricbeat module (about 10 minutes)
+#             crosses RabbitMQ to the consumers, the logs Filebeat ships, the
+#             metrics of every Metricbeat module, and the dashboards and alert
+#             rules of Kibana (screenshots in the run's artifacts) (~15 min)
 on:
   push:
     branches: [ master ]
     paths:
+      - 'docker/rabbit/**'
+      - '.github/scripts/kibana-dashboards.mjs'
       - 'docker/compose.infra.yml'
       - 'docker/postgres/**'
       - 'docker/elastic/**'
@@ -28,6 +31,8 @@ on:
       - 'apps/api/src/Infrastructure/Messaging/**'
   pull_request:
     paths:
+      - 'docker/rabbit/**'
+      - '.github/scripts/kibana-dashboards.mjs'
       - 'docker/compose.infra.yml'
       - 'docker/postgres/**'
       - 'docker/elastic/**'
@@ -72,8 +77,13 @@ jobs:
             docker compose --profile elastic config --services | grep -x "$service" > /dev/null
           done
 
-      - name: ShellCheck the setup script
-        run: shellcheck docker/elastic/setup/setup.sh
+      - name: ShellCheck the setup scripts
+        run: shellcheck docker/elastic/setup/setup.sh docker/elastic/kibana/kibana-setup.sh
+
+      - name: Dashboards, connector and rules are valid JSON
+        run: |
+          jq -e . docker/elastic/kibana/connector-library-alerts.json docker/elastic/kibana/rules/*.json > /dev/null
+          jq -e -s 'map(select(.type == "dashboard")) | length == 4' docker/elastic/kibana/library.ndjson
 
   smoke:
     name: Start the stack and trace the API
@@ -309,6 +319,104 @@ jobs:
             es "_ilm/policy/${beat}" | jq -e --arg b "$beat" '.[$b].policy.phases.delete.min_age == "7d"'
             es "_data_stream/${beat}-*" | jq -e --arg b "$beat" '.data_streams[0].ilm_policy == $b'
           done
+
+      - name: Fields used by the dashboards and the rules exist
+        run: |
+          check() {
+            count=$(curl --silent --show-error --fail --cacert var/elastic-ca.crt -u "elastic:${ELASTIC_PASSWORD}" \
+              -H 'Content-Type: application/json' "https://localhost:9200/$1/_count" \
+              -d "{\"query\":{\"exists\":{\"field\":\"$2\"}}}" | jq '.count')
+            echo "$1 $2: ${count}"
+            [ "$count" -gt 0 ] || missing="${missing} $1:$2"
+          }
+          checks() {
+            for field in transaction.duration.us transaction.name event.outcome span.duration.us span.name span.type \
+              labels.library_message_duplicate; do check 'traces-apm*' "$field"; done
+            for field in log.level message trace.id log.logger http.response.status_code; do check 'filebeat-*' "$field"; done
+            for field in docker.cpu.total.pct docker.memory.usage.total container.name docker.healthcheck.status \
+              php_fpm.pool.processes.active php_fpm.pool.processes.idle php_fpm.pool.connections.queued nginx.stubstatus.active \
+              postgresql.database.number_of_backends postgresql.database.name redis.info.memory.used.value \
+              redis.info.clients.connected rabbitmq.queue.messages.total.count rabbitmq.queue.consumers.count \
+              rabbitmq.queue.name elasticsearch.node.stats.fs.summary.available.bytes \
+              elasticsearch.node.stats.fs.summary.total.bytes; do check 'metricbeat-*' "$field"; done
+          }
+          for attempt in 1 2 3 4 5 6; do
+            missing=""
+            checks
+            [ -z "$missing" ] && exit 0
+            echo "Missing:${missing}; trying again in 20 s"
+            sleep 20
+          done
+          # A document of each of those metricsets, to find the right field names
+          for metricset in memory pool queue; do
+            curl --silent --show-error --cacert var/elastic-ca.crt -u "elastic:${ELASTIC_PASSWORD}" \
+              -H 'Content-Type: application/json' "https://localhost:9200/metricbeat-*/_search" \
+              -d "{\"size\":1,\"sort\":[{\"@timestamp\":\"desc\"}],\"query\":{\"term\":{\"metricset.name\":\"${metricset}\"}}}" \
+              | jq -c '.hits.hits[0]._source | del(.agent, .ecs, .host, .service, .event)'
+          done
+          echo "::error::Fields without documents:${missing}"
+          exit 1
+
+      - name: kibana_setup imported the dashboards and created the rules
+        run: |
+          docker compose --profile elastic logs kibana_setup
+          code=$(docker inspect --format '{{.State.ExitCode}}' "$(docker compose --profile elastic ps -aq kibana_setup)")
+          test "$code" = 0
+          kb() {
+            curl --silent --show-error --fail --cacert var/elastic-ca.crt -u "elastic:${ELASTIC_PASSWORD}" -H 'kbn-xsrf: ci' "$@"
+          }
+          for id in library-api library-domain library-infra library-errors; do
+            kb "https://localhost:5601/api/saved_objects/dashboard/${id}" | jq -r '.attributes.title'
+          done
+          # Every rule runs (each minute) without errors
+          for file in docker/elastic/kibana/rules/*.json; do
+            id=$(basename "$file" .json)
+            status=pending
+            for i in $(seq 1 24); do
+              status=$(kb "https://localhost:5601/api/alerting/rule/${id}" | jq -r '.execution_status.status')
+              [ "$status" != pending ] && break
+              sleep 5
+            done
+            echo "${id}: ${status}"
+            if [ "$status" = error ] || [ "$status" = pending ]; then
+              kb "https://localhost:5601/api/alerting/rule/${id}" | jq '.execution_status'
+              exit 1
+            fi
+          done
+
+      - name: The connector writes alerts to library-alerts
+        run: |
+          curl --silent --show-error --fail --cacert var/elastic-ca.crt -u "elastic:${ELASTIC_PASSWORD}" -H 'kbn-xsrf: ci' \
+            -H 'Content-Type: application/json' -X POST https://localhost:5601/api/actions/connector/library-alerts-index/_execute \
+            -d '{"params":{"documents":[{"message":"CI test of the library-alerts connector"}]}}' | jq -e '.status == "ok"'
+          curl --silent --show-error --fail --cacert var/elastic-ca.crt -u "elastic:${ELASTIC_PASSWORD}" \
+            "https://localhost:9200/library-alerts/_count" | jq -e '.count > 0'
+
+      - name: The dashboards render without errors
+        run: |
+          mkdir -p kibana-screenshots
+          cd .github/scripts
+          npm install --no-save --no-package-lock playwright@1.49.1 > /dev/null
+          npx playwright install --with-deps chromium > /dev/null
+          SCREENSHOTS="$GITHUB_WORKSPACE/kibana-screenshots" node kibana-dashboards.mjs \
+            library-api library-domain library-infra library-errors
+
+      - name: Screenshots of the dashboards
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kibana-dashboards
+          path: kibana-screenshots/
+          if-no-files-found: ignore
+
+      - name: make elastic-export writes the 4 dashboards
+        run: |
+          make elastic-export
+          for id in library-api library-domain library-infra library-errors; do
+            jq -e -s --arg id "$id" 'map(select(.type == "dashboard" and .id == $id)) | length == 1' \
+              docker/elastic/kibana/library.ndjson
+          done
+          git checkout docker/elastic/kibana/library.ndjson
 
       - name: With the APM Server down the API still answers quickly
         run: |

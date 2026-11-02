@@ -49,7 +49,7 @@ flowchart LR
 | `redis` | [docker/compose.infra.yml](docker/compose.infra.yml) | 6379 | Redis con contraseña `REDIS_PASSWORD` |
 | `pgadmin` | [docker/compose.infra.yml](docker/compose.infra.yml) | 5050 | pgAdmin 4 |
 
-`docker/compose.infra.yml` contiene además el stack de Elastic (Elasticsearch, Kibana, Filebeat, Metricbeat, APM) comentado; no se arranca.
+El stack de observabilidad (Elastic) está en [docker/compose.elastic.yml](docker/compose.elastic.yml), en el perfil `elastic`: `make up` no lo arranca. Ver [Observabilidad](#observabilidad).
 
 ## Requisitos previos
 
@@ -109,6 +109,58 @@ El [Makefile](Makefile) de la raíz gestiona Docker. Cada app tiene su propio Ma
 | `make logs` / `make ps` | Logs en directo / estado de los contenedores |
 | `make pgadmin` / `make rabbit` | Abre pgAdmin o la gestión de RabbitMQ en el navegador |
 | `make api-help` | Lista los objetivos de la API (`api-test`, `api-lint`, `api-composer`…) |
+| `make elastic-up` / `make elastic-down` | Arranca todo más el stack de Elastic / para y elimina solo el stack (conserva sus datos) |
+| `make kibana` / `make elastic-logs` | Abre Kibana / logs en directo del stack |
+| `make elastic-ca` | Copia la CA local a `var/elastic-ca.crt`, para confiar en ella en el navegador |
+| `make elastic-export` | Guarda los dashboards tal como están en Kibana en `docker/elastic/kibana/library.ndjson` |
+| `make elastic-reset` | Borra todos los datos de Elasticsearch (pide confirmación) |
+
+## Observabilidad
+
+El perfil `elastic` añade Elasticsearch y Kibana 9 con seguridad y TLS, un APM Server, Filebeat y Metricbeat. Todos usan una CA local que crea el servicio `elastic_setup`.
+
+| Servicio | Puerto en el host | Función |
+|---|---|---|
+| `elasticsearch` | 127.0.0.1:9200 | Almacena trazas, logs, métricas y alertas. Cada dato se guarda 7 días (`ELASTIC_RETENTION`) |
+| `kibana` | 127.0.0.1:5601 | Interfaz: `https://localhost:5601`, usuario `elastic` y `ELASTIC_PASSWORD` |
+| `apm_server` | 127.0.0.1:8200 | Recibe las trazas OpenTelemetry de `api` y `api_consumers` |
+| `filebeat` | Ninguno | Envía los logs de la API (JSON ECS con `trace.id`), nginx y PostgreSQL |
+| `metricbeat` | Ninguno | Métricas de contenedores, PostgreSQL, RabbitMQ, PHP-FPM, nginx, Redis y Elasticsearch |
+| `elastic_setup`, `kibana_setup` | Ninguno | Se ejecutan una vez en cada arranque: certificados, usuarios y retención; dashboards y alertas |
+
+### Arrancarlo
+
+1. Rellena en el `.env` de la raíz las variables de Elastic de [.env.dist](.env.dist): contraseñas, `KIBANA_ENCRYPTION_KEY` (32 caracteres o más) y `APM_SECRET_TOKEN` (solo letras y números).
+2. Ejecuta `make build`. Las imágenes de la API, nginx y PostgreSQL llevan cambios de observabilidad.
+3. Ejecuta `make elastic-up`.
+4. Ejecuta `make kibana`.
+
+El primer arranque tarda unos minutos. Para no ver avisos de certificado en el navegador, importa como CA de confianza el fichero que crea `make elastic-ca`.
+
+### Qué hay en Kibana
+
+- **Dashboards** (Analytics → Dashboards, los que empiezan por "Library ·"):
+  - **Library · API**: peticiones, latencia y errores por endpoint, y las consultas SQL.
+  - **Library · Dominio**: mensajes procesados por cada consumidor, duplicados descartados, colas y consumidores de RabbitMQ, mensajes del bus y llamadas a Google Books.
+  - **Library · Infraestructura**: CPU y memoria por contenedor, PHP-FPM, nginx, PostgreSQL, Redis y disco de Elasticsearch.
+  - **Library · Errores y logs**: errores de la API, nginx y PostgreSQL, y los últimos logs con su `trace.id`.
+  - También están los dashboards integrados de Filebeat y Metricbeat (`[Filebeat …]`, `[Metricbeat …]`).
+- **APM** (Observability → APM): servicios `library-api` y `library-consumers`. Una petición que publica un evento comparte la traza con el consumidor que lo procesa.
+- **Alertas** (Stack Management → Rules, etiqueta `library`). Cada alerta se escribe en el índice `library-alerts`, que puedes consultar en Discover:
+
+| Regla | Condición |
+|---|---|
+| `library-api-error-rate` | Más de un 5 % de peticiones fallidas en 5 minutos |
+| `library-api-latency` | Latencia p95 de la API por encima de 1 s en 5 minutos |
+| `library-queue-backlog` | Más de 100 mensajes en una cola durante 10 minutos |
+| `library-queue-no-consumers` | Una cola `colybri.library.*` sin consumidores durante 2 minutos |
+| `library-google-books` | Una llamada a Google Books que falla o tarda más de 3 s |
+| `library-es-disk` | Disco de Elasticsearch por encima del 85 % |
+
+### Cambiar dashboards y alertas
+
+- **Dashboards.** Edítalos en Kibana, ejecuta `make elastic-export` y haz commit de [docker/elastic/kibana/library.ndjson](docker/elastic/kibana/library.ndjson). `kibana_setup` los importa en cada arranque y sobrescribe los cambios que no se hayan exportado.
+- **Alertas.** Están en [docker/elastic/kibana/rules/](docker/elastic/kibana/rules). Edita el JSON y vuelve a ejecutar `make elastic-up`. `kibana_setup` borra las reglas y las crea de nuevo.
 
 ## Estructura del repositorio
 
@@ -117,10 +169,13 @@ El [Makefile](Makefile) de la raíz gestiona Docker. Cada app tiene su propio Ma
 ├── apps/
 │   └── api/                    # API Symfony: código, Dockerfile, compose.api.yml, Makefile, .env.dist
 ├── docker/
-│   ├── compose.infra.yml       # postgres, rabbitmq, redis, pgadmin (y Elastic comentado)
-│   ├── postgres/  rabbit/  redis/  elastic/
+│   ├── compose.infra.yml       # postgres, rabbitmq, redis, pgadmin
+│   ├── compose.elastic.yml     # Elastic (perfil elastic): ES, Kibana, APM, Filebeat, Metricbeat
+│   ├── elastic/                # setup, configuración de los Beats y del APM Server, dashboards y alertas
+│   ├── postgres/  rabbit/  redis/
 ├── .github/workflows/
-│   └── api.yml                 # CI de la API
+│   ├── api.yml                 # CI de la API
+│   └── elastic.yml             # CI del stack de Elastic: prueba de punta a punta
 ├── docker-compose.yml          # Punto de entrada: include de infra y de cada app
 ├── .env.dist                   # Variables de Docker Compose
 ├── Makefile                    # Ciclo de Docker y delegación api-*
@@ -129,7 +184,7 @@ El [Makefile](Makefile) de la raíz gestiona Docker. Cada app tiene su propio Ma
 
 ## CI
 
-Cada app tiene su propio workflow, que solo se ejecuta cuando cambian sus ficheros. [api.yml](.github/workflows/api.yml) se lanza en `master` y en los pull requests que tocan `apps/api/`, `docker/`, `docker-compose.yml` o el propio workflow; también se puede lanzar a mano desde la pestaña Actions. No hay checks obligatorios en `master`. Ninguna imagen se publica en un registro.
+Cada app tiene su propio workflow, que solo se ejecuta cuando cambian sus ficheros. [elastic.yml](.github/workflows/elastic.yml) arranca todo con el perfil `elastic` y lo comprueba de punta a punta: la traza de un `POST` hasta el consumidor, logs, métricas, alertas y dashboards. Las capturas de los dashboards quedan en los artefactos de la ejecución. [api.yml](.github/workflows/api.yml) se lanza en `master` y en los pull requests que tocan `apps/api/`, `docker/`, `docker-compose.yml` o el propio workflow; también se puede lanzar a mano desde la pestaña Actions. No hay checks obligatorios en `master`. Ninguna imagen se publica en un registro.
 
 ## Licencia
 

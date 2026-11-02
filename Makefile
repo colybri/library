@@ -8,9 +8,9 @@ CONT_IP     = docker inspect --format="{{range .NetworkSettings.Networks}}{{.IPA
 .DEFAULT_GOAL = help
 # Every profile, so stop/down/ps also reach the Elastic stack when it runs
 DOCKER_ALL  = $(DOCKER_COMP) --profile elastic
-ELASTIC_SERVICES = elastic_setup elasticsearch kibana apm_server filebeat metricbeat
+ELASTIC_SERVICES = elastic_setup elasticsearch kibana kibana_setup apm_server filebeat metricbeat
 
-.PHONY        = help build up start stop down logs ps pgadmin rabbit elastic-up elastic-down elastic-reset elastic-ca elastic-logs kibana dirs
+.PHONY        = help build up start stop down logs ps pgadmin rabbit elastic-up elastic-down elastic-reset elastic-ca elastic-logs elastic-export kibana dirs
 
 ## —— The Library monorepo ———————————————————————————————————————————————————
 help: ## Outputs this help screen (app targets: make api-help)
@@ -65,6 +65,12 @@ elastic-ca: ## Copy the local CA to var/elastic-ca.crt, to trust it in your brow
 	@mkdir -p var
 	@$(DOCKER_ALL) cp elasticsearch:/usr/share/elasticsearch/config/certs/ca/ca.crt var/elastic-ca.crt
 	@echo "CA written to var/elastic-ca.crt"
+
+elastic-export: ## Save the library dashboards as they are in Kibana to docker/elastic/kibana/library.ndjson
+	@$(DOCKER_ALL) run --rm --no-deps -T kibana_setup bash /kibana/kibana-setup.sh export > docker/elastic/kibana/library.ndjson.tmp \
+		&& mv docker/elastic/kibana/library.ndjson.tmp docker/elastic/kibana/library.ndjson \
+		|| { rm -f docker/elastic/kibana/library.ndjson.tmp; exit 1; }
+	@echo "Dashboards exported: review the diff and commit docker/elastic/kibana/library.ndjson"
 
 elastic-logs: ## Show live logs of the Elastic stack
 	@$(DOCKER_ALL) logs --tail=50 --follow $(ELASTIC_SERVICES)

@@ -1,0 +1,46 @@
+{
+  "schedule": {
+    "interval": "1m"
+  },
+  "tags": [
+    "library"
+  ],
+  "enabled": true,
+  "name": "API: más de un 5 % de peticiones fallidas (5 min)",
+  "rule_type_id": "apm.transaction_error_rate",
+  "consumer": "apm",
+  "params": {
+    "threshold": 5,
+    "windowSize": 5,
+    "windowUnit": "m",
+    "environment": "ENVIRONMENT_ALL",
+    "serviceName": "library-api"
+  },
+  "actions": [
+    {
+      "id": "library-alerts-index",
+      "group": "threshold_met",
+      "params": {
+        "documents": [
+          {
+            "rule": {
+              "id": "{{rule.id}}",
+              "name": "{{rule.name}}"
+            },
+            "alert": {
+              "id": "{{alert.id}}",
+              "action_group": "{{alert.actionGroup}}"
+            },
+            "message": "{{context.message}}",
+            "reason": "{{context.reason}}"
+          }
+        ]
+      },
+      "frequency": {
+        "summary": false,
+        "notify_when": "onActionGroupChange",
+        "throttle": null
+      }
+    }
+  ]
+}

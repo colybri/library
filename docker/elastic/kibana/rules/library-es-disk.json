@@ -1,0 +1,57 @@
+{
+  "schedule": {
+    "interval": "1m"
+  },
+  "tags": [
+    "library"
+  ],
+  "enabled": true,
+  "name": "Elasticsearch: disco por encima del 85 %",
+  "rule_type_id": ".es-query",
+  "consumer": "alerts",
+  "params": {
+    "searchType": "esQuery",
+    "index": [
+      "metricbeat-*"
+    ],
+    "timeField": "@timestamp",
+    "esQuery": "{\"query\": {\"bool\": {\"filter\": [{\"term\": {\"metricset.name\": \"node_stats\"}}, {\"exists\": {\"field\": \"elasticsearch.node.stats.fs.summary.total.bytes\"}}, {\"script\": {\"script\": {\"lang\": \"painless\", \"source\": \"doc['elasticsearch.node.stats.fs.summary.available.bytes'].value < doc['elasticsearch.node.stats.fs.summary.total.bytes'].value * 0.15\"}}}]}}}",
+    "size": 1,
+    "timeWindowSize": 5,
+    "timeWindowUnit": "m",
+    "threshold": [
+      0
+    ],
+    "thresholdComparator": ">",
+    "excludeHitsFromPreviousRun": false,
+    "aggType": "count",
+    "groupBy": "all"
+  },
+  "actions": [
+    {
+      "id": "library-alerts-index",
+      "group": "query matched",
+      "params": {
+        "documents": [
+          {
+            "rule": {
+              "id": "{{rule.id}}",
+              "name": "{{rule.name}}"
+            },
+            "alert": {
+              "id": "{{alert.id}}",
+              "action_group": "{{alert.actionGroup}}"
+            },
+            "message": "{{context.message}}",
+            "reason": "{{context.reason}}"
+          }
+        ]
+      },
+      "frequency": {
+        "summary": false,
+        "notify_when": "onActionGroupChange",
+        "throttle": null
+      }
+    }
+  ]
+}
