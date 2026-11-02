@@ -13,7 +13,6 @@ use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 class Publisher extends SimpleAggregateRoot
 {
     private const NAME = 'publisher';
-    private Uuid $aggregateId;
     private PublisherName $name;
     private ?PublisherCity $city;
     private Uuid $countryId;

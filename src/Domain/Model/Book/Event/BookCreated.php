@@ -35,7 +35,7 @@ final class BookCreated extends DomainEvent
 
     private Uuid $bookId;
     private BookTitle $title;
-    private BookSubtitle $subtitle;
+    private ?BookSubtitle $subtitle;
     private BookAuthorIds $authorIds;
     private BookPublishYear $publishYear;
     private BookPublishYearIsEstimated $publishYearIsEstimated;
@@ -88,7 +88,7 @@ final class BookCreated extends DomainEvent
 
         $this->bookId = Uuid::from((string)$payload[self::BOOK_ID_PAYLOAD]);
         $this->title = BookTitle::from((string)$payload[self::BOOK_TITLE_PAYLOAD]);
-        $this->subtitle = BookSubtitle::from((string)$payload[self::BOOK_SUBTITLE_PAYLOAD]);
+        $this->subtitle = null === ($payload[self::BOOK_SUBTITLE_PAYLOAD] ?? null) ? null : BookSubtitle::from((string)$payload[self::BOOK_SUBTITLE_PAYLOAD]);
         $this->authorIds = BookAuthorIds::from(array_map(fn($id) => Uuid::from((string)$id), json_decode($payload[self::BOOK_AUTHORS_PAYLOAD])));
         $this->isPseudo = BookAuthorIsPseudo::from((bool)$payload[self::BOOK_IS_PSEUDO_PAYLOAD]);
         $this->publishYear = BookPublishYear::from((int)$payload[self::BOOK_PUBLISH_YEAR_PAYLOAD]);

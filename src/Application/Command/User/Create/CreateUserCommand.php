@@ -82,7 +82,7 @@ final class CreateUserCommand extends Command
         return $this->email;
     }
 
-    public function password(): ?UserPassword
+    public function password(): UserPassword
     {
         return $this->password;
     }

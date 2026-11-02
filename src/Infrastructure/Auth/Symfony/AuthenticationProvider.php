@@ -15,7 +15,7 @@ final class AuthenticationProvider implements UserInterface, PasswordAuthenticat
     {
     }
 
-    public function getPassword(): ?string
+    public function getPassword(): string
     {
         return $this->password->value();
     }
