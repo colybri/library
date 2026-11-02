@@ -97,7 +97,8 @@ jobs:
         run: |
           cp .env.dist .env
           # Inside compose the hosts are the service names
-          sed -i 's|@127.0.0.1:5432|@postgres:5432|; s|^POSTGRES_\(WRITE\|READ\)_HOST=.*|POSTGRES_\1_HOST=postgres|' .env
+          # "#" as delimiter: with "|" the alternation \| would be a literal "|"
+          sed -i 's#@127.0.0.1:5432#@postgres:5432#; s#^POSTGRES_\(WRITE\|READ\)_HOST=.*#POSTGRES_\1_HOST=postgres#' .env
           sed -i 's|^RABBITMQ_HOST=.*|RABBITMQ_HOST=rabbitmq|; s|^REDIS_URL=.*|REDIS_URL=redis://ci@redis:6379|' .env
 
       - name: Build the PHP image
