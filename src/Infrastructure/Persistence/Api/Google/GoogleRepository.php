@@ -13,9 +13,9 @@ class GoogleRepository
     private Client $client;
     private const ENDPOINT = 'https://www.googleapis.com/books/v1/volumes';
 
-    public function __construct()
+    public function __construct(?Client $client = null)
     {
-        $this->client = new Client($this->prepare());
+        $this->client = $client ?? new Client($this->prepare());
     }
 
     private function prepare(): array
@@ -37,7 +37,7 @@ class GoogleRepository
 
         $response = json_decode($request->getBody()->getContents());
 
-        return $response->totalItems > 0 ? $response->items : [];
+        return ($response->totalItems ?? 0) > 0 ? ($response->items ?? []) : [];
     }
 
     protected function byCriteria(string $path, Criteria $criteria, EntityMap $map)
@@ -53,8 +53,7 @@ class GoogleRepository
         foreach ($params as $key => $value) {
             $path .= $key . '=' . $value . '&';
         }
-        $path .= '&key=' . $_ENV['GOOGLE_BOOKS_API_KEY'];
-        ;
+        $path .= '&key=' . ($_ENV['GOOGLE_BOOKS_API_KEY'] ?? '');
 
         return $path;
     }

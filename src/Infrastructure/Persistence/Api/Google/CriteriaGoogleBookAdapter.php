@@ -24,9 +24,8 @@ class CriteriaGoogleBookAdapter implements ConditionVisitor
 
     public function build(Criteria $criteria): string
     {
-
         foreach ($criteria->filters() as $theFilter) {
-            $this->buildExpression($theFilter);
+            $this->path .= $this->buildExpression($theFilter);
         }
 
         if (null !== $criteria->offset()) {
@@ -34,20 +33,18 @@ class CriteriaGoogleBookAdapter implements ConditionVisitor
         }
 
         if (null !== $criteria->limit()) {
-            $this->path .= '&maxResults=' . $criteria->offset();
+            $this->path .= '&maxResults=' . $criteria->limit();
         }
 
         return $this->path;
     }
 
-    public function visitAnd(Conjunction $statement): void
+    public function visitAnd(Conjunction $statement): string
     {
-        foreach ($statement->filters() as $index => $filter) {
-            $this->path .= $this->buildExpression($filter);
-            if ($index !== array_key_last($statement->filters())) {
-                $this->path .= '+';
-            }
-        }
+        return \implode(
+            '+',
+            \array_map(fn (Condition $filter) => $this->buildExpression($filter), $statement->filters())
+        );
     }
 
     public function visitOr(Disjunction $statement): string
@@ -62,7 +59,7 @@ class CriteriaGoogleBookAdapter implements ConditionVisitor
         return $this->mapParameter($filter) . ':' . $this->mapFieldValue($filter);
     }
 
-    private function buildExpression(Condition $filter)
+    private function buildExpression(Condition $filter): string
     {
         return $filter->accept($this);
     }
@@ -72,8 +69,8 @@ class CriteriaGoogleBookAdapter implements ConditionVisitor
         return  $this->entityMap->map($filter->field()->value());
     }
 
-    private function mapFieldValue(Filter $filter)
+    private function mapFieldValue(Filter $filter): string
     {
-        return $filter->value()->value();
+        return \rawurlencode((string) $filter->value()->value());
     }
 }

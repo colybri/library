@@ -87,11 +87,11 @@ coverage: ## Print the code coverage summary in the console
 pgadmin: ## Open pgadmin on browser
 	@xdg-open http://$(PG_ADMIN_CONT_IP)
 
-dump: ## Dump sql database file on migrations folder
-	$(DATABASE_CONT) /bin/bash -c "PGPASSWORD=${POSTGRES_PASS} pg_dump --username ${POSTGRES_USER} library" > ./migrations/library.sql
+dump: ## Dump the schema and the countries data to migrations/library.sql (no library data)
+	@docker exec library_postgres sh -c 'pg_dump -U "$$POSTGRES_USER" --schema-only --no-owner library; pg_dump -U "$$POSTGRES_USER" --data-only -t public.countries library' > ./migrations/library.sql
 
 restore: ## Restore database from migrations
-	@$(DATABASE_CONT) /bin/bash -c "PGPASSWORD=${POSTGRES_PASS} psql --username ${POSTGRES_USER} library" < ./migrations/library.sql
+	@docker exec -i library_postgres sh -c 'psql -U "$$POSTGRES_USER" library' < ./migrations/library.sql
 
 
 ## —— Composer ——————————————————————————————————————————————————————————————
