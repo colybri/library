@@ -27,6 +27,7 @@ RUN apk add --no-cache \
 		gettext \
 		git \
 		gnu-libiconv \
+		supervisor \
 	;
 
 # install gnu-libiconv and set LD_PRELOAD env to make iconv work fully on Alpine image.
@@ -109,6 +110,10 @@ COPY docker/php/conf.d/symfony.dev.ini $PHP_INI_DIR/conf.d/symfony.ini
 COPY docker/php/php-fpm.d/zz-docker.conf /usr/local/etc/php-fpm.d/zz-docker.conf
 COPY --chmod=755 docker/php/docker-healthcheck.sh /usr/local/bin/docker-healthcheck
 COPY --chmod=755 docker/php/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
+# RabbitMQ consumers (api_consumers service): supervisord with one program per subscriber
+COPY docker/php/supervisord.conf /etc/supervisord.conf
+COPY --chmod=755 docker/php/library-consumers.sh /usr/local/bin/library-consumers
+COPY --chmod=755 docker/php/library-consumers-healthcheck.sh /usr/local/bin/library-consumers-healthcheck
 
 HEALTHCHECK --interval=10s --timeout=3s --retries=3 CMD ["docker-healthcheck"]
 

@@ -6,7 +6,7 @@ DOCKER_COMP = docker compose
 EXEC        = $(DOCKER_COMP) exec api
 
 .DEFAULT_GOAL = help
-.PHONY        = help sh test test-integration behat grumphp lint fix report coverage dump restore composer console cc cache
+.PHONY        = help sh consumers-logs consumers-restart consumers-status test test-integration behat grumphp lint fix report coverage dump restore composer console cc cache
 
 ## —— The Library API ———————————————————————————————————————————————————————
 help: ## Outputs this help screen
@@ -14,6 +14,16 @@ help: ## Outputs this help screen
 
 sh: ## Connect to the PHP FPM container
 	@$(EXEC) sh
+
+## —— RabbitMQ consumers (api_consumers) ————————————————————————————————————
+consumers-logs: ## Follow the logs of the RabbitMQ consumers
+	@$(DOCKER_COMP) logs --tail=50 --follow api_consumers
+
+consumers-restart: ## Restart the consumers (needed after changing a subscriber)
+	@$(DOCKER_COMP) restart api_consumers
+
+consumers-status: ## Show the state of every consumer program
+	@$(DOCKER_COMP) exec api_consumers supervisorctl -c /etc/supervisord.conf status
 
 ## —— Phpunit ————————————————————————————————————————————————————————————————
 test: ## Run the unit tests

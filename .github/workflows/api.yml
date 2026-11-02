@@ -216,6 +216,32 @@ jobs:
             test -f gen/coverage/index.html
             test -f gen/metrics/index.html'
 
+      # Same command as the api_consumers service in compose.api.yml, against a
+      # real RabbitMQ: queues are declared and every subscriber gets a consumer.
+      - name: api_consumers starts its consumers under supervisord
+        run: |
+          docker network create consumers-ci
+          docker run -d --name rabbitmq --network consumers-ci \
+            -e RABBITMQ_DEFAULT_USER=library -e RABBITMQ_DEFAULT_PASS=library \
+            --health-cmd "rabbitmq-diagnostics -q ping" --health-interval 5s --health-retries 30 \
+            rabbitmq:3.13
+          for i in $(seq 60); do
+            [ "$(docker inspect -f '{{.State.Health.Status}}' rabbitmq)" = healthy ] && break
+            sleep 2
+          done
+          docker run -d --name consumers --network consumers-ci -v "$PWD:/srv/app" \
+            -e RABBITMQ_HOST=rabbitmq -e RABBITMQ_LOGIN=library -e RABBITMQ_PASSWORD=library \
+            library-php-dev:ci library-consumers
+          healthy=0
+          for i in $(seq 30); do
+            if docker exec consumers library-consumers-healthcheck; then healthy=1; break; fi
+            sleep 2
+          done
+          docker logs consumers
+          [ "$healthy" = 1 ] || { echo "Some consumer is not RUNNING"; exit 1; }
+          docker exec rabbitmq rabbitmqctl list_queues --quiet name consumers | tee queues.txt
+          grep -E '^colybri\.library\.author\.update_snapshot_on_author_created_subscriber\s+1$' queues.txt
+
       - name: Xdebug variant builds
         uses: docker/build-push-action@v6
         with:

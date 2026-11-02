@@ -34,7 +34,7 @@ flowchart LR
     subgraph docker["docker compose (proyecto library)"]
         nginx["api_nginx<br/>Nginx :80 / :443"]
         php["api<br/>PHP-FPM 8.4 + Symfony 7.4"]
-        consumers["Consumidores<br/>bin/console library:*:consume"]
+        consumers["api_consumers<br/>supervisord + library:rabbit:consume"]
         postgres[("postgres<br/>PostgreSQL 14")]
         rabbit[["rabbitmq<br/>RabbitMQ"]]
         redis[("redis<br/>Redis")]
@@ -60,10 +60,11 @@ flowchart LR
 - **Symfony** (`api`) resuelve la ruta, valida el JWT y despacha el comando o la consulta. Los controladores están en `src/Entrypoint/Controller/`, los casos de uso en `src/Application/` y el modelo en `src/Domain/`.
 - **PostgreSQL** guarda los datos del catálogo, los usuarios y los eventos de respaldo. No se usa el ORM, solo DBAL.
 - **RabbitMQ** recibe los eventos de dominio en el exchange definido por `RABBITMQ_EXCHANGE`. `library:rabbit:configure` crea las colas de cada suscriptor y `library:rabbit:consume` procesa cada una.
+- **Consumidores** (`api_consumers`) usa la misma imagen y el mismo código que `api`, pero en lugar de PHP-FPM ejecuta supervisord con un programa `library:rabbit:consume` por suscriptor. Ver [Consumidores de RabbitMQ](#consumidores-de-rabbitmq).
 - **Redis** es el almacén de sesiones de Symfony ([config/packages/framework.yaml](config/packages/framework.yaml)).
 - **Google Books** es la única integración externa: se usa para buscar ediciones. `GOOGLE_BOOKS_API_KEY` es opcional.
 
-Los servicios `api` y `api_nginx` se definen en [compose.api.yml](compose.api.yml); PostgreSQL, RabbitMQ, Redis y pgAdmin son infraestructura compartida en [docker/compose.infra.yml](../../docker/compose.infra.yml).
+Los servicios `api`, `api_consumers` y `api_nginx` se definen en [compose.api.yml](compose.api.yml); PostgreSQL, RabbitMQ, Redis y pgAdmin son infraestructura compartida en [docker/compose.infra.yml](../../docker/compose.infra.yml).
 
 ## Tecnologías principales
 
@@ -149,6 +150,18 @@ bin/console library:rabbit:configure
 Al arrancar, el entrypoint del contenedor `api` ejecuta `composer install` (fuera de `prod`) y espera a que la base de datos responda ([docker/php/docker-entrypoint.sh](docker/php/docker-entrypoint.sh)).
 
 El contenedor `api` también monta el repositorio entero en `/srv/repo`, para que GrumPHP encuentre el `.git` de la raíz.
+
+### Consumidores de RabbitMQ
+
+El servicio `api_consumers` arranca con [docker/php/library-consumers.sh](docker/php/library-consumers.sh): espera a que `api` haya instalado `vendor/`, ejecuta `library:rabbit:configure`, genera un programa de Supervisor por suscriptor con `library:rabbit:generate-supervisor` (en `/tmp/supervisor.d`, dentro del contenedor) y lanza supervisord ([docker/php/supervisord.conf](docker/php/supervisord.conf)). No repite `composer install` ni las migraciones.
+
+Cada suscriptor nuevo (una clase que implementa `DomainEventSubscriber`) tiene su cola y su proceso sin tocar el compose. El contenedor está sano cuando todos los programas están en `RUNNING`.
+
+| Comando | Para qué |
+|---|---|
+| `make api-consumers-logs` | Ver los logs de los consumidores |
+| `make api-consumers-status` | Ver el estado de cada programa |
+| `make api-consumers-restart` | Reiniciar los consumidores. Hace falta después de cambiar un suscriptor o su configuración, porque son procesos PHP largos y no recargan el código |
 
 La imagen de producción se construye, desde la raíz, con:
 
@@ -237,7 +250,7 @@ apps/api/
 │   ├── Integration/            # Bus de eventos con Postgres y RabbitMQ reales
 │   └── Entrypoint/http/        # Escenarios Behat de la API
 ├── .env.dist                   # Variables de Symfony de referencia
-├── compose.api.yml             # Servicios api y api_nginx (incluido desde la raíz)
+├── compose.api.yml             # Servicios api, api_consumers y api_nginx (incluido desde la raíz)
 ├── Dockerfile                  # Etapas library_php_base, library_php_dev y library_php
 ├── Makefile                    # Objetivos de la API (make api-help desde la raíz)
 ├── behat.yml  phpunit.xml.dist  phpstan.neon  phpcs.xml  grumphp.yml  .redocly.yaml
