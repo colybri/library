@@ -20,7 +20,7 @@ class BookDbalMap implements EntityMap
         Uuid::class => 'id',
         BookTitle::class => 'title',
         BookSubtitle::class => 'subtitle',
-        BookAuthorIds::class => 'author_ids',
+        BookAuthorIds::class => 'authors_ids',
         BookAuthorIsPseudo::class => 'is_pseudo_author',
         BookPublishYear::class => 'publish_year',
         BookPublishYearIsEstimated::class => 'is_estimated_publish_year',

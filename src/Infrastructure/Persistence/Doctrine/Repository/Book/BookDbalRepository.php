@@ -45,7 +45,7 @@ class BookDbalRepository extends DbalRepository implements BookRepository
     public function match(Criteria $criteria): array
     {
         $queryBuilder = $this->connectionRead->createQueryBuilder()
-            ->select('*')->from(BookDbalMap::table());
+            ->select('*', 'array_to_json(authors_ids) as authors')->from(BookDbalMap::table());
 
         (new CriteriaDbalAdapter($queryBuilder, new BookDbalMap()))->build($criteria);
 
