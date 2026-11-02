@@ -237,8 +237,13 @@ jobs:
             if docker exec consumers library-consumers-healthcheck; then healthy=1; break; fi
             sleep 2
           done
-          docker logs consumers
-          [ "$healthy" = 1 ] || { echo "Some consumer is not RUNNING"; exit 1; }
+          [ "$healthy" = 1 ] || { docker logs consumers; echo "Some consumer is not RUNNING"; exit 1; }
+          # The read timeout is 2 s: after several empty waits the program must
+          # still be the same process (no restarts) with a single consumer.
+          sleep 8
+          docker exec consumers library-consumers-healthcheck
+          docker logs consumers 2>&1 | tee consumers.log
+          if grep -q "exited: library_" consumers.log; then echo "A consumer exited and was restarted"; exit 1; fi
           docker exec rabbitmq rabbitmqctl list_queues --quiet name consumers | tee queues.txt
           grep -E '^colybri\.library\.author\.update_snapshot_on_author_created_subscriber\s+1$' queues.txt
 

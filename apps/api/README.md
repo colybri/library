@@ -283,7 +283,7 @@ Comandos de consola propios (`make api-console c="..."`):
 | `library:user:create id email password isActive` | Crea un usuario |
 | `library:fixtures:generate` / `library:fixtures:clean` | Carga o elimina datos de prueba |
 | `library:rabbit:configure` | Declara el exchange y las colas de los suscriptores |
-| `library:rabbit:consume cola` | Consume los eventos de una cola de RabbitMQ |
+| `library:rabbit:consume cola` | Consume los eventos de una cola de RabbitMQ hasta que se detiene el proceso |
 | `library:postgres:consume cantidad` | Procesa eventos guardados en el respaldo de PostgreSQL |
 | `library:rabbit:generate-supervisor [ruta] [--output-dir=carpeta]` | Genera un `.conf` de Supervisor por suscriptor (por defecto en `/srv/app/build/supervisord`) |
 

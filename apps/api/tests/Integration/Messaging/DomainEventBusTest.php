@@ -141,6 +141,20 @@ final class DomainEventBusTest extends KernelTestCase
     }
 
     #[Test]
+    public function the_rabbitmq_consumer_keeps_consuming_after_the_queue_was_empty(): void
+    {
+        $consumer = self::getContainer()->get(RabbitMqDomainEventsConsumer::class);
+        $subscriberQueue = RabbitMqQueueNameFormatter::format($this->subscriber());
+
+        $this->createAuthor();
+        $consumer->consume($subscriberQueue);
+        $this->createAuthor();
+        $consumer->consume($subscriberQueue);
+
+        self::assertNotInstanceOf(\AMQPEnvelope::class, $this->rabbit->queue($subscriberQueue)->get(), 'The second event was not acknowledged');
+    }
+
+    #[Test]
     public function when_rabbitmq_is_down_events_go_to_postgres_and_are_consumed_from_there(): void
     {
         // RabbitMqConnection keeps the AMQP connection in static properties,
