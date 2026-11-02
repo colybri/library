@@ -8,7 +8,7 @@ CONT_IP     = docker inspect --format="{{range .NetworkSettings.Networks}}{{.IPA
 .DEFAULT_GOAL = help
 # Every profile, so stop/down/ps also reach the Elastic stack when it runs
 DOCKER_ALL  = $(DOCKER_COMP) --profile elastic
-ELASTIC_SERVICES = elastic_setup elasticsearch kibana
+ELASTIC_SERVICES = elastic_setup elasticsearch kibana apm_server
 
 .PHONY        = help build up start stop down logs ps pgadmin rabbit elastic-up elastic-down elastic-reset elastic-ca elastic-logs kibana
 
@@ -45,7 +45,7 @@ rabbit: ## Open the RabbitMQ management UI on browser
 	@xdg-open http://$$($(CONT_IP) $$($(DOCKER_COMP) ps -q rabbitmq)):15672
 
 ## —— Elastic stack (profile elastic) ———————————————————————————————————————
-elastic-up: ## Start everything plus Elasticsearch and Kibana (https://localhost:5601)
+elastic-up: ## Start everything plus Elasticsearch, Kibana (https://localhost:5601) and the APM Server
 	@$(DOCKER_ALL) up --detach
 
 elastic-down: ## Stop and remove only the Elastic stack, keeping its data

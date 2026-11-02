@@ -6,7 +6,10 @@ namespace Colybri\Library\Infrastructure\Persistence\Api\Google;
 
 use Colybri\Criteria\Domain\Criteria;
 use Colybri\Criteria\Infrastructure\Adapter\EntityMap;
+use Colybri\Library\Infrastructure\Tracing\GuzzleTracingMiddleware;
+use Colybri\Library\Infrastructure\Tracing\Tracing;
 use GuzzleHttp\Client;
+use GuzzleHttp\HandlerStack;
 
 class GoogleRepository
 {
@@ -20,7 +23,12 @@ class GoogleRepository
 
     private function prepare(): array
     {
+        // Every call to Google Books is a span in the trace of the request
+        $handler = HandlerStack::create();
+        $handler->push(new GuzzleTracingMiddleware(Tracing::tracer()), 'tracing');
+
         return [
+            'handler' => $handler,
             'base_uri' => self::ENDPOINT,
             'debug' => false,
             'headers' => [

@@ -10,6 +10,12 @@ use AMQPQueueException;
 use Colybri\Library\Domain\Messaging\DomainEvent;
 use Colybri\Library\Infrastructure\Messaging\Bus\Event\DomainEventMapping;
 use Colybri\Library\Infrastructure\Messaging\Bus\Event\RabbitMq\Exchange\RabbitMqExchangeNameFormatter;
+use OpenTelemetry\API\Trace\SpanKind;
+use OpenTelemetry\API\Trace\StatusCode;
+use OpenTelemetry\API\Trace\TracerInterface;
+use OpenTelemetry\API\Trace\TracerProviderInterface;
+use OpenTelemetry\Context\Propagation\TextMapPropagatorInterface;
+use OpenTelemetry\SDK\Trace\TracerProviderInterface as SdkTracerProviderInterface;
 use PcComponentes\Ddd\Domain\Model\ValueObject\DateTimeValueObject;
 use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use Throwable;
@@ -24,7 +30,10 @@ final class RabbitMqDomainEventsConsumer
         private readonly RabbitMqConnection $connection,
         private readonly DomainEventMapping $mapping,
         private readonly string $exchangeName,
-        private readonly int $maxRetries
+        private readonly int $maxRetries,
+        private readonly TracerInterface $tracer,
+        private readonly TextMapPropagatorInterface $propagator,
+        private readonly TracerProviderInterface $tracerProvider,
     ) {
     }
 
@@ -48,26 +57,66 @@ final class RabbitMqDomainEventsConsumer
     private function consumer(): callable
     {
         return function (AMQPEnvelope $envelope, AMQPQueue $queue) {
-
-            $eventData = json_decode($envelope->getBody(), true);
-            if (JSON_ERROR_NONE !== json_last_error()) {
-                throw new \RuntimeException('Unable to parse response body into JSON: ' . json_last_error());
-            }
-            $event = $this->reconstituteEvent($eventData);
+            // One CONSUMER span per message, child of the trace that published
+            // it: the publisher put traceparent in the AMQP headers.
+            $span = $this->tracer
+                ->spanBuilder(sprintf('%s process', $queue->getName()))
+                ->setSpanKind(SpanKind::KIND_CONSUMER)
+                ->setParent($this->propagator->extract($envelope->getHeaders()))
+                ->setAttribute('messaging.system', 'rabbitmq')
+                ->setAttribute('messaging.operation.type', 'process')
+                ->setAttribute('messaging.destination.name', $queue->getName())
+                ->setAttribute('messaging.message.id', (string) $envelope->getMessageId())
+                ->setAttribute('messaging.rabbitmq.destination.routing_key', (string) $envelope->getRoutingKey())
+                ->startSpan();
+            $scope = $span->activate();
 
             try {
-                /* @var DomainEventSubscriber $subscriber */
-                foreach ($this->mapping->subscribersFor($eventData['data']['type']) as $subscriber) {
-                    $subscriber($event);
-                }
+                $this->process($envelope, $queue);
             } catch (Throwable $error) {
-                $this->handleConsumptionError($envelope, $queue);
+                $span->recordException($error);
+                $span->setStatus(StatusCode::STATUS_ERROR, $error->getMessage());
 
                 throw $error;
+            } finally {
+                $scope->detach();
+                $span->end();
+                $this->flushTraces();
             }
-
-            $queue->ack($envelope->getDeliveryTag());
         };
+    }
+
+    private function process(AMQPEnvelope $envelope, AMQPQueue $queue): void
+    {
+        $eventData = json_decode($envelope->getBody(), true);
+        if (JSON_ERROR_NONE !== json_last_error()) {
+            throw new \RuntimeException('Unable to parse response body into JSON: ' . json_last_error());
+        }
+        $event = $this->reconstituteEvent($eventData);
+
+        try {
+            /* @var DomainEventSubscriber $subscriber */
+            foreach ($this->mapping->subscribersFor($eventData['data']['type']) as $subscriber) {
+                $subscriber($event);
+            }
+        } catch (Throwable $error) {
+            $this->handleConsumptionError($envelope, $queue);
+
+            throw $error;
+        }
+
+        $queue->ack($envelope->getDeliveryTag());
+    }
+
+    /**
+     * The consumer is a long-running process: without this, the spans of a
+     * message would wait for the next batch instead of reaching the APM Server.
+     */
+    private function flushTraces(): void
+    {
+        if ($this->tracerProvider instanceof SdkTracerProviderInterface) {
+            $this->tracerProvider->forceFlush();
+        }
     }
 
     private function handleConsumptionError(AMQPEnvelope $envelope, AMQPQueue $queue): void

@@ -1,9 +1,11 @@
 name: Elastic
 
-# CI of the Elastic stack (docker/compose.elastic.yml, profile "elastic").
-# It runs only when the stack's configuration or this workflow change.
+# CI of the Elastic stack (docker/compose.elastic.yml, profile "elastic") and
+# of what the API sends to it. It runs only when those files change.
 #   validate  compose files and the setup script (seconds)
-#   smoke     starts the stack and checks it end to end (a few minutes)
+#   smoke     starts everything (stack + API) and checks it end to end:
+#             TLS, users, retention, Kibana, and traces of a real request
+#             that crosses RabbitMQ to the consumers (about 10 minutes)
 on:
   push:
     branches: [ master ]
@@ -13,6 +15,14 @@ on:
       - 'docker-compose.yml'
       - '.env.dist'
       - '.github/workflows/elastic.yml'
+      # What the API sends to the APM Server
+      - 'apps/api/Dockerfile'
+      - 'apps/api/compose.api.yml'
+      - 'apps/api/docker/**'
+      - 'apps/api/composer.lock'
+      - 'apps/api/config/**'
+      - 'apps/api/src/Infrastructure/Tracing/**'
+      - 'apps/api/src/Infrastructure/Messaging/**'
   pull_request:
     paths:
       - 'docker/elastic/**'
@@ -20,6 +30,14 @@ on:
       - 'docker-compose.yml'
       - '.env.dist'
       - '.github/workflows/elastic.yml'
+      # What the API sends to the APM Server
+      - 'apps/api/Dockerfile'
+      - 'apps/api/compose.api.yml'
+      - 'apps/api/docker/**'
+      - 'apps/api/composer.lock'
+      - 'apps/api/config/**'
+      - 'apps/api/src/Infrastructure/Tracing/**'
+      - 'apps/api/src/Infrastructure/Messaging/**'
   workflow_dispatch:
 
 concurrency:
@@ -37,7 +55,7 @@ jobs:
         run: |
           cp .env.dist .env
           # The new variables are optional while the profile is off
-          sed -i '/^ELASTIC_\|^KIBANA_\|^ES_HEAP\|^ELASTICSEARCH_PORT/d' .env
+          sed -i '/^ELASTIC_\|^KIBANA_\|^APM_\|^ES_HEAP\|^ELASTICSEARCH_PORT/d' .env
           docker compose config --quiet
           ! docker compose config --services | grep -x elasticsearch > /dev/null
 
@@ -51,10 +69,10 @@ jobs:
         run: shellcheck docker/elastic/setup/setup.sh
 
   smoke:
-    name: Start Elasticsearch and Kibana
+    name: Start the stack and trace the API
     needs: validate
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
 
@@ -68,10 +86,25 @@ jobs:
           sed -i "s|^ELASTIC_PASSWORD=.*|ELASTIC_PASSWORD=${elastic_password}|" .env
           sed -i "s|^KIBANA_SYSTEM_PASSWORD=.*|KIBANA_SYSTEM_PASSWORD='${kibana_password}'|" .env
           sed -i "s|^KIBANA_ENCRYPTION_KEY=.*|KIBANA_ENCRYPTION_KEY=$(openssl rand -hex 32)|" .env
+          sed -i "s|^APM_ES_PASSWORD=.*|APM_ES_PASSWORD=ci-$(openssl rand -hex 8)|" .env
+          sed -i "s|^APM_SECRET_TOKEN=.*|APM_SECRET_TOKEN=$(openssl rand -hex 24)|" .env
+          sed -i "s|^USER_ID=.*|USER_ID=$(id -u)|" .env
+          echo "REDIS_PASSWORD=ci" >> .env
           echo "ELASTIC_PASSWORD=${elastic_password}" >> "$GITHUB_ENV"
 
-      - name: Start the stack
-        run: docker compose --profile elastic up --detach elasticsearch kibana
+      - name: Prepare apps/api/.env for docker compose
+        working-directory: apps/api
+        run: |
+          cp .env.dist .env
+          # Inside compose the hosts are the service names
+          sed -i 's|@127.0.0.1:5432|@postgres:5432|; s|^POSTGRES_\(WRITE\|READ\)_HOST=.*|POSTGRES_\1_HOST=postgres|' .env
+          sed -i 's|^RABBITMQ_HOST=.*|RABBITMQ_HOST=rabbitmq|; s|^REDIS_URL=.*|REDIS_URL=redis://ci@redis:6379|' .env
+
+      - name: Build the PHP image
+        run: docker compose build api
+
+      - name: Start the stack and the API
+        run: docker compose --profile elastic up --detach
 
       - name: Wait until Kibana is healthy
         run: |
@@ -122,9 +155,103 @@ jobs:
       - name: elastic_setup can run again (idempotent)
         run: docker compose --profile elastic run --rm --no-deps elastic_setup
 
+      - name: The APM Server is healthy
+        run: |
+          apm=$(docker compose --profile elastic ps -q apm_server)
+          for i in $(seq 1 30); do
+            [ "$(docker inspect --format '{{.State.Health.Status}}' "$apm")" = healthy ] && exit 0
+            sleep 5
+          done
+          docker compose --profile elastic logs apm_server
+          exit 1
+
+      - name: Load the schema and wait for the API and its consumers
+        run: |
+          for i in $(seq 1 30); do
+            docker compose exec -T postgres pg_isready -U library -d library && break
+            sleep 2
+          done
+          docker compose exec -T postgres psql -U library -d library -v ON_ERROR_STOP=1 -q < apps/api/migrations/library.sql
+          for service in api api_consumers; do
+            id=$(docker compose ps -q "$service")
+            for i in $(seq 1 60); do
+              status=$(docker inspect --format '{{.State.Health.Status}}' "$id")
+              echo "$service: $status"
+              [ "$status" = healthy ] && break
+              sleep 10
+            done
+            [ "$status" = healthy ] || { docker compose logs "$service"; exit 1; }
+          done
+
+      - name: Create an author through the API
+        run: |
+          author_id=$(cat /proc/sys/kernel/random/uuid)
+          echo "AUTHOR_ID=${author_id}" >> "$GITHUB_ENV"
+          code=$(curl --silent --show-error --output response.txt --write-out '%{http_code}' \
+            -X POST http://localhost/api/v1/author -H 'Content-Type: application/json' \
+            -d "{\"id\":\"${author_id}\",\"firstName\":\"Emilia\",\"lastName\":\"Pardo Bazan\",\"countryId\":\"34d41de4-d197-8f63-5014-7c5e5e8f71e3\",\"isPseudonymOf\":null,\"bornAt\":1851,\"deathAt\":1921}")
+          cat response.txt; echo
+          test "$code" = "201"
+          curl --silent --show-error --fail "http://localhost/api/v1/author/${author_id}"
+
+      - name: The request and its consumer share one trace in Elasticsearch
+        run: |
+          search() {
+            curl --silent --show-error --fail --cacert var/elastic-ca.crt -u "elastic:${ELASTIC_PASSWORD}" \
+              -H 'Content-Type: application/json' "https://localhost:9200/$1/_search" -d "$2"
+          }
+          trace_id=""
+          for i in $(seq 1 24); do
+            trace_id=$(search 'traces-apm*' '{"size":1,"query":{"bool":{"filter":[
+              {"term":{"service.name":"library-api"}},{"term":{"processor.event":"transaction"}},
+              {"term":{"http.request.method":"POST"}}]}}}' | jq -r '.hits.hits[0]._source.trace.id // empty')
+            [ -n "$trace_id" ] && break
+            sleep 5
+          done
+          test -n "$trace_id" || { echo "::error::No transaction of library-api arrived"; docker compose logs apm_server api; exit 1; }
+          echo "POST trace: ${trace_id}"
+          echo "TRACE_ID=${trace_id}" >> "$GITHUB_ENV"
+
+          for i in $(seq 1 24); do
+            found=$(search 'traces-apm*' "{\"size\":0,\"query\":{\"bool\":{\"filter\":[
+              {\"term\":{\"trace.id\":\"${trace_id}\"}},{\"term\":{\"service.name\":\"library-consumers\"}}]}}}" | jq '.hits.total.value')
+            [ "$found" -gt 0 ] && break
+            sleep 5
+          done
+          test "$found" -gt 0 || { echo "::error::The consumer did not continue the trace"; docker compose logs apm_server api_consumers; exit 1; }
+
+          echo "Documents of the trace by service and span type:"
+          search 'traces-apm*' "{\"size\":0,\"query\":{\"term\":{\"trace.id\":\"${trace_id}\"}},
+            \"aggs\":{\"service\":{\"terms\":{\"field\":\"service.name\"},\"aggs\":{\"type\":{\"terms\":{\"field\":\"span.type\",\"missing\":\"transaction\"}}}}}}" \
+            | jq '.aggregations.service.buckets[] | {service: .key, types: [.type.buckets[] | {(.key): .doc_count}] | add}'
+          # The SQL of the API (PDO spans) and the Redis check of the consumer are in the trace
+          sql=$(search 'traces-apm*' "{\"size\":0,\"query\":{\"bool\":{\"filter\":[{\"term\":{\"trace.id\":\"${trace_id}\"}},{\"term\":{\"service.name\":\"library-api\"}},{\"prefix\":{\"span.name\":\"PDO\"}}]}}}" | jq '.hits.total.value')
+          redis=$(search 'traces-apm*' "{\"size\":0,\"query\":{\"bool\":{\"filter\":[{\"term\":{\"trace.id\":\"${trace_id}\"}},{\"term\":{\"span.name\":\"EXISTS\"}}]}}}" | jq '.hits.total.value')
+          echo "SQL spans: ${sql}, Redis spans: ${redis}"
+          test "$sql" -gt 0
+          test "$redis" -gt 0
+
+      - name: The API logs carry the trace.id (ECS JSON)
+        run: |
+          grep -h "\"${TRACE_ID}\"" var/log/*.log | head -3 | jq -c '{"@timestamp", "log.level", message, trace, span}'
+          grep -qh "\"${TRACE_ID}\"" var/log/*.log
+
+      - name: APM data streams keep 7 days through the data stream lifecycle
+        run: |
+          curl --silent --show-error --fail --cacert var/elastic-ca.crt -u "elastic:${ELASTIC_PASSWORD}" \
+            "https://localhost:9200/_data_stream/traces-apm-default" \
+            | jq -e '.data_streams[0] | (.next_generation_managed_by == "Data stream lifecycle") and (.lifecycle.effective_retention == "7d")'
+
+      - name: With the APM Server down the API still answers quickly
+        run: |
+          docker compose --profile elastic stop apm_server
+          time_total=$(curl --silent --output /dev/null --write-out '%{time_total}' "http://localhost/api/v1/author/${AUTHOR_ID}")
+          echo "GET took ${time_total}s"
+          awk -v t="$time_total" 'BEGIN { exit !(t < 2) }'
+
       - name: Logs of the stack
         if: failure()
-        run: docker compose --profile elastic logs --no-color elastic_setup elasticsearch kibana
+        run: docker compose --profile elastic logs --no-color
 
       - name: Clean up
         if: always()

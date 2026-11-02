@@ -1,5 +1,5 @@
-# Elastic stack for observability: Elasticsearch and Kibana (APM Server,
-# Filebeat and Metricbeat come in later phases). Every service is in the
+# Elastic stack for observability: Elasticsearch, Kibana and the APM Server
+# (Filebeat and Metricbeat come in a later phase). Every service is in the
 # "elastic" profile, so `make up` does not start them: use `make elastic-up`.
 # Security is on, with TLS everywhere: elastic_setup creates a local CA and the
 # certificates in the elastic_certs volume (`make elastic-ca` copies the CA out).
@@ -22,6 +22,7 @@ services:
       KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
       # Only checked here: compose must not fail without them when the profile is off
       KIBANA_ENCRYPTION_KEY: ${KIBANA_ENCRYPTION_KEY:-}
+      APM_ES_PASSWORD: ${APM_ES_PASSWORD:-}
       ELASTIC_RETENTION: ${ELASTIC_RETENTION:-7d}
     # Healthy once the certificates exist: Elasticsearch waits for that.
     healthcheck:
@@ -105,6 +106,37 @@ services:
       timeout: 10s
       retries: 60
       start_period: 60s
+
+  # Receives the traces of api and api_consumers (OTLP over HTTPS, port 8200)
+  apm_server:
+    image: docker.elastic.co/apm/apm-server:${ELASTIC_VERSION:-9.5.5}
+    profiles: [elastic]
+    restart: unless-stopped
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      # library_apm, the user apm_server writes with, is created by elastic_setup
+      elastic_setup:
+        condition: service_completed_successfully
+    # The configuration is mounted from the host, so its owner is not the image's user
+    command: ["apm-server", "-e", "--strict.perms=false"]
+    # The certificates belong to root:root (mode 640): read them through group 0
+    group_add: ["0"]
+    ports:
+      - 127.0.0.1:${APM_SERVER_PORT:-8200}:8200
+    volumes:
+      - elastic_certs:/usr/share/apm-server/certs:ro
+      - ./elastic/apm-server/apm-server.yml:/usr/share/apm-server/apm-server.yml:ro
+    environment:
+      APM_SECRET_TOKEN: ${APM_SECRET_TOKEN:-}
+      APM_ES_PASSWORD: ${APM_ES_PASSWORD:-}
+    healthcheck:
+      # Without a token the server answers 401 once it is up
+      test: ["CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' --cacert certs/ca/ca.crt https://localhost:8200/ | grep -qE '^(200|401)$$'"]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+      start_period: 20s
 
 volumes:
   elastic_certs:

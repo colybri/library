@@ -7,11 +7,13 @@
 #      elastic_certs volume. Generated only once; delete the volume to renew.
 #   2. Waits until Elasticsearch answers over HTTPS.
 #   3. Sets the password of the built-in kibana_system user.
-#   4. Retention: data streams keep 7 days of data at most.
+#   4. Creates library_apm, the user the APM Server writes with.
+#   5. Retention: data streams keep 7 days of data at most.
 set -euo pipefail
 
 : "${ELASTIC_PASSWORD:?Set ELASTIC_PASSWORD in .env}"
 : "${KIBANA_SYSTEM_PASSWORD:?Set KIBANA_SYSTEM_PASSWORD in .env}"
+: "${APM_ES_PASSWORD:?Set APM_ES_PASSWORD in .env}"
 if [ "${#KIBANA_ENCRYPTION_KEY}" -lt 32 ]; then
 	echo "[elastic_setup] KIBANA_ENCRYPTION_KEY in .env must have at least 32 characters" >&2
 	exit 1
@@ -79,6 +81,10 @@ fi
 chown -R root:root "$CERTS"
 find "$CERTS" -type d -exec chmod 750 {} +
 find "$CERTS" -type f -exec chmod 640 {} +
+# The CA certificate is public: PHP-FPM workers (www-data) read it to trust
+# the APM Server. Its private key stays readable by group root only.
+chmod 755 "$CERTS" "$CERTS/ca"
+chmod 644 "$CERTS/ca/ca.crt"
 
 # 2. Wait for Elasticsearch --------------------------------------------------
 log "Waiting for Elasticsearch"
@@ -100,10 +106,35 @@ until es POST /_security/user/kibana_system/_password "{\"password\":$(json_stri
 	sleep 5
 done
 
-# 4. Retention ---------------------------------------------------------------
+# 4. APM Server user ---------------------------------------------------------
+# Only what the APM Server needs to write its data streams.
+log "Creating the library_apm user"
+es PUT /_security/role/library_apm_writer '{
+	"cluster": ["monitor"],
+	"indices": [{
+		"names": ["traces-apm*", "logs-apm*", "metrics-apm*"],
+		"privileges": ["auto_configure", "create_doc"]
+	}]
+}' > /dev/null
+es PUT /_security/user/library_apm "{\"password\":$(json_string "$APM_ES_PASSWORD"),\"roles\":[\"library_apm_writer\"],\"full_name\":\"APM Server of the library stack\"}" > /dev/null
+
+# 5. Retention ---------------------------------------------------------------
 # Global retention of data stream lifecycles: every data stream managed by a
-# lifecycle (APM, and the Beats from phase 3) keeps $RETENTION at most.
+# lifecycle keeps $RETENTION at most.
 log "Setting the data retention to ${RETENTION}"
 es PUT /_cluster/settings "{\"persistent\":{\"data_streams.lifecycle.retention.default\":\"${RETENTION}\",\"data_streams.lifecycle.retention.max\":\"${RETENTION}\"}}" > /dev/null
+
+# The built-in logs, metrics and traces templates (APM ones included) use ILM
+# when it is configured, and global retention only applies to data streams
+# managed by a lifecycle. Their @custom hooks switch them to the lifecycle.
+for type in logs metrics traces; do
+	es PUT "/_component_template/${type}@custom" '{
+		"template": {
+			"settings": {"index.lifecycle.prefer_ilm": false},
+			"lifecycle": {"enabled": true}
+		},
+		"_meta": {"managed_by": "library elastic_setup", "description": "Data stream lifecycle, so the global retention applies"}
+	}' > /dev/null
+done
 
 log "Done"

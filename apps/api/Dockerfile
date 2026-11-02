@@ -37,6 +37,8 @@ ENV LD_PRELOAD=/usr/lib/preloadable_libiconv.so
 ARG APCU_VERSION=5.1.24
 ARG AMQP_VERSION=2.2.0
 ARG REDIS_VERSION=6.3.0
+# OpenTelemetry auto-instrumentation hooks (traces sent to the APM Server)
+ARG OPENTELEMETRY_VERSION=1.4.2
 RUN set -eux; \
 	apk add --no-cache --virtual .build-deps \
 		$PHPIZE_DEPS \
@@ -60,6 +62,7 @@ RUN set -eux; \
 		apcu-${APCU_VERSION} \
 		amqp-${AMQP_VERSION} \
 		redis-${REDIS_VERSION} \
+		opentelemetry-${OPENTELEMETRY_VERSION} \
 	; \
 	pecl clear-cache; \
 	docker-php-ext-enable \
@@ -67,6 +70,7 @@ RUN set -eux; \
 		opcache \
 		amqp \
 		redis \
+		opentelemetry \
 	; \
 	\
 	runDeps="$( \

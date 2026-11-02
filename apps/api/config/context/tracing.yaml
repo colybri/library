@@ -1,0 +1,24 @@
+# OpenTelemetry. The SDK is configured by the OTEL_* environment variables
+# (apps/api/docker/otel.env) and only enabled in PHP-FPM and api_consumers;
+# everywhere else Globals hands out no-op implementations.
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  OpenTelemetry\API\Trace\TracerProviderInterface:
+    factory: [ 'OpenTelemetry\API\Globals', 'tracerProvider' ]
+
+  OpenTelemetry\API\Trace\TracerInterface:
+    factory: [ 'Colybri\Library\Infrastructure\Tracing\Tracing', 'tracer' ]
+
+  OpenTelemetry\Context\Propagation\TextMapPropagatorInterface:
+    factory: [ 'OpenTelemetry\API\Globals', 'propagator' ]
+
+  # Redis has no auto-instrumentation: spans come from this decorator
+  Colybri\Library\Domain\Messaging\ProcessorRepository: '@Colybri\Library\Infrastructure\Messaging\Event\Redis\RedisProcessorRepository'
+
+  Colybri\Library\Infrastructure\Tracing\TracedProcessorRepository:
+    decorates: Colybri\Library\Infrastructure\Messaging\Event\Redis\RedisProcessorRepository
+    arguments:
+      $inner: '@.inner'
