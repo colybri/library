@@ -40,7 +40,10 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
-    user: ${USER_ID}
+    # No user override: the image starts as root, fixes the ownership of the
+    # amqp-data volume and drops to the rabbitmq user. Running it as the host
+    # UID failed with "Error when reading /var/lib/rabbitmq/.erlang.cookie:
+    # eacces" when the volume belonged to another user.
     volumes:
       - amqp-data:/var/lib/rabbitmq
       - ./rabbit/enabled_plugins:/etc/rabbitmq/enabled_plugins
