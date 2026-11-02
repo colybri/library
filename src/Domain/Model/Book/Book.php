@@ -20,10 +20,8 @@ use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 class Book extends SimpleAggregateRoot
 {
     private const NAME = 'book';
-    private Uuid $aggregateId;
     private BookTitle $title;
-    private BookSubtitle $subtitle;
-    private BookFullName $fullName;
+    private ?BookSubtitle $subtitle;
     private BookAuthorIds $authorIds;
     private BookPublishYear $publishYear;
     private BookPublishYearIsEstimated $publishYearIsEstimated;
@@ -46,7 +44,6 @@ class Book extends SimpleAggregateRoot
         BookIsOnWishList $isOnWishList
     ) {
         $self = new self($id);
-        $self->aggregateId = $id;
         $self->title = $title;
         $self->subtitle = $subtitle;
         $self->authorIds = $authorIds;
@@ -70,7 +67,6 @@ class Book extends SimpleAggregateRoot
         BookIsOnWishList $isOnWishList
     ) {
         $self = new self($id);
-        $self->aggregateId = $id;
         $self->title = $title;
         $self->subtitle = $subtitle;
         $self->authorIds = $authorIds;
@@ -99,7 +95,7 @@ class Book extends SimpleAggregateRoot
 
     public function fullName(): BookFullName
     {
-        $fullName = null === $this->subtitle() ? $this->title() : $this->title()->value() . ": " . $this->subtitle()->value();
+        $fullName = null === $this->subtitle() ? $this->title()->value() : $this->title()->value() . ": " . $this->subtitle()->value();
         return BookFullName::from($fullName);
     }
 

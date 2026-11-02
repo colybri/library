@@ -28,7 +28,7 @@ final class CreatePublisherCommand extends Command
 
     private Uuid $publisherId;
     private PublisherName $name;
-    private PublisherCity $city;
+    private ?PublisherCity $city;
     private Uuid $countryId;
     private PublisherFoundationYear $foundation;
 
@@ -72,7 +72,7 @@ final class CreatePublisherCommand extends Command
 
         $this->publisherId = Uuid::from($payload[self::PUBLISHER_ID_PAYLOAD]);
         $this->name = PublisherName::from((string)$payload[self::PUBLISHER_NAME_PAYLOAD]);
-        $this->city = PublisherCity::from((string)$payload[self::PUBLISHER_CITY_PAYLOAD]);
+        $this->city = null === ($payload[self::PUBLISHER_CITY_PAYLOAD] ?? null) ? null : PublisherCity::from((string)$payload[self::PUBLISHER_CITY_PAYLOAD]);
         $this->countryId = Uuid::from((string)$payload[self::PUBLISHER_COUNTRY_ID_PAYLOAD]);
         $this->foundation = null === $payload[self::PUBLISHER_FOUNDATION_PAYLOAD] ? null : PublisherFoundationYear::from((int)$payload[self::PUBLISHER_FOUNDATION_PAYLOAD]);
         $this->foundation = PublisherFoundationYear::from((int)$payload[self::PUBLISHER_FOUNDATION_PAYLOAD]);

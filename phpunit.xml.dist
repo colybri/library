@@ -8,6 +8,7 @@
          bootstrap="tests/bootstrap.php"
          executionOrder="depends,defects"
          beStrictAboutOutputDuringTests="true"
+         displayDetailsOnTestsThatTriggerDeprecations="true"
          defaultTestSuite="Project Test Suite"
 >
     <php>
@@ -36,7 +37,8 @@
         </testsuite>
     </testsuites>
 
-    <source>
+    <!-- Deprecations raised inside vendor code (e.g. a missing void in pccomponentes/messenger-bundle) are not ours to fix -->
+    <source ignoreIndirectDeprecations="true">
         <include>
             <directory suffix=".php">src</directory>
         </include>

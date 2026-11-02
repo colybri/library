@@ -14,7 +14,6 @@ final class Journal extends SimpleAggregateRoot
 {
     private const NAME = 'journal';
 
-    private Uuid $aggregateId;
     private JournalName $name;
     private ?JournalImage $image;
     private Uuid $publisherId;
@@ -43,7 +42,7 @@ final class Journal extends SimpleAggregateRoot
 
     public function id(): Uuid
     {
-        return $this->aggregateId;
+        return $this->aggregateId();
     }
 
     public function name(): JournalName
