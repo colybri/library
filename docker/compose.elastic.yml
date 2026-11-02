@@ -97,8 +97,10 @@ services:
       XPACK_REPORTING_ENCRYPTIONKEY: ${KIBANA_ENCRYPTION_KEY:-}
       TELEMETRY_OPTIN: "false"
     healthcheck:
-      # 302 to the login page once Kibana is ready
-      test: ["CMD-SHELL", "curl -s -I --cacert config/certs/ca/ca.crt https://localhost:5601 | grep -q 'HTTP/1.1 302 Found'"]
+      # Kibana answers 503 while it starts and 401 (no credentials) once ready.
+      # Check only the status code: over TLS Kibana 9 speaks HTTP/2, so the
+      # status line is not "HTTP/1.1 302 Found" as in older examples.
+      test: ["CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' --cacert config/certs/ca/ca.crt https://localhost:5601/api/status | grep -qE '^(200|401)$$'"]
       interval: 10s
       timeout: 10s
       retries: 60

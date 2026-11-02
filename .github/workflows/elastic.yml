@@ -75,12 +75,15 @@ jobs:
 
       - name: Wait until Kibana is healthy
         run: |
-          for i in $(seq 1 90); do
-            status=$(docker inspect --format '{{.State.Health.Status}}' "$(docker compose --profile elastic ps -q kibana)" 2>/dev/null || true)
+          kibana=$(docker compose --profile elastic ps -q kibana)
+          for i in $(seq 1 48); do
+            status=$(docker inspect --format '{{.State.Health.Status}}' "$kibana" 2>/dev/null || true)
             echo "kibana: ${status:-starting}"
             [ "$status" = "healthy" ] && exit 0
             sleep 10
           done
+          echo "::error::Kibana is not healthy after 8 minutes. Last healthcheck runs:"
+          docker inspect --format '{{json .State.Health.Log}}' "$kibana" | jq .
           exit 1
 
       - name: elastic_setup finished without errors
