@@ -25,7 +25,6 @@ use Colybri\Library\Infrastructure\Messaging\Bus\Event\RabbitMq\RabbitMqDomainEv
 use Doctrine\DBAL\Connection;
 use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -142,16 +141,17 @@ final class DomainEventBusTest extends KernelTestCase
     }
 
     #[Test]
-    #[RunInSeparateProcess]
     public function when_rabbitmq_is_down_events_go_to_postgres_and_are_consumed_from_there(): void
     {
-        $unreachable = new RabbitMqConnection([
-            'host' => '127.0.0.1',
-            'port' => 1,
-            'login' => 'guest',
-            'password' => 'guest',
-            'connect_timeout' => 1,
-        ]);
+        // RabbitMqConnection keeps the AMQP connection in static properties,
+        // so a second instance with a bad port would still reuse the good
+        // one. Simulate the outage at the publish call instead.
+        $unreachable = new class ([]) extends RabbitMqConnection {
+            public function exchange(string $name): \AMQPExchange
+            {
+                throw new \AMQPConnectionException('RabbitMQ is down');
+            }
+        };
         $bus = new RabbitMqDomainEventBus(
             $this->exchange,
             $unreachable,
