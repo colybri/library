@@ -22,8 +22,11 @@ services:
       - ../../var/xdebug:/tmp/xdebug
       - ../../var/log:/srv/app/var/log
       - ./docker/php/local.ini:/usr/local/etc/php/php.ini
+      # CA of the Elastic stack, to send traces to the APM Server over TLS
+      - elastic_certs:/etc/elastic-certs:ro
     working_dir: /srv/app
     tty: true
+    env_file: ./docker/otel.env
     healthcheck:
       interval: 10s
       timeout: 3s
@@ -36,6 +39,10 @@ services:
       COMPOSER_NO_DEV: 0
       SERVICE_NAME: library
       SERVICE_TAGS: develop
+      # Traces only from the PHP-FPM workers (docker/php/php-fpm.d/zz-docker.conf)
+      LIBRARY_TRACING: "true"
+      OTEL_SERVICE_NAME: library-api
+      OTEL_EXPORTER_OTLP_HEADERS: Authorization=Bearer%20${APM_SECRET_TOKEN:-}
       # The repo is owned by the host user and the container runs as root, so git
       # refuses it ("dubious ownership") and GrumPHP cannot find .git. Trust it.
       GIT_CONFIG_COUNT: 1
@@ -60,7 +67,9 @@ services:
       - ./:/srv/app
       - ../../var/log:/srv/app/var/log
       - ./docker/php/local.ini:/usr/local/etc/php/php.ini
+      - elastic_certs:/etc/elastic-certs:ro
     working_dir: /srv/app
+    env_file: ./docker/otel.env
     healthcheck:
       interval: 10s
       timeout: 5s
@@ -77,6 +86,10 @@ services:
     environment:
       SERVICE_NAME: library-consumers
       SERVICE_TAGS: develop
+      # The container only runs the consumers: trace every PHP process
+      OTEL_PHP_AUTOLOAD_ENABLED: "true"
+      OTEL_SERVICE_NAME: library-consumers
+      OTEL_EXPORTER_OTLP_HEADERS: Authorization=Bearer%20${APM_SECRET_TOKEN:-}
 
   api_nginx:
     restart: unless-stopped

@@ -1,0 +1,24 @@
+# APM Server (service apm_server, profile elastic). Receives OpenTelemetry
+# traces over OTLP/HTTP on 8200 (TLS) and writes them to Elasticsearch.
+apm-server:
+  host: "0.0.0.0:8200"
+  ssl:
+    enabled: true
+    certificate: "/usr/share/apm-server/certs/apm-server/apm-server.crt"
+    key: "/usr/share/apm-server/certs/apm-server/apm-server.key"
+  # Agents (the PHP API) send "Authorization: Bearer <token>"
+  auth:
+    secret_token: "${APM_SECRET_TOKEN}"
+
+# library_apm: user with only the privileges to write APM data, created by
+# elastic_setup (docker/elastic/setup/setup.sh)
+output.elasticsearch:
+  hosts: ["https://elasticsearch:9200"]
+  username: "library_apm"
+  password: "${APM_ES_PASSWORD}"
+  ssl:
+    certificate_authorities: ["/usr/share/apm-server/certs/ca/ca.crt"]
+
+logging:
+  level: info
+  to_stderr: true

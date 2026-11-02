@@ -10,8 +10,16 @@ services:
         - '@monolog.processor.domain_trace'
         - '@monolog.processor.normalize_message'
         - '@monolog.processor.trace_of_exception'
+        - '@monolog.processor.trace_context'
     tags:
       - { name: monolog.processor }
+
+  # JSON lines in Elastic Common Schema (trace.id, log.level, ...), read by Filebeat
+  monolog.formatter.ecs:
+    class: Elastic\Monolog\Formatter\ElasticCommonSchemaFormatter
+
+  monolog.processor.trace_context:
+    class: Colybri\Library\Infrastructure\Logging\Monolog\Processor\TraceContextProcessor
 
   monolog.processor.occurred_on:
     class: Colybri\Library\Infrastructure\Logging\Monolog\Processor\OccurredOnProcessor

@@ -43,7 +43,7 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: amqp, ctype, curl, iconv, intl, json, pdo_pgsql, redis, zip
+          extensions: amqp, ctype, curl, iconv, intl, json, opentelemetry, pdo_pgsql, redis, zip
           coverage: none
           tools: composer:v2
 
@@ -103,7 +103,7 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: amqp, ctype, curl, iconv, intl, json, pdo_pgsql, redis, zip
+          extensions: amqp, ctype, curl, iconv, intl, json, opentelemetry, pdo_pgsql, redis, zip
           coverage: none
           tools: composer:v2
 
@@ -131,7 +131,7 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: amqp, ctype, curl, iconv, intl, json, pdo_pgsql, redis, zip
+          extensions: amqp, ctype, curl, iconv, intl, json, opentelemetry, pdo_pgsql, redis, zip
           coverage: none
           tools: composer:v2
 
@@ -196,10 +196,10 @@ jobs:
           docker rm -f fpm
           [ "$healthy" = 1 ] || { echo "docker-healthcheck does not reach PHP-FPM"; exit 1; }
 
-      - name: Production image loads the amqp and redis extensions
+      - name: Production image loads the amqp, redis and opentelemetry extensions
         run: |
           docker run --rm --entrypoint php library-php:ci -m > modules.txt
-          for ext in amqp redis; do
+          for ext in amqp redis opentelemetry; do
             grep -qix "$ext" modules.txt || { cat modules.txt; echo "The $ext extension is not loaded"; exit 1; }
           done
 
