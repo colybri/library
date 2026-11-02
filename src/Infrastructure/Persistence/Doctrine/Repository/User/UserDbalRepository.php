@@ -54,7 +54,7 @@ final class UserDbalRepository extends DbalRepository implements UserRepository
         $statement = $this->connectionWrite->prepare($sql);
         $statement->bindValue('id', $user->aggregateId()->value());
         $statement->bindValue('email', $user->email()->value());
-        $statement->bindValue('password', $user->password()?->value());
+        $statement->bindValue('password', $user->password()->value());
         $statement->bindValue('isActive', $user->isActive()->value());
 
         $statement->executeQuery();

@@ -75,7 +75,7 @@ final class CountryFixtures implements FixtureRepository
 
             $statement = $this->connectionWrite->prepare($sql);
             $statement->bindValue('id', $entity->aggregateId()->value());
-            $statement->bindValue('code', $entity->alpha2Code()?->value());
+            $statement->bindValue('code', $entity->alpha2Code()->value());
             $statement->bindValue('num_code', self::NUM_CODE[$entity->aggregateId()->value()]);
             $statement->bindValue('name', $entity->name()->value());
             $statement->bindValue('nationality', $entity->nationality()->value());

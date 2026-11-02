@@ -1,11 +1,109 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Access to an undefined property Colybri\\\\Library\\\\Tests\\\\Infrastructure\\\\Behat\\\\Context\\\\LibraryApiContext\\:\\:\\$password\\.$#"
+			message: '#^Method Colybri\\Library\\Application\\Command\\Book\\Create\\CreateBookCommand\:\:subtitle\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Application/Command/Book/Create/CreateBookCommand.php
+
+		-
+			message: '#^Method Colybri\\Library\\Application\\Command\\Book\\Update\\UpdateBookCommand\:\:subtitle\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Application/Command/Book/Update/UpdateBookCommand.php
+
+		-
+			message: '#^Method Colybri\\Library\\Application\\Command\\Publisher\\Create\\CreatePublisherCommand\:\:city\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Application/Command/Publisher/Create/CreatePublisherCommand.php
+
+		-
+			message: '#^Method Colybri\\Library\\Application\\Command\\Publisher\\Update\\UpdatePublisherCommand\:\:city\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Application/Command/Publisher/Update/UpdatePublisherCommand.php
+
+		-
+			message: '#^Method Colybri\\Library\\Application\\Command\\User\\Create\\CreateUserCommand\:\:password\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Application/Command/User/Create/CreateUserCommand.php
+
+		-
+			message: '#^Call to method Colybri\\Library\\Application\\Subscriber\\Author\\UpdateSnapshotOnAuthorCreatedProcessor\:\:execute\(\) on a separate line has no effect\.$#'
+			identifier: method.resultUnused
+			count: 1
+			path: src/Application/Subscriber/Author/UpdateSnapshotOnAuthorCreatedSubscriber.php
+
+		-
+			message: '#^Property Colybri\\Library\\Domain\\Model\\Book\\Book\:\:\$aggregateId is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Domain/Model/Book/Book.php
+
+		-
+			message: '#^Property Colybri\\Library\\Domain\\Model\\Book\\Book\:\:\$fullName is unused\.$#'
+			identifier: property.unused
+			count: 1
+			path: src/Domain/Model/Book/Book.php
+
+		-
+			message: '#^Method Colybri\\Library\\Domain\\Model\\Book\\Event\\BookCreated\:\:subtitle\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Domain/Model/Book/Event/BookCreated.php
+
+		-
+			message: '#^Property Colybri\\Library\\Domain\\Model\\Journal\\Journal\:\:\$aggregateId is never written, only read\.$#'
+			identifier: property.onlyRead
+			count: 1
+			path: src/Domain/Model/Journal/Journal.php
+
+		-
+			message: '#^Property Colybri\\Library\\Domain\\Model\\Publisher\\Publisher\:\:\$aggregateId is unused\.$#'
+			identifier: property.unused
+			count: 1
+			path: src/Domain/Model/Publisher/Publisher.php
+
+		-
+			message: '#^Method Colybri\\Library\\Infrastructure\\Auth\\Symfony\\AuthenticationProvider\:\:getPassword\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Infrastructure/Auth/Symfony/AuthenticationProvider.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between null and Colybri\\Library\\Domain\\Messaging\\DomainEvent will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: src/Infrastructure/Messaging/Bus/Event/RabbitMq/RabbitMqDomainEventsConsumer.php
+
+		-
+			message: '#^Access to an undefined property Colybri\\Library\\Tests\\Infrastructure\\Behat\\Context\\LibraryApiContext\:\:\$password\.$#'
+			identifier: property.notFound
 			count: 1
 			path: tests/Infrastructure/Behat/Context/LibraryApiContext.php
 
 		-
-			message: "#^Access to an undefined property Colybri\\\\Library\\\\Tests\\\\Infrastructure\\\\Behat\\\\Context\\\\LibraryApiContext\\:\\:\\$user\\.$#"
+			message: '#^Access to an undefined property Colybri\\Library\\Tests\\Infrastructure\\Behat\\Context\\LibraryApiContext\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Infrastructure/Behat/Context/LibraryApiContext.php
+
+		-
+			message: '#^Parameter \#1 \$body of method Psr\\Http\\Message\\MessageInterface\:\:withBody\(\) expects Psr\\Http\\Message\\StreamInterface, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Infrastructure/Behat/Context/LibraryApiContext.php
+
+		-
+			message: '#^Parameter \#1 \$uri of method Psr\\Http\\Message\\RequestInterface\:\:withUri\(\) expects Psr\\Http\\Message\\UriInterface, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Infrastructure/Behat/Context/LibraryApiContext.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
 			count: 1
 			path: tests/Infrastructure/Behat/Context/LibraryApiContext.php
