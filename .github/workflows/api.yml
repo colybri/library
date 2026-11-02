@@ -178,6 +178,18 @@ jobs:
           grep -E "session.upload_progress.enabled\]? *= *(off|0|'')? *$" fpm.txt \
             || { cat fpm.txt; echo "session.upload_progress.enabled is not off in the FPM pool"; exit 1; }
 
+      - name: PHP-FPM answers the container healthcheck
+        run: |
+          docker run -d --name fpm --entrypoint php-fpm library-php:ci
+          healthy=0
+          for i in $(seq 15); do
+            if docker exec fpm docker-healthcheck; then healthy=1; break; fi
+            sleep 1
+          done
+          docker logs fpm
+          docker rm -f fpm
+          [ "$healthy" = 1 ] || { echo "docker-healthcheck does not reach PHP-FPM"; exit 1; }
+
       - name: Production image has no coverage driver
         run: |
           if docker run --rm --entrypoint php library-php:ci -m | grep -Eix 'pcov|xdebug'; then
