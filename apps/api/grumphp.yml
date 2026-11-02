@@ -1,6 +1,6 @@
 grumphp:
   git_hook_variables:
-    EXEC_GRUMPHP_COMMAND: 'docker-compose run --rm --no-deps -u $(id -u):$(id -g) -w /srv/repo/apps/api library'
+    EXEC_GRUMPHP_COMMAND: 'docker compose run --rm --no-deps -u $(id -u):$(id -g) -w /srv/repo/apps/api api'
   stop_on_failure: true
   ignore_unstaged_changes: true
   hide_circumvention_tip: false
