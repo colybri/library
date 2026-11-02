@@ -102,9 +102,13 @@ services:
     volumes:
       - ./:/srv/app
       - php_socket:/var/run/php
+      # Access and error logs as files, for Filebeat (profile elastic)
+      - nginx_logs:/var/log/library-nginx
     depends_on:
       - api
 
 volumes:
   php_socket:
+    driver: local
+  nginx_logs:
     driver: local

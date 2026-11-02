@@ -6,10 +6,38 @@ services:
       context: ./postgres
       target: library_postgres
     restart: unless-stopped
-    command: -c ssl=on -c ssl_cert_file=/var/lib/postgresql/server.crt -c ssl_key_file=/var/lib/postgresql/server.key
+    # Logs go to files that Filebeat reads (profile elastic): one per weekday,
+    # overwritten a week later. Slow statements (>= 200 ms) are logged too.
+    # Passed as flags: the image's postgresql.conf is hidden by the data volume.
+    command:
+      - -c
+      - ssl=on
+      - -c
+      - ssl_cert_file=/var/lib/postgresql/server.crt
+      - -c
+      - ssl_key_file=/var/lib/postgresql/server.key
+      - -c
+      - logging_collector=on
+      - -c
+      - log_directory=/var/log/postgresql
+      - -c
+      - log_filename=postgresql-%a.log
+      - -c
+      - log_truncate_on_rotation=on
+      - -c
+      - log_rotation_age=1d
+      - -c
+      - log_rotation_size=0
+      - -c
+      - "log_line_prefix=%m [%p] %q%u@%d "
+      - -c
+      - log_min_duration_statement=200
+      - -c
+      - log_timezone=UTC
     volumes:
       - ../postgres_data:/var/lib/postgresql/data
-      - ../var/log/postgresql:/var/log/postgresql
+      # Named volume: it starts with the image's folder, owned by postgres
+      - postgres_logs:/var/log/postgresql
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_READ_PASS}
       POSTGRES_USER: ${POSTGRES_READ_USER}
@@ -59,4 +87,6 @@ services:
 
 volumes:
   amqp-data:
+    driver: local
+  postgres_logs:
     driver: local

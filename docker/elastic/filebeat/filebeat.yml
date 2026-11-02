@@ -1,0 +1,63 @@
+# Filebeat (service filebeat, profile elastic). Reads log files and ships them
+# to Elasticsearch (data stream filebeat-<version>, kept ELASTIC_RETENTION by
+# the "filebeat" ILM policy that elastic_setup creates).
+#   /logs/api         var/log of the API and its consumers: ECS JSON lines
+#   /logs/nginx       api_nginx access and error logs (volume nginx_logs)
+#   /logs/postgresql  Postgres logs (volume postgres_logs)
+
+filebeat.inputs:
+  # Monolog writes one ECS JSON document per line, with trace.id and span.id
+  # of the OpenTelemetry span: logs and traces link to each other in Kibana.
+  - type: filestream
+    id: library-api
+    paths:
+      - /logs/api/*.log
+      - /logs/api/library-simple-message/*.log
+    parsers:
+      - ndjson:
+          target: ""
+          overwrite_keys: true
+          expand_keys: true
+          add_error_key: true
+    processors:
+      - add_fields:
+          target: service
+          fields:
+            name: library-api
+      - add_fields:
+          target: event
+          fields:
+            dataset: library.api
+
+filebeat.modules:
+  - module: nginx
+    access:
+      enabled: true
+      var.paths: ["/logs/nginx/access.log*"]
+    error:
+      enabled: true
+      var.paths: ["/logs/nginx/error.log*"]
+  - module: postgresql
+    log:
+      enabled: true
+      var.paths: ["/logs/postgresql/postgresql-*.log"]
+
+output.elasticsearch:
+  hosts: ["https://elasticsearch:9200"]
+  username: "library_beats"
+  password: "${BEATS_ES_PASSWORD}"
+  ssl.certificate_authorities: ["/usr/share/filebeat/certs/ca/ca.crt"]
+
+# The policy exists already (elastic_setup): use it, do not replace it
+setup.ilm.overwrite: false
+
+# Built-in Filebeat dashboards ([Filebeat Nginx], [Filebeat PostgreSQL]...)
+setup.dashboards.enabled: true
+setup.kibana:
+  host: "https://kibana:5601"
+  username: "library_beats"
+  password: "${BEATS_ES_PASSWORD}"
+  ssl.certificate_authorities: ["/usr/share/filebeat/certs/ca/ca.crt"]
+
+logging.level: info
+logging.to_stderr: true

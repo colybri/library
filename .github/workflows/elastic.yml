@@ -4,12 +4,15 @@ name: Elastic
 # of what the API sends to it. It runs only when those files change.
 #   validate  compose files and the setup script (seconds)
 #   smoke     starts everything (stack + API) and checks it end to end:
-#             TLS, users, retention, Kibana, and traces of a real request
-#             that crosses RabbitMQ to the consumers (about 10 minutes)
+#             TLS, users, retention, Kibana, traces of a real request that
+#             crosses RabbitMQ to the consumers, the logs Filebeat ships and
+#             the metrics of every Metricbeat module (about 10 minutes)
 on:
   push:
     branches: [ master ]
     paths:
+      - 'docker/compose.infra.yml'
+      - 'docker/postgres/**'
       - 'docker/elastic/**'
       - 'docker/compose.elastic.yml'
       - 'docker-compose.yml'
@@ -25,6 +28,8 @@ on:
       - 'apps/api/src/Infrastructure/Messaging/**'
   pull_request:
     paths:
+      - 'docker/compose.infra.yml'
+      - 'docker/postgres/**'
       - 'docker/elastic/**'
       - 'docker/compose.elastic.yml'
       - 'docker-compose.yml'
@@ -55,7 +60,7 @@ jobs:
         run: |
           cp .env.dist .env
           # The new variables are optional while the profile is off
-          sed -i '/^ELASTIC_\|^KIBANA_\|^APM_\|^ES_HEAP\|^ELASTICSEARCH_PORT/d' .env
+          sed -i '/^ELASTIC_\|^KIBANA_\|^APM_\|^BEATS_\|^ES_HEAP\|^ELASTICSEARCH_PORT/d' .env
           docker compose config --quiet
           ! docker compose config --services | grep -x elasticsearch > /dev/null
 
@@ -63,7 +68,9 @@ jobs:
         run: |
           cp .env.dist .env
           docker compose --profile elastic config --quiet
-          docker compose --profile elastic config --services | grep -x kibana > /dev/null
+          for service in kibana apm_server filebeat metricbeat; do
+            docker compose --profile elastic config --services | grep -x "$service" > /dev/null
+          done
 
       - name: ShellCheck the setup script
         run: shellcheck docker/elastic/setup/setup.sh
@@ -88,6 +95,7 @@ jobs:
           sed -i "s|^KIBANA_ENCRYPTION_KEY=.*|KIBANA_ENCRYPTION_KEY=$(openssl rand -hex 32)|" .env
           sed -i "s|^APM_ES_PASSWORD=.*|APM_ES_PASSWORD=ci-$(openssl rand -hex 8)|" .env
           sed -i "s|^APM_SECRET_TOKEN=.*|APM_SECRET_TOKEN=$(openssl rand -hex 24)|" .env
+          sed -i "s|^BEATS_ES_PASSWORD=.*|BEATS_ES_PASSWORD=ci-$(openssl rand -hex 8)|" .env
           sed -i "s|^USER_ID=.*|USER_ID=$(id -u)|" .env
           echo "REDIS_PASSWORD=ci" >> .env
           echo "ELASTIC_PASSWORD=${elastic_password}" >> "$GITHUB_ENV"
@@ -251,6 +259,56 @@ jobs:
           curl --silent --show-error --fail --cacert var/elastic-ca.crt -u "elastic:${ELASTIC_PASSWORD}" \
             "https://localhost:9200/_data_stream/traces-apm-default" \
             | jq -e '.data_streams[0] | (.next_generation_managed_by == "Data stream lifecycle") and (.lifecycle.effective_retention == "7d")'
+
+      - name: Filebeat ships the API, nginx and Postgres logs
+        run: |
+          count() {
+            curl --silent --show-error --fail --cacert var/elastic-ca.crt -u "elastic:${ELASTIC_PASSWORD}" \
+              -H 'Content-Type: application/json' "https://localhost:9200/filebeat-*/_count" -d "$1" | jq '.count'
+          }
+          # The API log lines of the POST, with the trace.id of its span
+          api=0; nginx=0; postgres=0
+          for i in $(seq 1 36); do
+            api=$(count "{\"query\":{\"bool\":{\"filter\":[{\"term\":{\"trace.id\":\"${TRACE_ID}\"}},{\"term\":{\"event.dataset\":\"library.api\"}}]}}}")
+            nginx=$(count '{"query":{"bool":{"filter":[{"term":{"event.dataset":"nginx.access"}},{"term":{"http.request.method":"POST"}}]}}}')
+            postgres=$(count '{"query":{"term":{"event.dataset":"postgresql.log"}}}')
+            echo "API lines of the trace: ${api}, nginx POST: ${nginx}, Postgres: ${postgres}"
+            [ "$api" -gt 0 ] && [ "$nginx" -gt 0 ] && [ "$postgres" -gt 0 ] && exit 0
+            sleep 5
+          done
+          docker compose --profile elastic logs filebeat
+          exit 1
+
+      - name: Metricbeat collects every module
+        run: |
+          count() {
+            curl --silent --show-error --fail --cacert var/elastic-ca.crt -u "elastic:${ELASTIC_PASSWORD}" \
+              -H 'Content-Type: application/json' "https://localhost:9200/metricbeat-*/_count" \
+              -d "{\"query\":{\"bool\":{\"filter\":[{\"term\":{\"event.module\":\"$1\"}},{\"term\":{\"metricset.name\":\"$2\"}}]}}}" | jq '.count'
+          }
+          checks="docker:container postgresql:database rabbitmq:queue php_fpm:pool nginx:stubstatus redis:info elasticsearch:node_stats"
+          for i in $(seq 1 36); do
+            missing=""
+            for check in $checks; do
+              [ "$(count "${check%%:*}" "${check##*:}")" -gt 0 ] || missing="${missing} ${check}"
+            done
+            [ -z "$missing" ] && { echo "Every module sends metrics"; exit 0; }
+            echo "Still without documents:${missing}"
+            sleep 5
+          done
+          echo "::error::No metrics from:${missing}"
+          docker compose --profile elastic logs metricbeat
+          exit 1
+
+      - name: Beats data streams keep 7 days through their ILM policies
+        run: |
+          es() {
+            curl --silent --show-error --fail --cacert var/elastic-ca.crt -u "elastic:${ELASTIC_PASSWORD}" "https://localhost:9200/$1"
+          }
+          for beat in filebeat metricbeat; do
+            es "_ilm/policy/${beat}" | jq -e --arg b "$beat" '.[$b].policy.phases.delete.min_age == "7d"'
+            es "_data_stream/${beat}-*" | jq -e --arg b "$beat" '.data_streams[0].ilm_policy == $b'
+          done
 
       - name: With the APM Server down the API still answers quickly
         run: |
