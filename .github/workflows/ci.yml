@@ -102,6 +102,31 @@ jobs:
           grep -E "session.upload_progress.enabled\]? *= *(off|0|'')? *$" fpm.txt \
             || { cat fpm.txt; echo "session.upload_progress.enabled is not off in the FPM pool"; exit 1; }
 
+      - name: Production image has no coverage driver
+        run: |
+          if docker run --rm --entrypoint php library-php:ci -m | grep -Eix 'pcov|xdebug'; then
+            echo "The production image must not ship a coverage driver"; exit 1
+          fi
+
+      - name: Build the development image (PCOV)
+        run: docker build --target library_php_dev -t library-php-dev:ci .
+
+      - name: make report works inside the development image
+        run: |
+          docker run --rm --entrypoint php library-php-dev:ci -m | grep -qix pcov
+          docker run --rm -v "$PWD:/srv/app" -w /srv/app --entrypoint sh library-php-dev:ci -c '
+            set -e
+            composer install --no-interaction --no-progress
+            vendor/bin/phpunit --coverage-html gen/coverage --log-junit gen/junit.xml --coverage-text --only-summary-for-coverage-text
+            vendor/bin/phpmetrics --junit=gen/junit.xml --report-html=gen/metrics src
+            test -f gen/coverage/index.html
+            test -f gen/metrics/index.html'
+
+      - name: Xdebug variant builds
+        run: |
+          docker build --target library_php_dev --build-arg COVERAGE_DRIVER=xdebug -t library-php-xdebug:ci .
+          docker run --rm --entrypoint php library-php-xdebug:ci -m | grep -qix xdebug
+
   security:
     name: Dependency audit
     runs-on: ubuntu-latest

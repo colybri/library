@@ -1,5 +1,5 @@
 # Executables (local)
-DOCKER_COMP = docker-compose
+DOCKER_COMP = docker compose
 
 # Docker containers
 PHP_CONT = @docker exec -it library
@@ -22,7 +22,7 @@ export $(shell sed 's/=.*//' .env)
 
 # Misc
 .DEFAULT_GOAL = help
-.PHONY        = help build up start stop down logs sh test lint report dump restore composer vendor sf cc
+.PHONY        = help build up start stop down logs sh test lint report coverage dump restore composer vendor sf cc
 
 
 ## ——  The Library Makefile  ———————————————————————————————————————————
@@ -32,21 +32,21 @@ help: ## Outputs this help screen
 
 ## —— Docker ————————————————————————————————————————————————————————————————
 build: ## Builds the Docker images
-	@USER_ID=$(id -g) GROUP_ID=$(id -g) $(DOCKER_COMP) build --pull --no-cache
+	@USER_ID=$$(id -u) GROUP_ID=$$(id -g) $(DOCKER_COMP) build --pull --no-cache
 
 up: ## Start the docker hub in detached mode (no logs)
-	@USER_ID=$(id -g) GROUP_ID=$(id -g) $(DOCKER_COMP) up --detach
+	@USER_ID=$$(id -u) GROUP_ID=$$(id -g) $(DOCKER_COMP) up --detach
 
 start: build up ## Build and start the containers
 
 stop: ## Stop the docker hub
-	@USER_ID=$(id -g) GROUP_ID=$(id -g) $(DOCKER_COMP) stop
+	@USER_ID=$$(id -u) GROUP_ID=$$(id -g) $(DOCKER_COMP) stop
 
 down: ## Remove the docker hub
-	@USER_ID=$(id -g) GROUP_ID=$(id -g) $(DOCKER_COMP) down --remove-orphans
+	@USER_ID=$$(id -u) GROUP_ID=$$(id -g) $(DOCKER_COMP) down --remove-orphans
 
 logs: ## Show live logs
-	@USER_ID=$(id -g) GROUP_ID=$(id -g) $(DOCKER_COMP) logs --tail=0 --follow
+	@USER_ID=$$(id -u) GROUP_ID=$$(id -g) $(DOCKER_COMP) logs --tail=0 --follow
 
 sh: ## Connect to the PHP FPM container
 	@$(PHP_CONT) sh
@@ -75,9 +75,12 @@ fix: ## Fix errors according to code standard
 
 
 
-report: ## Generate static code reports
-	@$(DOCKER_COMP) exec library ./vendor/bin/phpunit --coverage-html ./gen/coverage ./tests
-	@$(DOCKER_COMP) exec library ./vendor/bin/phpmetrics --junit=./gen/coverage/index.xml --report-html=./gen/metrics/index.html ./src
+report: ## Generate coverage (gen/coverage), JUnit (gen/junit.xml) and metrics (gen/metrics) reports
+	@$(DOCKER_COMP) exec library ./vendor/bin/phpunit --coverage-html ./gen/coverage --log-junit ./gen/junit.xml
+	@$(DOCKER_COMP) exec library ./vendor/bin/phpmetrics --junit=./gen/junit.xml --report-html=./gen/metrics ./src
+
+coverage: ## Print the code coverage summary in the console
+	@$(DOCKER_COMP) exec library ./vendor/bin/phpunit --coverage-text --only-summary-for-coverage-text
 
 ## —— Postgres ————————————————————————————————————————————————————————————————
 

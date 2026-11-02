@@ -3,12 +3,13 @@ services:
     container_name: library
     build:
       context: .
-      target: library_php
+      target: library_php_dev
       args:
         SYMFONY_VERSION: ${SYMFONY_VERSION:-7.4}
         SKELETON: ${SKELETON:-symfony/skeleton}
         STABILITY: ${STABILITY:-stable}
         PHP_VERSION: 8.4.27
+        COVERAGE_DRIVER: ${COVERAGE_DRIVER:-pcov}
     restart: unless-stopped
     volumes:
       - ./:/srv/app
