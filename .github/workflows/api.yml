@@ -196,6 +196,13 @@ jobs:
           docker rm -f fpm
           [ "$healthy" = 1 ] || { echo "docker-healthcheck does not reach PHP-FPM"; exit 1; }
 
+      - name: Production image loads the amqp and redis extensions
+        run: |
+          docker run --rm --entrypoint php library-php:ci -m > modules.txt
+          for ext in amqp redis; do
+            grep -qix "$ext" modules.txt || { cat modules.txt; echo "The $ext extension is not loaded"; exit 1; }
+          done
+
       - name: Production image has no coverage driver
         run: |
           if docker run --rm --entrypoint php library-php:ci -m | grep -Eix 'pcov|xdebug'; then
