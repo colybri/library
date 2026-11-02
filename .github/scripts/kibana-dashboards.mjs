@@ -39,6 +39,13 @@ for (const id of process.argv.slice(2)) {
   await page.screenshot({ path: `${screenshots}/${id}.png`, fullPage: true });
 
   const panels = await page.locator('[data-test-subj="dashboardPanel"]').count();
+  // One line per panel: whether it finished rendering and what it shows
+  for (const panel of await page.locator('[data-test-subj="dashboardPanel"]').all()) {
+    const rendered = await panel.locator('[data-render-complete]').evaluateAll(
+      (elements) => elements.map((e) => e.getAttribute('data-render-complete')).join(','));
+    const text = (await panel.innerText()).replace(/\s+/g, ' ').trim().slice(0, 140);
+    console.log(`  [render ${rendered || 'n/a'}] ${text}`);
+  }
   const errors = [];
   for (const selector of errorSelectors) {
     for (const element of await page.locator(selector).all()) {
