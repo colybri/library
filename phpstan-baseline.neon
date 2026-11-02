@@ -72,11 +72,6 @@ parameters:
 			count: 1
 			path: src/Infrastructure/Auth/Symfony/AuthenticationProvider.php
 
-		-
-			message: '#^Strict comparison using \=\=\= between null and Colybri\\Library\\Domain\\Messaging\\DomainEvent will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 1
-			path: src/Infrastructure/Messaging/Bus/Event/RabbitMq/RabbitMqDomainEventsConsumer.php
 
 		-
 			message: '#^Access to an undefined property Colybri\\Library\\Tests\\Infrastructure\\Behat\\Context\\LibraryApiContext\:\:\$password\.$#'

@@ -10,7 +10,7 @@ use Colybri\Library\Domain\Messaging\EventBus;
 
 final class PostgresDomainEventBus implements EventBus
 {
-    private const ATOM = 'Y-m-d H:i:s';
+    private const ATOM = 'Y-m-d H:i:s.uP';
     public function __construct(protected Connection $connectionWrite)
     {
     }
@@ -45,8 +45,8 @@ final class PostgresDomainEventBus implements EventBus
         $statement->bindValue('id', $event->messageId()->value());
         $statement->bindValue('name', $event::messageName());
         $statement->bindValue('ocurredOn', $event->occurredOn()->format(self::ATOM));
-        $statement->bindValue('agregateId', $event->aggregateId());
-        $statement->bindValue('body', $event->messagePayload());
+        $statement->bindValue('agregateId', $event->aggregateId()->value());
+        $statement->bindValue('body', \json_encode($event->messagePayload(), JSON_THROW_ON_ERROR));
 
 
         $statement->executeStatement();

@@ -10,6 +10,8 @@ use AMQPQueueException;
 use Colybri\Library\Domain\Messaging\DomainEvent;
 use Colybri\Library\Infrastructure\Messaging\Bus\Event\DomainEventMapping;
 use Colybri\Library\Infrastructure\Messaging\Bus\Event\RabbitMq\Exchange\RabbitMqExchangeNameFormatter;
+use PcComponentes\Ddd\Domain\Model\ValueObject\DateTimeValueObject;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use Throwable;
 use Colybri\Library\Domain\Messaging\DomainEventSubscriber;
 
@@ -81,19 +83,17 @@ final class RabbitMqDomainEventsConsumer
         $this->sendMessageTo(RabbitMqExchangeNameFormatter::retry($this->exchangeName), $envelope, $queue);
     }
 
-    private function reconstituteEvent($eventData): DomainEvent
+    private function reconstituteEvent(array $eventData): DomainEvent
     {
-        $eventName = $eventData['data']['type'];
-        $eventClass = $this->mapping->eventFor($eventName);
-        if (null === $eventClass) {
-            throw new \RuntimeException("The event <$eventName> doesn't exist or has no subscribers");
-        }
+        $eventClass = $this->mapping->eventFor($eventData['data']['type']);
+        $attributes = $eventData['data']['attributes'];
 
         return $eventClass::fromPayload(
-            $eventData['data']['id'],
-            $eventData['data']['attributes']['id'],
-            $eventData['data']['occurred_on'],
-            $eventData['data']['attributes']
+            Uuid::from((string) $eventData['data']['id']),
+            Uuid::from((string) $attributes['aggregate_id']),
+            DateTimeValueObject::from((string) $eventData['data']['occurred_on']),
+            $attributes['payload'],
+            (int) ($attributes['aggregate_version'] ?? 0)
         );
     }
 
