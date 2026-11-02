@@ -30,7 +30,7 @@
             <directory>tests</directory>
             <exclude>tests/Integration</exclude>
         </testsuite>
-        <!-- Needs Postgres and RabbitMQ: phpunit --testsuite integration -->
+        <!-- Needs Postgres and RabbitMQ: make test-integration -->
         <testsuite name="integration">
             <directory>tests/Integration</directory>
         </testsuite>
