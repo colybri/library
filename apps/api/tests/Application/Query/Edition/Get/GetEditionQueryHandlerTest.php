@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Application\Query\Edition\Get;
+namespace Colybri\Library\Tests\Application\Query\Edition\Get;
 
 use PHPUnit\Framework\Attributes\Test;
 use Colybri\Library\Application\Query\Edition\Get\GetEditionQuery;

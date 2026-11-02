@@ -1,5 +1,5 @@
 apiDefinitions:
-  main: docs/openapi/openapi.yaml
+  main: docs/openapi/openapi.yml
 lint:
   extends:
     - recommended

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Application\Command\Edition\Update;
+namespace Colybri\Library\Tests\Application\Command\Edition\Update;
 
 use PHPUnit\Framework\Attributes\Test;
 use Colybri\Library\Application\Command\Edition\Update\UpdateEditionCommand;
