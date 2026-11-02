@@ -8,10 +8,13 @@ use Colybri\Library\Domain\Messaging\DomainEvent;
 use Colybri\Library\Infrastructure\Messaging\Bus\Event\DomainEventMapping;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ParameterType;
+use PcComponentes\Ddd\Domain\Model\ValueObject\DateTimeValueObject;
+use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 
 class PostgresDomainEventsConsumer
 {
-    private const ATOM = 'Y-m-d H:i:s';
+    private const ATOM = 'Y-m-d H:i:s.uP';
     public function __construct(protected Connection $connectionWrite, private readonly DomainEventMapping $eventMapping)
     {
     }
@@ -19,11 +22,11 @@ class PostgresDomainEventsConsumer
     public function consume(int $eventsToConsume): void
     {
         $sql = "
-            SELECT * from events_pending_queue 
-             ORDER BY occurred_on ASC LIMIT :eventsToConsume
+            SELECT * from events_pending_queue
+             ORDER BY ocurred_on ASC LIMIT :eventsToConsume
         ";
         $query = $this->connectionWrite->prepare($sql);
-        $query->bindValue('eventsToConsume', $eventsToConsume);
+        $query->bindValue('eventsToConsume', $eventsToConsume, ParameterType::INTEGER);
 
         $events = $query->executeQuery()->fetchAllAssociative();
         $ids = [];
@@ -32,10 +35,10 @@ class PostgresDomainEventsConsumer
             $domainEventClass = $this->eventMapping->eventFor($event['name']);
 
             $domainEvent = $domainEventClass::fromPayload(
-                $event['id'],
-                $event['aggregate_id'],
-                $event['occurred_on'],
-                $event['body']
+                Uuid::from((string) $event['id']),
+                Uuid::from((string) $event['agregate_id']),
+                DateTimeValueObject::from((string) $event['ocurred_on']),
+                \json_decode((string) $event['body'], true, 512, JSON_THROW_ON_ERROR)
             );
 
             try {
@@ -62,7 +65,7 @@ class PostgresDomainEventsConsumer
     {
 
         $sql = "
-            INSERT into events_failded_queue (
+            INSERT into events_failed_queue (
                 id, 
                 name,
                 ocurred_on,
@@ -81,8 +84,8 @@ class PostgresDomainEventsConsumer
         $statement->bindValue('id', $event->messageId()->value());
         $statement->bindValue('name', $event::messageName());
         $statement->bindValue('ocurredOn', $event->occurredOn()->format(self::ATOM));
-        $statement->bindValue('agregateId', $event->aggregateId());
-        $statement->bindValue('body', $event->messagePayload());
+        $statement->bindValue('agregateId', $event->aggregateId()->value());
+        $statement->bindValue('body', \json_encode($event->messagePayload(), JSON_THROW_ON_ERROR));
 
 
         $statement->executeStatement();

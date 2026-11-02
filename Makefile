@@ -55,6 +55,9 @@ sh: ## Connect to the PHP FPM container
 test: ## Builds the Docker images
 	@$(DOCKER_COMP) exec library ./vendor/bin/phpunit
 
+test-integration: ## Run the tests that need Postgres and RabbitMQ (message bus)
+	@$(DOCKER_COMP) exec library ./vendor/bin/phpunit --testsuite integration
+
 ## —— Behat ————————————————————————————————————————————————————————————————
 behat: ## Fix errors according to code standard
 	@$(DOCKER_COMP) exec library ./vendor/bin/behat --colors

@@ -13,7 +13,8 @@ class DomainEventMapping
     {
         $this->mapping = $this->reindex($mapping);
     }
-    public function eventFor(string $name): DomainEvent
+    /** @return class-string<DomainEvent> */
+    public function eventFor(string $name): string
     {
         if (!isset($this->mapping[$name])) {
             throw new \RuntimeException("The Domain Event Class for <$name> doesn't exists or have no subscribers");
