@@ -9,71 +9,97 @@ use Colybri\Library\Infrastructure\Messaging\Bus\Event\RabbitMq\Queue\RabbitMqQu
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 final class GenerateSupervisorRabbitMqConsumerFilesCommand extends Command
 {
-    private const EVENTS_TO_PROCESS_AT_TIME = 200;
-    private const NUMBERS_OF_PROCESSES_PER_SUBSCRIBER = 1;
-    private const SUPERVISOR_PATH = '/srv/app/build/supervisord';
+    public const NAME = 'library:rabbit:generate-supervisor';
 
-    protected const NAME = 'libary:rabbitmq:generate-supervisor';
+    private const NUMBERS_OF_PROCESSES_PER_SUBSCRIBER = 1;
+    private const DEFAULT_OUTPUT_DIR = '/srv/app/build/supervisord';
+
+    /**
+     * @param iterable<DomainEventSubscriber> $subscribers
+     */
+    public function __construct(private readonly iterable $subscribers, private readonly string $environment)
+    {
+        parent::__construct();
+    }
 
     protected function configure(): void
     {
         $this
             ->setName(self::NAME)
             ->setDescription('Generate the supervisor configuration for every RabbitMQ subscriber')
-            ->addArgument('command-path', InputArgument::OPTIONAL, 'Path on this is gonna be deployed', '/srv/app');
-    }
-
-    public function __construct(private iterable $subscribers)
-    {
-        parent::__construct();
+            ->addArgument(
+                'command-path',
+                InputArgument::OPTIONAL,
+                'Path where the application lives (bin/console is run from there)',
+                '/srv/app'
+            )
+            ->addOption(
+                'output-dir',
+                'o',
+                InputOption::VALUE_REQUIRED,
+                'Folder where the .conf files are written',
+                self::DEFAULT_OUTPUT_DIR
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $path = (string)$input->getArgument('command-path');
+        $path = rtrim((string) $input->getArgument('command-path'), '/');
+        $outputDir = rtrim((string) $input->getOption('output-dir'), '/');
+
+        if (!is_dir($outputDir) && !mkdir($outputDir, 0775, true) && !is_dir($outputDir)) {
+            $output->writeln(sprintf('<error>Unable to create the folder "%s"</error>', $outputDir));
+
+            return Command::FAILURE;
+        }
 
         foreach ($this->subscribers as $subscriber) {
-            $this->configCreator($path, $subscriber);
+            $file = $this->configCreator($path, $outputDir, $subscriber);
+            $output->writeln(sprintf('Generated %s', $file), OutputInterface::VERBOSITY_VERBOSE);
         }
 
         return Command::SUCCESS;
     }
 
-    private function configCreator(string $path, DomainEventSubscriber $subscriber): void
+    private function configCreator(string $path, string $outputDir, DomainEventSubscriber $subscriber): string
     {
         $queueName = RabbitMqQueueNameFormatter::format($subscriber);
         $subscriberName = RabbitMqQueueNameFormatter::shortFormat($subscriber);
 
         $fileContent = str_replace(
             [
-                '{subscriber_name}',
                 '{queue_name}',
                 '{path}',
+                '{consume_command}',
+                '{environment}',
                 '{processes}',
-                '{events_to_process}',
             ],
             [
-                $subscriberName,
                 $queueName,
                 $path,
+                ConsumeRabbitMqDomainEventsCommand::NAME,
+                $this->environment,
                 (string) self::NUMBERS_OF_PROCESSES_PER_SUBSCRIBER,
-                (string) self::EVENTS_TO_PROCESS_AT_TIME
             ],
             $this->template()
         );
 
-        file_put_contents($this->fileName($subscriberName), $fileContent);
+        $file = sprintf('%s/%s.conf', $outputDir, $subscriberName);
+        file_put_contents($file, $fileContent);
+
+        return $file;
     }
 
     private function template(): string
     {
         return <<<EOF
             [program:library_{queue_name}]
-            command      = {path}/bin/console library:rabbitmq:consume --env=prod {queue_name}
+            command      = {path}/bin/console {consume_command} --env={environment} {queue_name}
             process_name = %(program_name)s_%(process_num)02d
             numprocs     = {processes}
             startsecs    = 1
@@ -81,11 +107,7 @@ final class GenerateSupervisorRabbitMqConsumerFilesCommand extends Command
             exitcodes    = 2
             stopwaitsecs = 300
             autostart    = true
-        EOF;
-    }
 
-    private function fileName(string $queue)
-    {
-        return sprintf('%s/%s.ini', self::SUPERVISOR_PATH, $queue);
+            EOF;
     }
 }
