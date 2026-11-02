@@ -104,7 +104,7 @@ jobs:
         run: docker compose build api
 
       - name: Start the stack and the API
-        run: docker compose --profile elastic up --detach
+        run: make elastic-up
 
       - name: Wait until Kibana is healthy
         run: |

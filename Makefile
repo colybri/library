@@ -10,7 +10,7 @@ CONT_IP     = docker inspect --format="{{range .NetworkSettings.Networks}}{{.IPA
 DOCKER_ALL  = $(DOCKER_COMP) --profile elastic
 ELASTIC_SERVICES = elastic_setup elasticsearch kibana apm_server
 
-.PHONY        = help build up start stop down logs ps pgadmin rabbit elastic-up elastic-down elastic-reset elastic-ca elastic-logs kibana
+.PHONY        = help build up start stop down logs ps pgadmin rabbit elastic-up elastic-down elastic-reset elastic-ca elastic-logs kibana dirs
 
 ## —— The Library monorepo ———————————————————————————————————————————————————
 help: ## Outputs this help screen (app targets: make api-help)
@@ -20,7 +20,7 @@ help: ## Outputs this help screen (app targets: make api-help)
 build: ## Builds the Docker images
 	@$(DOCKER_COMP) build --pull --no-cache
 
-up: ## Start every app and the infrastructure in detached mode (no logs)
+up: dirs ## Start every app and the infrastructure in detached mode (no logs)
 	@$(DOCKER_COMP) up --detach
 
 start: build up ## Build and start the containers
@@ -45,8 +45,13 @@ rabbit: ## Open the RabbitMQ management UI on browser
 	@xdg-open http://$$($(CONT_IP) $$($(DOCKER_COMP) ps -q rabbitmq)):15672
 
 ## —— Elastic stack (profile elastic) ———————————————————————————————————————
-elastic-up: ## Start everything plus Elasticsearch, Kibana (https://localhost:5601) and the APM Server
+elastic-up: dirs ## Start everything plus Elasticsearch, Kibana (https://localhost:5601) and the APM Server
 	@$(DOCKER_ALL) up --detach
+
+# Bind-mounted folders: if Docker creates them they belong to root, and then
+# neither the host user nor `make elastic-ca` can write in var/
+dirs:
+	@mkdir -p var/log var/xdebug
 
 elastic-down: ## Stop and remove only the Elastic stack, keeping its data
 	@$(DOCKER_ALL) rm --stop --force $(ELASTIC_SERVICES)
