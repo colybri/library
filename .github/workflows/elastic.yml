@@ -320,7 +320,6 @@ jobs:
 
       - name: Fields used by the dashboards and the rules exist
         run: |
-          missing=""
           check() {
             count=$(curl --silent --show-error --fail --cacert var/elastic-ca.crt -u "elastic:${ELASTIC_PASSWORD}" \
               -H 'Content-Type: application/json' "https://localhost:9200/$1/_count" \
@@ -328,16 +327,33 @@ jobs:
             echo "$1 $2: ${count}"
             [ "$count" -gt 0 ] || missing="${missing} $1:$2"
           }
-          for field in transaction.duration.us transaction.name event.outcome span.duration.us span.name span.type \
-            labels.library_message_duplicate; do check 'traces-apm*' "$field"; done
-          for field in log.level message trace.id log.logger http.response.status_code; do check 'filebeat-*' "$field"; done
-          for field in docker.cpu.total.pct docker.memory.usage.total container.name docker.healthcheck.status \
-            php_fpm.pool.process.active php_fpm.pool.process.idle php_fpm.pool.connections.queued nginx.stubstatus.active \
-            postgresql.database.number_of_backends postgresql.database.name redis.info.memory.used.value \
-            redis.info.clients.connected rabbitmq.queue.messages.total.count rabbitmq.queue.consumers.count \
-            rabbitmq.queue.name elasticsearch.node.stats.fs.summary.available.bytes \
-            elasticsearch.node.stats.fs.summary.total.bytes; do check 'metricbeat-*' "$field"; done
-          [ -z "$missing" ] || { echo "::error::Fields without documents:${missing}"; exit 1; }
+          checks() {
+            for field in transaction.duration.us transaction.name event.outcome span.duration.us span.name span.type \
+              labels.library_message_duplicate; do check 'traces-apm*' "$field"; done
+            for field in log.level message trace.id log.logger http.response.status_code; do check 'filebeat-*' "$field"; done
+            for field in docker.cpu.total.pct docker.memory.usage.total container.name docker.healthcheck.status \
+              php_fpm.pool.processes.active php_fpm.pool.processes.idle php_fpm.pool.connections.queued nginx.stubstatus.active \
+              postgresql.database.number_of_backends postgresql.database.name redis.info.memory.used.value \
+              redis.info.clients.connected rabbitmq.queue.messages.total.count rabbitmq.queue.consumers.count \
+              rabbitmq.queue.name elasticsearch.node.stats.fs.summary.available.bytes \
+              elasticsearch.node.stats.fs.summary.total.bytes; do check 'metricbeat-*' "$field"; done
+          }
+          for attempt in 1 2 3 4 5 6; do
+            missing=""
+            checks
+            [ -z "$missing" ] && exit 0
+            echo "Missing:${missing}; trying again in 20 s"
+            sleep 20
+          done
+          # A document of each of those metricsets, to find the right field names
+          for metricset in memory pool queue; do
+            curl --silent --show-error --cacert var/elastic-ca.crt -u "elastic:${ELASTIC_PASSWORD}" \
+              -H 'Content-Type: application/json' "https://localhost:9200/metricbeat-*/_search" \
+              -d "{\"size\":1,\"sort\":[{\"@timestamp\":\"desc\"}],\"query\":{\"term\":{\"metricset.name\":\"${metricset}\"}}}" \
+              | jq -c '.hits.hits[0]._source | del(.agent, .ecs, .host, .service, .event)'
+          done
+          echo "::error::Fields without documents:${missing}"
+          exit 1
 
       - name: kibana_setup imported the dashboards and created the rules
         run: |
