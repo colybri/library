@@ -66,6 +66,7 @@ RUN set -eux; \
 		apcu \
 		opcache \
 		amqp \
+		redis \
 	; \
 	\
 	runDeps="$( \

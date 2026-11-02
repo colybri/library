@@ -29,7 +29,7 @@ consumers-status: ## Show the state of every consumer program
 test: ## Run the unit tests
 	@$(EXEC) ./vendor/bin/phpunit
 
-test-integration: ## Run the tests that need Postgres and RabbitMQ (message bus)
+test-integration: ## Run the tests that need Postgres, RabbitMQ and Redis (message bus)
 	@$(EXEC) ./vendor/bin/phpunit --testsuite integration
 
 ## —— Behat ————————————————————————————————————————————————————————————————
