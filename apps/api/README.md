@@ -272,7 +272,7 @@ Comandos de consola propios (`make api-console c="..."`):
 | `library:rabbit:configure` | Declara el exchange y las colas de los suscriptores |
 | `library:rabbit:consume cola` | Consume los eventos de una cola de RabbitMQ |
 | `library:postgres:consume cantidad` | Procesa eventos guardados en el respaldo de PostgreSQL |
-| `libary:rabbitmq:generate-supervisor [ruta]` (sic, con la errata del código) | Genera la configuración de Supervisor para los consumidores |
+| `library:rabbit:generate-supervisor [ruta] [--output-dir=carpeta]` | Genera un `.conf` de Supervisor por suscriptor (por defecto en `/srv/app/build/supervisord`) |
 
 ## Pruebas y calidad
 

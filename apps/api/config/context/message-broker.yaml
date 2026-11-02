@@ -58,3 +58,4 @@ services:
   Colybri\Library\Entrypoint\Console\Messaging\RabbitMq\GenerateSupervisorRabbitMqConsumerFilesCommand:
     arguments:
       $subscribers: !tagged_iterator library.domain_event_subscriber
+      $environment: '%kernel.environment%'

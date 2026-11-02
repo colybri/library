@@ -12,7 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 final class ConsumeRabbitMqDomainEventsCommand extends Command
 {
-    private const NAME = 'library:rabbit:consume';
+    public const NAME = 'library:rabbit:consume';
 
     public function __construct(
         private RabbitMqDomainEventsConsumer $consumer
