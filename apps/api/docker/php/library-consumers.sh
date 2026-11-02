@@ -23,7 +23,17 @@ done
 
 mkdir -p var/cache var/log
 
-bin/console library:rabbit:configure
+# RabbitMQ can report healthy a moment before it accepts AMQP connections.
+ATTEMPTS_LEFT=30
+until bin/console library:rabbit:configure; do
+	ATTEMPTS_LEFT=$((ATTEMPTS_LEFT - 1))
+	if [ $ATTEMPTS_LEFT -eq 0 ]; then
+		echo "RabbitMQ is not reachable" >&2
+		exit 1
+	fi
+	echo "Waiting for RabbitMQ..."
+	sleep 2
+done
 
 rm -rf "$PROGRAMS_DIR"
 bin/console library:rabbit:generate-supervisor "$APP_HOME" --output-dir="$PROGRAMS_DIR" -v

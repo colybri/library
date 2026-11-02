@@ -248,7 +248,7 @@ jobs:
           docker network create consumers-ci
           docker run -d --name rabbitmq --network consumers-ci \
             -e RABBITMQ_DEFAULT_USER=library -e RABBITMQ_DEFAULT_PASS=library \
-            --health-cmd "rabbitmq-diagnostics -q ping" --health-interval 5s --health-retries 30 \
+            --health-cmd "rabbitmq-diagnostics -q check_port_connectivity" --health-interval 5s --health-retries 30 \
             rabbitmq:3.13
           for i in $(seq 60); do
             [ "$(docker inspect -f '{{.State.Health.Status}}' rabbitmq)" = healthy ] && break
