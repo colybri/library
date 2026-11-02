@@ -130,6 +130,10 @@ es PUT /_security/role/library_apm_writer '{
 	"indices": [{
 		"names": ["traces-apm*", "logs-apm*", "metrics-apm*"],
 		"privileges": ["auto_configure", "create_doc"]
+	}, {
+		"names": [".apm-agent-configuration", ".apm-source-map"],
+		"privileges": ["read"],
+		"allow_restricted_indices": true
 	}]
 }' > /dev/null
 es PUT /_security/user/library_apm "{\"password\":$(json_string "$APM_ES_PASSWORD"),\"roles\":[\"library_apm_writer\"],\"full_name\":\"APM Server of the library stack\"}" > /dev/null

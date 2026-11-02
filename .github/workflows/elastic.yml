@@ -155,13 +155,15 @@ jobs:
       - name: elastic_setup can run again (idempotent)
         run: docker compose --profile elastic run --rm --no-deps elastic_setup
 
-      - name: The APM Server is healthy
+      - name: The APM Server answers over TLS
         run: |
-          apm=$(docker compose --profile elastic ps -q apm_server)
+          # 401: up, and it rejects requests without the secret token
           for i in $(seq 1 30); do
-            [ "$(docker inspect --format '{{.State.Health.Status}}' "$apm")" = healthy ] && exit 0
+            code=$(curl --silent --output /dev/null --write-out '%{http_code}' --cacert var/elastic-ca.crt https://localhost:8200/ || true)
+            [ "$code" = 401 ] && exit 0
             sleep 5
           done
+          echo "::error::The APM Server did not answer 401 (last code: $code)"
           docker compose --profile elastic logs apm_server
           exit 1
 

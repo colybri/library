@@ -134,13 +134,8 @@ services:
     environment:
       APM_SECRET_TOKEN: ${APM_SECRET_TOKEN:-}
       APM_ES_PASSWORD: ${APM_ES_PASSWORD:-}
-    healthcheck:
-      # Without a token the server answers 401 once it is up
-      test: ["CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' --cacert certs/ca/ca.crt https://localhost:8200/ | grep -qE '^(200|401)$$'"]
-      interval: 10s
-      timeout: 10s
-      retries: 30
-      start_period: 20s
+    # No healthcheck: the image has no curl. `make elastic-up` waits for nothing
+    # that depends on it, and the CI checks https://localhost:8200 from the host.
 
 volumes:
   elastic_certs:
