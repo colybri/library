@@ -1,0 +1,74 @@
+# Metricbeat (service metricbeat, profile elastic). Every 10 s it collects
+# metrics of the containers and the services they run and ships them to
+# Elasticsearch (data stream metricbeat-<version>, kept ELASTIC_RETENTION by
+# the "metricbeat" ILM policy that elastic_setup creates).
+# Service names have "_" (api_nginx): fine here, Go accepts them in URLs.
+
+metricbeat.modules:
+  # Containers: CPU, memory, network, health (Docker socket, read-only)
+  - module: docker
+    metricsets: [container, cpu, memory, network, diskio, healthcheck, info]
+    hosts: ["unix:///var/run/docker.sock"]
+    period: 10s
+
+  - module: postgresql
+    metricsets: [database, bgwriter, activity]
+    hosts: ["postgres://postgres:5432/library?sslmode=disable"]
+    username: "${POSTGRES_USER}"
+    password: "${POSTGRES_PASSWORD}"
+    period: 10s
+
+  # Management API (plugin rabbitmq_management): queues, consumers, messages
+  - module: rabbitmq
+    metricsets: [node, queue, connection, exchange]
+    hosts: ["rabbitmq:15672"]
+    username: "${RABBITMQ_USER}"
+    password: "${RABBITMQ_PASSWORD}"
+    period: 10s
+
+  # PHP-FPM status (pm.status_path) and nginx stub_status, both served by
+  # api_nginx on port 8080, which is only reachable inside the compose network
+  - module: php_fpm
+    metricsets: [pool, process]
+    hosts: ["http://api_nginx:8080"]
+    status_path: "/fpm-status"
+    period: 10s
+  - module: nginx
+    metricsets: [stubstatus]
+    hosts: ["http://api_nginx:8080"]
+    server_status_path: "nginx-status"
+    period: 10s
+
+  - module: redis
+    metricsets: [info, keyspace]
+    hosts: ["redis:6379"]
+    password: "${REDIS_PASSWORD}"
+    period: 10s
+
+  # Disk, heap and indexing of Elasticsearch itself (for the disk alert)
+  - module: elasticsearch
+    metricsets: [node, node_stats]
+    hosts: ["https://elasticsearch:9200"]
+    username: "library_beats"
+    password: "${BEATS_ES_PASSWORD}"
+    ssl.certificate_authorities: ["/usr/share/metricbeat/certs/ca/ca.crt"]
+    period: 30s
+
+output.elasticsearch:
+  hosts: ["https://elasticsearch:9200"]
+  username: "library_beats"
+  password: "${BEATS_ES_PASSWORD}"
+  ssl.certificate_authorities: ["/usr/share/metricbeat/certs/ca/ca.crt"]
+
+setup.ilm.overwrite: false
+
+# Built-in Metricbeat dashboards ([Metricbeat Docker], [Metricbeat Redis]...)
+setup.dashboards.enabled: true
+setup.kibana:
+  host: "https://kibana:5601"
+  username: "library_beats"
+  password: "${BEATS_ES_PASSWORD}"
+  ssl.certificate_authorities: ["/usr/share/metricbeat/certs/ca/ca.crt"]
+
+logging.level: info
+logging.to_stderr: true

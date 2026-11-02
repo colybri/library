@@ -1,5 +1,5 @@
-# Elastic stack for observability: Elasticsearch, Kibana and the APM Server
-# (Filebeat and Metricbeat come in a later phase). Every service is in the
+# Elastic stack for observability: Elasticsearch, Kibana, the APM Server,
+# Filebeat (log files) and Metricbeat (metrics). Every service is in the
 # "elastic" profile, so `make up` does not start them: use `make elastic-up`.
 # Security is on, with TLS everywhere: elastic_setup creates a local CA and the
 # certificates in the elastic_certs volume (`make elastic-ca` copies the CA out).
@@ -23,6 +23,7 @@ services:
       # Only checked here: compose must not fail without them when the profile is off
       KIBANA_ENCRYPTION_KEY: ${KIBANA_ENCRYPTION_KEY:-}
       APM_ES_PASSWORD: ${APM_ES_PASSWORD:-}
+      BEATS_ES_PASSWORD: ${BEATS_ES_PASSWORD:-}
       ELASTIC_RETENTION: ${ELASTIC_RETENTION:-7d}
     # Healthy once the certificates exist: Elasticsearch waits for that.
     healthcheck:
@@ -137,10 +138,65 @@ services:
     # No healthcheck: the image has no curl. `make elastic-up` waits for nothing
     # that depends on it, and the CI checks https://localhost:8200 from the host.
 
+  # Ships the log files of the API, nginx and Postgres (elastic/filebeat/filebeat.yml)
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:${ELASTIC_VERSION:-9.5.5}
+    profiles: [elastic]
+    restart: unless-stopped
+    # Root reads every log file, whoever wrote it
+    user: root
+    command: ["-e", "--strict.perms=false"]
+    depends_on:
+      elastic_setup:
+        condition: service_completed_successfully
+      # It loads its dashboards into Kibana when it starts
+      kibana:
+        condition: service_healthy
+    volumes:
+      - elastic_certs:/usr/share/filebeat/certs:ro
+      - ./elastic/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      # Registry: which lines were already shipped
+      - filebeat_data:/usr/share/filebeat/data
+      - ../var/log:/logs/api:ro
+      - nginx_logs:/logs/nginx:ro
+      - postgres_logs:/logs/postgresql:ro
+    environment:
+      BEATS_ES_PASSWORD: ${BEATS_ES_PASSWORD:-}
+
+  # Metrics of the containers and their services (elastic/metricbeat/metricbeat.yml)
+  metricbeat:
+    image: docker.elastic.co/beats/metricbeat:${ELASTIC_VERSION:-9.5.5}
+    profiles: [elastic]
+    restart: unless-stopped
+    # Root reads the Docker socket
+    user: root
+    command: ["-e", "--strict.perms=false"]
+    depends_on:
+      elastic_setup:
+        condition: service_completed_successfully
+      kibana:
+        condition: service_healthy
+    volumes:
+      - elastic_certs:/usr/share/metricbeat/certs:ro
+      - ./elastic/metricbeat/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro
+      - metricbeat_data:/usr/share/metricbeat/data
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      BEATS_ES_PASSWORD: ${BEATS_ES_PASSWORD:-}
+      POSTGRES_USER: ${POSTGRES_READ_USER:-}
+      POSTGRES_PASSWORD: ${POSTGRES_READ_PASS:-}
+      RABBITMQ_USER: ${RABBITMQ_LOGIN:-}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+
 volumes:
   elastic_certs:
     driver: local
   elastic_data:
     driver: local
   kibana_data:
+    driver: local
+  filebeat_data:
+    driver: local
+  metricbeat_data:
     driver: local

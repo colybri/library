@@ -9,3 +9,6 @@ RUN chmod 640 /var/lib/postgresql/server.key /var/lib/postgresql/server.crt
 
 COPY  postgresql.conf /var/lib/postgresql/data/
 
+# Log folder (volume postgres_logs): Postgres writes it, Filebeat reads it
+RUN mkdir -p /var/log/postgresql && chown postgres:postgres /var/log/postgresql && chmod 750 /var/log/postgresql
+

@@ -8,7 +8,7 @@ CONT_IP     = docker inspect --format="{{range .NetworkSettings.Networks}}{{.IPA
 .DEFAULT_GOAL = help
 # Every profile, so stop/down/ps also reach the Elastic stack when it runs
 DOCKER_ALL  = $(DOCKER_COMP) --profile elastic
-ELASTIC_SERVICES = elastic_setup elasticsearch kibana apm_server
+ELASTIC_SERVICES = elastic_setup elasticsearch kibana apm_server filebeat metricbeat
 
 .PHONY        = help build up start stop down logs ps pgadmin rabbit elastic-up elastic-down elastic-reset elastic-ca elastic-logs kibana dirs
 
@@ -59,7 +59,7 @@ elastic-down: ## Stop and remove only the Elastic stack, keeping its data
 elastic-reset: ## Delete every Elastic document (volume elastic_data); certificates are kept
 	@printf "This deletes every document stored in Elasticsearch. Continue? [y/N] "; read answer; [ "$$answer" = "y" ]
 	@$(DOCKER_ALL) rm --stop --force $(ELASTIC_SERVICES)
-	@docker volume rm --force library_elastic_data library_kibana_data
+	@docker volume rm --force library_elastic_data library_kibana_data library_filebeat_data library_metricbeat_data
 
 elastic-ca: ## Copy the local CA to var/elastic-ca.crt, to trust it in your browser
 	@mkdir -p var
