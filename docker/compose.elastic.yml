@@ -1,5 +1,6 @@
-# Elastic stack for observability: Elasticsearch, Kibana, the APM Server,
-# Filebeat (log files) and Metricbeat (metrics). Every service is in the
+# Elastic stack for observability: Elasticsearch, Kibana (with the library
+# dashboards and alert rules), the APM Server, Filebeat (log files) and
+# Metricbeat (metrics). Every service is in the
 # "elastic" profile, so `make up` does not start them: use `make elastic-up`.
 # Security is on, with TLS everywhere: elastic_setup creates a local CA and the
 # certificates in the elastic_certs volume (`make elastic-ca` copies the CA out).
@@ -107,6 +108,21 @@ services:
       timeout: 10s
       retries: 60
       start_period: 60s
+
+  # One-shot: imports the dashboards and creates the alert rules (elastic/kibana)
+  kibana_setup:
+    image: *elastic_image
+    profiles: [elastic]
+    command: ["bash", "/kibana/kibana-setup.sh"]
+    restart: "no"
+    depends_on:
+      kibana:
+        condition: service_healthy
+    volumes:
+      - elastic_certs:/certs:ro
+      - ./elastic/kibana:/kibana:ro
+    environment:
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
 
   # Receives the traces of api and api_consumers (OTLP over HTTPS, port 8200)
   apm_server:

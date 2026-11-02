@@ -1,0 +1,9 @@
+{
+  "name": "Library: índice library-alerts",
+  "connector_type_id": ".index",
+  "config": {
+    "index": "library-alerts",
+    "refresh": true,
+    "executionTimeField": "@timestamp"
+  }
+}

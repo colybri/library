@@ -1,0 +1,57 @@
+{
+  "schedule": {
+    "interval": "1m"
+  },
+  "tags": [
+    "library"
+  ],
+  "enabled": true,
+  "name": "RabbitMQ: una cola de library sin consumidores (2 min)",
+  "rule_type_id": ".index-threshold",
+  "consumer": "alerts",
+  "params": {
+    "index": [
+      "metricbeat-*"
+    ],
+    "timeField": "@timestamp",
+    "aggType": "max",
+    "aggField": "rabbitmq.queue.consumers.count",
+    "groupBy": "top",
+    "termField": "rabbitmq.queue.name",
+    "termSize": 20,
+    "timeWindowSize": 2,
+    "timeWindowUnit": "m",
+    "thresholdComparator": "<",
+    "threshold": [
+      1
+    ],
+    "filterKuery": "metricset.name : \"queue\" and rabbitmq.queue.name : colybri.library.*"
+  },
+  "actions": [
+    {
+      "id": "library-alerts-index",
+      "group": "threshold met",
+      "params": {
+        "documents": [
+          {
+            "rule": {
+              "id": "{{rule.id}}",
+              "name": "{{rule.name}}"
+            },
+            "alert": {
+              "id": "{{alert.id}}",
+              "action_group": "{{alert.actionGroup}}"
+            },
+            "message": "{{context.message}}",
+            "reason": "{{context.reason}}"
+          }
+        ]
+      },
+      "frequency": {
+        "summary": false,
+        "notify_when": "onActionGroupChange",
+        "throttle": null
+      }
+    }
+  ]
+}

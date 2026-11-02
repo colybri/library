@@ -1,0 +1,57 @@
+{
+  "schedule": {
+    "interval": "1m"
+  },
+  "tags": [
+    "library"
+  ],
+  "enabled": true,
+  "name": "Google Books: errores o llamadas de más de 3 s (5 min)",
+  "rule_type_id": ".es-query",
+  "consumer": "alerts",
+  "params": {
+    "searchType": "esQuery",
+    "index": [
+      "traces-apm*"
+    ],
+    "timeField": "@timestamp",
+    "esQuery": "{\"query\": {\"bool\": {\"filter\": [{\"term\": {\"span.name\": \"GET www.googleapis.com\"}}], \"should\": [{\"term\": {\"event.outcome\": \"failure\"}}, {\"range\": {\"span.duration.us\": {\"gt\": 3000000}}}], \"minimum_should_match\": 1}}}",
+    "size": 10,
+    "timeWindowSize": 5,
+    "timeWindowUnit": "m",
+    "threshold": [
+      0
+    ],
+    "thresholdComparator": ">",
+    "excludeHitsFromPreviousRun": true,
+    "aggType": "count",
+    "groupBy": "all"
+  },
+  "actions": [
+    {
+      "id": "library-alerts-index",
+      "group": "query matched",
+      "params": {
+        "documents": [
+          {
+            "rule": {
+              "id": "{{rule.id}}",
+              "name": "{{rule.name}}"
+            },
+            "alert": {
+              "id": "{{alert.id}}",
+              "action_group": "{{alert.actionGroup}}"
+            },
+            "message": "{{context.message}}",
+            "reason": "{{context.reason}}"
+          }
+        ]
+      },
+      "frequency": {
+        "summary": false,
+        "notify_when": "onActionGroupChange",
+        "throttle": null
+      }
+    }
+  ]
+}

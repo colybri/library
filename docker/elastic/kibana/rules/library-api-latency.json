@@ -1,0 +1,47 @@
+{
+  "schedule": {
+    "interval": "1m"
+  },
+  "tags": [
+    "library"
+  ],
+  "enabled": true,
+  "name": "API: latencia p95 por encima de 1 s (5 min)",
+  "rule_type_id": "apm.transaction_duration",
+  "consumer": "apm",
+  "params": {
+    "threshold": 1000,
+    "aggregationType": "95th",
+    "windowSize": 5,
+    "windowUnit": "m",
+    "environment": "ENVIRONMENT_ALL",
+    "serviceName": "library-api"
+  },
+  "actions": [
+    {
+      "id": "library-alerts-index",
+      "group": "threshold_met",
+      "params": {
+        "documents": [
+          {
+            "rule": {
+              "id": "{{rule.id}}",
+              "name": "{{rule.name}}"
+            },
+            "alert": {
+              "id": "{{alert.id}}",
+              "action_group": "{{alert.actionGroup}}"
+            },
+            "message": "{{context.message}}",
+            "reason": "{{context.reason}}"
+          }
+        ]
+      },
+      "frequency": {
+        "summary": false,
+        "notify_when": "onActionGroupChange",
+        "throttle": null
+      }
+    }
+  ]
+}
