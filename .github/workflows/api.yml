@@ -72,7 +72,7 @@ jobs:
         run: vendor/bin/phpunit -c phpunit.xml.dist
 
   integration:
-    name: Message bus integration (Postgres + RabbitMQ)
+    name: Message bus integration (Postgres + RabbitMQ + Redis)
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -91,6 +91,12 @@ jobs:
         options: >-
           --health-cmd "rabbitmq-diagnostics -q ping"
           --health-interval 10s --health-timeout 10s --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: [ '6379:6379' ]
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s --health-timeout 5s --health-retries 10
     steps:
       - uses: actions/checkout@v4
 

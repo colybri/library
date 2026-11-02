@@ -31,7 +31,7 @@
             <directory>tests</directory>
             <exclude>tests/Integration</exclude>
         </testsuite>
-        <!-- Needs Postgres and RabbitMQ: make test-integration -->
+        <!-- Needs Postgres, RabbitMQ and Redis: make test-integration -->
         <testsuite name="integration">
             <directory>tests/Integration</directory>
         </testsuite>

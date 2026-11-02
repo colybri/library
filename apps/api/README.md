@@ -53,6 +53,7 @@ flowchart LR
     rabbit -->|"Colas por suscriptor"| consumers
     postgres -.->|"Eventos de respaldo"| consumers
     consumers --> postgres
+    consumers -->|"Mensajes ya procesados"| redis
     pgadmin --> postgres
 ```
 
@@ -61,7 +62,7 @@ flowchart LR
 - **PostgreSQL** guarda los datos del catálogo, los usuarios y los eventos de respaldo. No se usa el ORM, solo DBAL.
 - **RabbitMQ** recibe los eventos de dominio en el exchange definido por `RABBITMQ_EXCHANGE`. `library:rabbit:configure` crea las colas de cada suscriptor y `library:rabbit:consume` procesa cada una.
 - **Consumidores** (`api_consumers`) usa la misma imagen y el mismo código que `api`, pero en lugar de PHP-FPM ejecuta supervisord con un programa `library:rabbit:consume` por suscriptor. Ver [Consumidores de RabbitMQ](#consumidores-de-rabbitmq).
-- **Redis** es el almacén de sesiones de Symfony ([config/packages/framework.yaml](config/packages/framework.yaml)).
+- **Redis** es el almacén de sesiones de Symfony ([config/packages/framework.yaml](config/packages/framework.yaml)) y guarda qué suscriptor ya procesó cada mensaje, para no procesar dos veces un evento que RabbitMQ entregue de nuevo (`RedisProcessorRepository`, claves `library:processed:*` que caducan a los 7 días).
 - **Google Books** es la única integración externa: se usa para buscar ediciones. `GOOGLE_BOOKS_API_KEY` es opcional.
 
 Los servicios `api`, `api_consumers` y `api_nginx` se definen en [compose.api.yml](compose.api.yml); PostgreSQL, RabbitMQ, Redis y pgAdmin son infraestructura compartida en [docker/compose.infra.yml](../../docker/compose.infra.yml).
@@ -103,7 +104,7 @@ Después edita `apps/api/.env` con tus valores. Las variables más importantes:
 | `RABBITMQ_LOGIN`, `RABBITMQ_PASSWORD` | Sí | Credenciales de RabbitMQ (con Docker, las mismas que en el `.env` de la raíz) | `guest` |
 | `RABBITMQ_EXCHANGE` | Sí | Exchange donde se publican los eventos | `library` |
 | `RABBITMQ_MAX_RETRIES` | Sí | Reintentos de un mensaje antes de descartarlo | `3` |
-| `REDIS_URL` | Sí | DSN de Redis para sesiones. Con Docker, `redis://<REDIS_PASSWORD>@redis:6379` | `redis://127.0.0.1:6379` |
+| `REDIS_URL` | Sí | DSN de Redis para sesiones y mensajes ya procesados. Con Docker, `redis://<REDIS_PASSWORD>@redis:6379` | `redis://127.0.0.1:6379` |
 | `JWT_SECRET_KEY`, `JWT_PUBLIC_KEY`, `JWT_PASSPHRASE` | Sí | Claves y frase de paso para firmar los JWT | `config/jwt/*.pem`, `ChangeMe` |
 | `GOOGLE_BOOKS_API_KEY` | No | Clave de la API de Google Books | Vacía |
 | `BEHAT_USER`, `BEHAT_PASSWORD` | Para Behat | Email y contraseña de un usuario existente para el paso `an authentificated user` | Vacías |
@@ -118,7 +119,7 @@ make api-console c=lexik:jwt:generate-keypair
 
 El repositorio no define un servidor web fuera de Docker: Nginx y PHP-FPM solo se configuran en [compose.api.yml](compose.api.yml). Sin Docker puedes instalar dependencias, preparar la base de datos y ejecutar las pruebas y la consola, igual que hace la CI. Para servir la API, usa Docker ([README de la raíz](../../README.md)).
 
-Necesitas PHP 8.4.27 o superior con las extensiones `amqp`, `ctype`, `curl`, `iconv`, `intl`, `json`, `pdo_pgsql`, `redis` y `zip` (las mismas que instala la CI en [api.yml](../../.github/workflows/api.yml)), Composer 2, y PostgreSQL 14 y RabbitMQ accesibles. Desde `apps/api/`:
+Necesitas PHP 8.4.27 o superior con las extensiones `amqp`, `ctype`, `curl`, `iconv`, `intl`, `json`, `pdo_pgsql`, `redis` y `zip` (las mismas que instala la CI en [api.yml](../../.github/workflows/api.yml)), Composer 2, y PostgreSQL 14, RabbitMQ y Redis accesibles. Desde `apps/api/`:
 
 ```bash
 # 1. Dependencias

@@ -59,3 +59,18 @@ services:
     arguments:
       $subscribers: !tagged_iterator library.domain_event_subscriber
       $environment: '%kernel.environment%'
+
+  # Redis client for the processed-messages store. Lazy: it only connects
+  # when a subscriber runs, so booting the kernel does not need Redis.
+  library.redis:
+    class: Redis
+    factory: [ 'Symfony\Component\Cache\Adapter\RedisAdapter', 'createConnection' ]
+    arguments:
+      - '%env(REDIS_URL)%'
+      - { lazy: true }
+
+  Colybri\Library\Infrastructure\Messaging\Event\Redis\RedisProcessorRepository:
+    arguments:
+      $redis: '@library.redis'
+      # 7 days: longer than any retry or redelivery of a message
+      $ttlSeconds: 604800
