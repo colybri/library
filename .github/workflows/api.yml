@@ -1,12 +1,26 @@
-name: CI
+name: API
 
+# CI of apps/api only. It runs when the API, the shared infrastructure or this
+# workflow change; a PR that only touches another app or the docs skips it.
+# Each app has its own workflow with the same layout (web.yml will follow).
 on:
   push:
     branches: [ master ]
+    paths:
+      - 'apps/api/**'
+      - 'docker/**'
+      - 'docker-compose.yml'
+      - '.github/workflows/api.yml'
   pull_request:
+    paths:
+      - 'apps/api/**'
+      - 'docker/**'
+      - 'docker-compose.yml'
+      - '.github/workflows/api.yml'
+  workflow_dispatch:
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: api-${{ github.ref }}
   cancel-in-progress: true
 
 # The backend lives in apps/api: every `run` step starts there.
