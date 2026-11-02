@@ -2,7 +2,7 @@ services:
   library:
     container_name: library
     build:
-      context: .
+      context: ./apps/api
       target: library_php_dev
       args:
         SYMFONY_VERSION: ${SYMFONY_VERSION:-7.4}
@@ -12,11 +12,13 @@ services:
         COVERAGE_DRIVER: ${COVERAGE_DRIVER:-pcov}
     restart: unless-stopped
     volumes:
-      - ./:/srv/app
+      - ./apps/api:/srv/app
+      # Whole repository, so GrumPHP can reach .git (it lives at the root, outside apps/api)
+      - ./:/srv/repo
       - php_socket:/var/run/php
       - ./var/xdebug:/tmp/xdebug
       - ./var/log:/srv/app/var/log
-      - ./docker/php/local.ini:/usr/local/etc/php/php.ini
+      - ./apps/api/docker/php/local.ini:/usr/local/etc/php/php.ini
     working_dir: /srv/app
     tty: true
     healthcheck:
@@ -35,13 +37,13 @@ services:
     container_name: library_nginx
     restart: unless-stopped
     build:
-      context: ./docker/nginx
+      context: ./apps/api/docker/nginx
       target: webserver
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - ./:/srv/app
+      - ./apps/api:/srv/app
       - php_socket:/var/run/php
     depends_on:
       - library

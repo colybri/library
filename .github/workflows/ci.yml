@@ -9,6 +9,11 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+# The backend lives in apps/api: every `run` step starts there.
+defaults:
+  run:
+    working-directory: apps/api
+
 jobs:
   quality:
     name: Lint, static analysis and tests (PHP ${{ matrix.php }})
@@ -29,6 +34,8 @@ jobs:
           tools: composer:v2
 
       - uses: ramsey/composer-install@v3
+        with:
+          working-directory: apps/api
 
       - name: Validate composer.json
         run: composer validate --no-check-publish
@@ -81,6 +88,8 @@ jobs:
           tools: composer:v2
 
       - uses: ramsey/composer-install@v3
+        with:
+          working-directory: apps/api
 
       - name: Load the schema from migrations/library.sql
         env:
@@ -108,6 +117,7 @@ jobs:
 
       - uses: ramsey/composer-install@v3
         with:
+          working-directory: apps/api
           composer-options: --no-dev
 
       - name: Warm up the prod cache
@@ -134,7 +144,7 @@ jobs:
       - name: Build the PHP image
         uses: docker/build-push-action@v6
         with:
-          context: .
+          context: apps/api
           target: library_php
           tags: library-php:ci
           load: true
@@ -163,7 +173,7 @@ jobs:
       - name: Build the development image (PCOV)
         uses: docker/build-push-action@v6
         with:
-          context: .
+          context: apps/api
           target: library_php_dev
           tags: library-php-dev:ci
           load: true
@@ -195,7 +205,7 @@ jobs:
       - name: Xdebug variant builds
         uses: docker/build-push-action@v6
         with:
-          context: .
+          context: apps/api
           target: library_php_dev
           build-args: COVERAGE_DRIVER=xdebug
           tags: library-php-xdebug:ci

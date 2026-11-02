@@ -64,7 +64,7 @@ behat: ## Fix errors according to code standard
 
 ## —— GrumPHP ————————————————————————————————————————————————————————————————
 grumphp: ## Fix errors according to code standard
-	@$(DOCKER_COMP) exec library ./vendor/bin/grumphp run
+	@$(DOCKER_COMP) exec -w /srv/repo/apps/api library ./vendor/bin/grumphp run
 
 ## —— Static analysis —————————————————————————————————————————————————————————
 lint: ## Run stactic quality analisys tools
@@ -91,10 +91,10 @@ pgadmin: ## Open pgadmin on browser
 	@xdg-open http://$(PG_ADMIN_CONT_IP)
 
 dump: ## Dump the schema and the countries data to migrations/library.sql (no library data)
-	@docker exec library_postgres sh -c 'pg_dump -U "$$POSTGRES_USER" --schema-only --no-owner library; pg_dump -U "$$POSTGRES_USER" --data-only -t public.countries library' > ./migrations/library.sql
+	@docker exec library_postgres sh -c 'pg_dump -U "$$POSTGRES_USER" --schema-only --no-owner library; pg_dump -U "$$POSTGRES_USER" --data-only -t public.countries library' > ./apps/api/migrations/library.sql
 
 restore: ## Restore database from migrations
-	@docker exec -i library_postgres sh -c 'psql -U "$$POSTGRES_USER" library' < ./migrations/library.sql
+	@docker exec -i library_postgres sh -c 'psql -U "$$POSTGRES_USER" library' < ./apps/api/migrations/library.sql
 
 
 ## —— Composer ——————————————————————————————————————————————————————————————
