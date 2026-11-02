@@ -23,7 +23,6 @@ use Colybri\Library\Domain\Model\Edition\ValueObject\EditionYear;
 use Colybri\Library\Infrastructure\Exception\RepositoryMethodNotImplementException;
 use Colybri\Library\Infrastructure\Persistence\Api\Google\GoogleRepository;
 use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
-use phpDocumentor\Reflection\DocBlock\Tags\Throws;
 
 final class EditionGoogleRepository extends GoogleRepository implements EditionRepository
 {
@@ -36,10 +35,15 @@ final class EditionGoogleRepository extends GoogleRepository implements EditionR
     {
         $books = $this->byCriteria('?q=', $criteria, new EditionGoogleMap());
 
-        return \array_map(
-            fn($book) => $this->map($book),
-            $books
-        );
+        $editions = [];
+        foreach ($books as $book) {
+            $edition = $this->mapOrSkip($book);
+            if (null !== $edition) {
+                $editions[] = $edition;
+            }
+        }
+
+        return $editions;
     }
 
     public function insert(Edition $edition): void
@@ -55,7 +59,36 @@ final class EditionGoogleRepository extends GoogleRepository implements EditionR
         throw new RepositoryMethodNotImplementException('This repository not implement method ' . __FUNCTION__);
     }
 
-    private function map(\stdClass $book): Edition
+    /**
+     * Google returns volumes this model cannot represent: no ISBN (only ISSN
+     * or OTHER identifiers), a language outside EditionLocale, etc. One of
+     * those must not fail the whole search, so it is left out.
+     */
+    private function mapOrSkip(\stdClass $book): ?Edition
+    {
+        $isbn = $this->isbn($book);
+        if (null === $isbn || !isset($book->id, $book->volumeInfo->title, $book->volumeInfo->language)) {
+            return null;
+        }
+
+        try {
+            return $this->map($book, $isbn);
+        } catch (\InvalidArgumentException) {
+            return null;
+        }
+    }
+
+    private function isbn(\stdClass $book): ?string
+    {
+        $identifiers = [];
+        foreach ($book->volumeInfo->industryIdentifiers ?? [] as $identifier) {
+            $identifiers[$identifier->type ?? ''] = $identifier->identifier ?? null;
+        }
+
+        return $identifiers['ISBN_13'] ?? $identifiers['ISBN_10'] ?? null;
+    }
+
+    private function map(\stdClass $book, string $isbn): Edition
     {
         return Edition::hydrate(
             Uuid::v4(),
@@ -63,7 +96,7 @@ final class EditionGoogleRepository extends GoogleRepository implements EditionR
             Uuid::v4(),
             Uuid::v4(),
             EditionGoogleBooksId::from($book->id),
-            EditionISBN::from($book->volumeInfo->industryIdentifiers[0]->identifier),
+            EditionISBN::from($isbn),
             EditionTitle::from($book->volumeInfo->title),
             isset($book->volumeInfo->subtitle) ? EditionSubtitle::from($book->volumeInfo->subtitle) : null,
             EditionLocale::from($book->volumeInfo->language),
