@@ -13,6 +13,13 @@ final class EditionISBN extends IntValueObject
     {
         $validator = new Isbn();
         $isbn = $validator->hyphens->removeHyphens((string)$value);
-        return parent::from((int)$validator->translate->to13($isbn));
+
+        // Translate::to13() only understands ISBN-10: given an ISBN-13 it
+        // returns "978-<12 digits><check>", which the int cast cut to 978.
+        if (13 !== \strlen($isbn)) {
+            $isbn = $validator->hyphens->removeHyphens($validator->translate->to13($isbn));
+        }
+
+        return parent::from((int)$isbn);
     }
 }

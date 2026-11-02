@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.1 (Debian 14.1-1.pgdg110+1)
--- Dumped by pg_dump version 14.1 (Debian 14.1-1.pgdg110+1)
+-- Dumped from database version 14.8 (Debian 14.8-1.pgdg110+1)
+-- Dumped by pg_dump version 14.8 (Debian 14.8-1.pgdg110+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -24,7 +24,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
 
 
 --
--- Name: EXTENSION "uuid-ossp"; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION "uuid-ossp"; Type: COMMENT; Schema: -; Owner: -
 --
 
 COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UUIDs)';
@@ -35,15 +35,15 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- Name: authors; Type: TABLE; Schema: public; Owner: postgres
+-- Name: authors; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.authors (
     id uuid NOT NULL,
-    first_name text NOT NULL,
-    last_name text,
     is_pseudonym_of uuid,
     country_id uuid NOT NULL,
+    first_name text NOT NULL,
+    last_name text,
     born_year integer NOT NULL,
     death_year integer,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -51,31 +51,26 @@ CREATE TABLE public.authors (
 );
 
 
-ALTER TABLE public.authors OWNER TO postgres;
-
 --
--- Name: books; Type: TABLE; Schema: public; Owner: postgres
+-- Name: books; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.books (
     id uuid NOT NULL,
-    title character varying NOT NULL,
+    title text NOT NULL,
+    subtitle text,
     authors_ids uuid[] NOT NULL,
-    editions_ids uuid[] NOT NULL,
-    image character varying,
-    publish_year integer,
+    is_on_wish_list boolean DEFAULT false NOT NULL,
+    publish_year integer NOT NULL,
     is_estimated_publish_year boolean DEFAULT false NOT NULL,
     is_pseudo_author boolean DEFAULT false NOT NULL,
-    is_on_wish_list boolean DEFAULT false NOT NULL,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at timestamp with time zone
 );
 
 
-ALTER TABLE public.books OWNER TO postgres;
-
 --
--- Name: books_authors; Type: TABLE; Schema: public; Owner: postgres
+-- Name: books_authors; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.books_authors (
@@ -84,22 +79,8 @@ CREATE TABLE public.books_authors (
 );
 
 
-ALTER TABLE public.books_authors OWNER TO postgres;
-
 --
--- Name: books_edtions; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.books_edtions (
-    book_id uuid NOT NULL,
-    edition_id uuid NOT NULL
-);
-
-
-ALTER TABLE public.books_edtions OWNER TO postgres;
-
---
--- Name: countries; Type: TABLE; Schema: public; Owner: postgres
+-- Name: countries; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.countries (
@@ -112,10 +93,8 @@ CREATE TABLE public.countries (
 );
 
 
-ALTER TABLE public.countries OWNER TO postgres;
-
 --
--- Name: countries_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: countries_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.countries_seq
@@ -126,29 +105,64 @@ CREATE SEQUENCE public.countries_seq
     CACHE 1;
 
 
-ALTER TABLE public.countries_seq OWNER TO postgres;
-
 --
--- Name: editions; Type: TABLE; Schema: public; Owner: postgres
+-- Name: editions; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.editions (
     id uuid NOT NULL,
     year integer NOT NULL,
     publisher_id uuid NOT NULL,
-    physical_book boolean DEFAULT false NOT NULL,
-    condition character varying,
+    book_id uuid NOT NULL,
+    google_id character varying,
+    isbn bigint NOT NULL,
+    title text NOT NULL,
+    subtitle text,
+    locale character(2) NOT NULL,
+    image character varying,
     resource character varying,
-    resource_types character varying[],
+    resource_type character varying[],
+    condition character varying,
+    pages integer,
+    city character varying NOT NULL,
+    is_on_library boolean DEFAULT false NOT NULL,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at timestamp with time zone
 );
 
 
-ALTER TABLE public.editions OWNER TO postgres;
+--
+-- Name: events_failed_queue; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.events_failed_queue (
+    id uuid NOT NULL,
+    name character varying NOT NULL,
+    ocurred_on timestamp with time zone NOT NULL,
+    agregate_id uuid NOT NULL,
+    body json NOT NULL,
+    retries integer DEFAULT 0 NOT NULL,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at timestamp with time zone
+);
+
 
 --
--- Name: journals; Type: TABLE; Schema: public; Owner: postgres
+-- Name: events_pending_queue; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.events_pending_queue (
+    id uuid NOT NULL,
+    name character varying NOT NULL,
+    ocurred_on timestamp with time zone NOT NULL,
+    agregate_id uuid NOT NULL,
+    body json NOT NULL,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+--
+-- Name: journals; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.journals (
@@ -162,10 +176,8 @@ CREATE TABLE public.journals (
 );
 
 
-ALTER TABLE public.journals OWNER TO postgres;
-
 --
--- Name: papers; Type: TABLE; Schema: public; Owner: postgres
+-- Name: papers; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.papers (
@@ -183,10 +195,8 @@ CREATE TABLE public.papers (
 );
 
 
-ALTER TABLE public.papers OWNER TO postgres;
-
 --
--- Name: papers_authors; Type: TABLE; Schema: public; Owner: postgres
+-- Name: papers_authors; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.papers_authors (
@@ -195,10 +205,8 @@ CREATE TABLE public.papers_authors (
 );
 
 
-ALTER TABLE public.papers_authors OWNER TO postgres;
-
 --
--- Name: publishers; Type: TABLE; Schema: public; Owner: postgres
+-- Name: publishers; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.publishers (
@@ -212,39 +220,223 @@ CREATE TABLE public.publishers (
 );
 
 
-ALTER TABLE public.publishers OWNER TO postgres;
-
 --
--- Data for Name: authors; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
-COPY public.authors (id, first_name, last_name, is_pseudonym_of, country_id, born_year, death_year, created_at, updated_at) FROM stdin;
-\.
-
-
---
--- Data for Name: books; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.books (id, title, authors_ids, editions_ids, image, publish_year, is_estimated_publish_year, is_pseudo_author, is_on_wish_list, created_at, updated_at) FROM stdin;
-\.
+CREATE TABLE public.users (
+    id uuid NOT NULL,
+    email character varying(100) NOT NULL,
+    password text NOT NULL,
+    is_active boolean DEFAULT false
+);
 
 
 --
--- Data for Name: books_authors; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Name: authors authors_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-COPY public.books_authors (book_id, author_id) FROM stdin;
-\.
+ALTER TABLE ONLY public.authors
+    ADD CONSTRAINT authors_pkey PRIMARY KEY (id);
 
 
 --
--- Data for Name: books_edtions; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Name: books_authors books_authors_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-COPY public.books_edtions (book_id, edition_id) FROM stdin;
-\.
+ALTER TABLE ONLY public.books_authors
+    ADD CONSTRAINT books_authors_pkey PRIMARY KEY (book_id, author_id);
 
+
+--
+-- Name: books books_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.books
+    ADD CONSTRAINT books_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: countries countries_alpha_2_code_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.countries
+    ADD CONSTRAINT countries_alpha_2_code_key UNIQUE (alpha_2_code);
+
+
+--
+-- Name: countries countries_alpha_3_code_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.countries
+    ADD CONSTRAINT countries_alpha_3_code_key UNIQUE (alpha_3_code);
+
+
+--
+-- Name: countries countries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.countries
+    ADD CONSTRAINT countries_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: editions editions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.editions
+    ADD CONSTRAINT editions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: events_pending_queue events_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.events_pending_queue
+    ADD CONSTRAINT events_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: editions google; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.editions
+    ADD CONSTRAINT google UNIQUE (google_id);
+
+
+--
+-- Name: editions isbn; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.editions
+    ADD CONSTRAINT isbn UNIQUE (isbn);
+
+
+--
+-- Name: journals journals_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.journals
+    ADD CONSTRAINT journals_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: papers_authors paper_authors_primary; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.papers_authors
+    ADD CONSTRAINT paper_authors_primary PRIMARY KEY (paper_id, author_id);
+
+
+--
+-- Name: papers papers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.papers
+    ADD CONSTRAINT papers_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: publishers publishers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.publishers
+    ADD CONSTRAINT publishers_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: books_authors authors_foreign_books; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.books_authors
+    ADD CONSTRAINT authors_foreign_books FOREIGN KEY (book_id) REFERENCES public.books(id);
+
+
+--
+-- Name: papers_authors authors_foreign_papers; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.papers_authors
+    ADD CONSTRAINT authors_foreign_papers FOREIGN KEY (paper_id) REFERENCES public.papers(id);
+
+
+--
+-- Name: authors authors_foreing_countries; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.authors
+    ADD CONSTRAINT authors_foreing_countries FOREIGN KEY (country_id) REFERENCES public.countries(id) NOT VALID;
+
+
+--
+-- Name: books_authors books_foreign_authors; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.books_authors
+    ADD CONSTRAINT books_foreign_authors FOREIGN KEY (author_id) REFERENCES public.authors(id);
+
+
+--
+-- Name: editions editons_foreign_books; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.editions
+    ADD CONSTRAINT editons_foreign_books FOREIGN KEY (book_id) REFERENCES public.books(id) NOT VALID;
+
+
+--
+-- Name: editions editons_foreign_publishers; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.editions
+    ADD CONSTRAINT editons_foreign_publishers FOREIGN KEY (publisher_id) REFERENCES public.publishers(id);
+
+
+--
+-- Name: journals journlas_foreing_publishers; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.journals
+    ADD CONSTRAINT journlas_foreing_publishers FOREIGN KEY (publisher_id) REFERENCES public.publishers(id) NOT VALID;
+
+
+--
+-- Name: papers_authors papers_foreign_authors; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.papers_authors
+    ADD CONSTRAINT papers_foreign_authors FOREIGN KEY (author_id) REFERENCES public.authors(id);
+
+
+--
+-- Name: publishers publishers_foreign_countries; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.publishers
+    ADD CONSTRAINT publishers_foreign_countries FOREIGN KEY (country_id) REFERENCES public.countries(id) NOT VALID;
+
+
+--
+-- PostgreSQL database dump complete
+--
+
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 14.8 (Debian 14.8-1.pgdg110+1)
+-- Dumped by pg_dump version 14.8 (Debian 14.8-1.pgdg110+1)
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
 
 --
 -- Data for Name: countries; Type: TABLE DATA; Schema: public; Owner: postgres
@@ -501,229 +693,6 @@ a017682e-9770-50f8-7cf6-709a09b2c381	732	EH	ESH	Western Sahara	Sahrawi, Sahrawia
 bb5d2496-992f-5c3e-1ab9-cba2c11ae31c	894	ZM	ZMB	Zambia	Zambian
 36a9d547-1a59-77b5-0359-f0173d3c794d	716	ZW	ZWE	Zimbabwe	Zimbabwean
 \.
-
-
---
--- Data for Name: editions; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.editions (id, year, publisher_id, physical_book, condition, resource, resource_types, created_at, updated_at) FROM stdin;
-\.
-
-
---
--- Data for Name: journals; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.journals (id, name, image, publisher_id, foundation_year, created_at, updated_at) FROM stdin;
-\.
-
-
---
--- Data for Name: papers; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.papers (id, title, authors_ids, journal_id, journal_volume, initial_page, end_page, publish_year, resource, created_at, updated_at) FROM stdin;
-\.
-
-
---
--- Data for Name: papers_authors; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.papers_authors (paper_id, author_id) FROM stdin;
-\.
-
-
---
--- Data for Name: publishers; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.publishers (id, name, city, country_id, foundation_year, created_at, updated_at) FROM stdin;
-\.
-
-
---
--- Name: countries_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.countries_seq', 1, false);
-
-
---
--- Name: authors authors_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.authors
-    ADD CONSTRAINT authors_pkey PRIMARY KEY (id);
-
-
---
--- Name: books_authors books_authors_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.books_authors
-    ADD CONSTRAINT books_authors_pkey PRIMARY KEY (book_id, author_id);
-
-
---
--- Name: books_edtions books_edtions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.books_edtions
-    ADD CONSTRAINT books_edtions_pkey PRIMARY KEY (book_id, edition_id);
-
-
---
--- Name: books books_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.books
-    ADD CONSTRAINT books_pkey PRIMARY KEY (id);
-
-
---
--- Name: countries countries_alpha_2_code_key; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.countries
-    ADD CONSTRAINT countries_alpha_2_code_key UNIQUE (alpha_2_code);
-
-
---
--- Name: countries countries_alpha_3_code_key; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.countries
-    ADD CONSTRAINT countries_alpha_3_code_key UNIQUE (alpha_3_code);
-
-
---
--- Name: countries countries_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.countries
-    ADD CONSTRAINT countries_pkey PRIMARY KEY (id);
-
-
---
--- Name: editions editions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.editions
-    ADD CONSTRAINT editions_pkey PRIMARY KEY (id);
-
-
---
--- Name: journals journals_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.journals
-    ADD CONSTRAINT journals_pkey PRIMARY KEY (id);
-
-
---
--- Name: papers_authors paper_authors_primary; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.papers_authors
-    ADD CONSTRAINT paper_authors_primary PRIMARY KEY (paper_id, author_id);
-
-
---
--- Name: papers papers_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.papers
-    ADD CONSTRAINT papers_pkey PRIMARY KEY (id);
-
-
---
--- Name: publishers publishers_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.publishers
-    ADD CONSTRAINT publishers_pkey PRIMARY KEY (id);
-
-
---
--- Name: books_authors authors_foreign_books; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.books_authors
-    ADD CONSTRAINT authors_foreign_books FOREIGN KEY (book_id) REFERENCES public.books(id);
-
-
---
--- Name: papers_authors authors_foreign_papers; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.papers_authors
-    ADD CONSTRAINT authors_foreign_papers FOREIGN KEY (paper_id) REFERENCES public.papers(id);
-
-
---
--- Name: authors authors_foreing_countries; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.authors
-    ADD CONSTRAINT authors_foreing_countries FOREIGN KEY (country_id) REFERENCES public.countries(id) NOT VALID;
-
-
---
--- Name: books_authors books_foreign_authors; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.books_authors
-    ADD CONSTRAINT books_foreign_authors FOREIGN KEY (author_id) REFERENCES public.authors(id);
-
-
---
--- Name: books_edtions books_foreign_editions; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.books_edtions
-    ADD CONSTRAINT books_foreign_editions FOREIGN KEY (edition_id) REFERENCES public.editions(id);
-
-
---
--- Name: books_edtions editions_foreign_books; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.books_edtions
-    ADD CONSTRAINT editions_foreign_books FOREIGN KEY (book_id) REFERENCES public.books(id);
-
-
---
--- Name: editions editons_foreign_publishers; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.editions
-    ADD CONSTRAINT editons_foreign_publishers FOREIGN KEY (publisher_id) REFERENCES public.publishers(id);
-
-
---
--- Name: journals journlas_foreing_publishers; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.journals
-    ADD CONSTRAINT journlas_foreing_publishers FOREIGN KEY (publisher_id) REFERENCES public.publishers(id) NOT VALID;
-
-
---
--- Name: papers_authors papers_foreign_authors; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.papers_authors
-    ADD CONSTRAINT papers_foreign_authors FOREIGN KEY (author_id) REFERENCES public.authors(id);
-
-
---
--- Name: publishers publishers_foreign_countries; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.publishers
-    ADD CONSTRAINT publishers_foreign_countries FOREIGN KEY (country_id) REFERENCES public.countries(id) NOT VALID;
 
 
 --
