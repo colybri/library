@@ -127,8 +127,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # BuildKit with the GitHub Actions cache: layers are reused between runs.
+      # Nothing is pushed to any registry (push: false, load into the local daemon).
+      - uses: docker/setup-buildx-action@v3
+
       - name: Build the PHP image
-        run: docker build --target library_php -t library-php:ci .
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: library_php
+          tags: library-php:ci
+          load: true
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: PHP is at least 8.4.27 and FPM upload progress is off
         run: |
@@ -149,7 +161,25 @@ jobs:
           fi
 
       - name: Build the development image (PCOV)
-        run: docker build --target library_php_dev -t library-php-dev:ci .
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: library_php_dev
+          tags: library-php-dev:ci
+          load: true
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Editing the code does not rebuild the development image
+        run: |
+          echo "// cache check" >> src/Kernel.php
+          docker buildx build --target library_php_dev --progress=plain . 2>&1 | tee dev-rebuild.log
+          git checkout -- src/Kernel.php
+          # pecl prints this only when it really compiles an extension.
+          if grep -q "Build process completed successfully" dev-rebuild.log; then
+            echo "A code change recompiled PHP extensions: the development image must not depend on the code"; exit 1
+          fi
 
       - name: make report works inside the development image
         run: |
@@ -163,8 +193,19 @@ jobs:
             test -f gen/metrics/index.html'
 
       - name: Xdebug variant builds
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: library_php_dev
+          build-args: COVERAGE_DRIVER=xdebug
+          tags: library-php-xdebug:ci
+          load: true
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Xdebug is loaded
         run: |
-          docker build --target library_php_dev --build-arg COVERAGE_DRIVER=xdebug -t library-php-xdebug:ci .
           docker run --rm --entrypoint php library-php-xdebug:ci -m | grep -qix xdebug
 
   security:
