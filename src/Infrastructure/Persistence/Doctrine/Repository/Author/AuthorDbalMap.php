@@ -9,13 +9,15 @@ use Colybri\Library\Domain\Model\Author\ValueObject\AuthorBornAt;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorDeathAt;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorFirstName;
 use Colybri\Library\Domain\Model\Author\ValueObject\AuthorIsPseudonymOf;
+use Colybri\Library\Domain\Model\Author\ValueObject\AuthorLastName;
 use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 
 final class AuthorDbalMap implements EntityMap
 {
     private const FIELDS = [
         Uuid::class => 'id',
-        AuthorFirstName::class => 'name',
+        AuthorFirstName::class => 'first_name',
+        AuthorLastName::class => 'last_name',
         AuthorIsPseudonymOf::class => 'is_pseudonym_of',
         AuthorBornAt::class => 'born_year',
         AuthorDeathAt::class => 'death_year'

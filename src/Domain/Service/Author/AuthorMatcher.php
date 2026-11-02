@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Colybri\Library\Domain\Service\Author;
 
 use Colybri\Criteria\Domain\Criteria;
+use Colybri\Criteria\Domain\Disjunction;
 use Colybri\Criteria\Domain\Filter;
 use Colybri\Criteria\Domain\FilterField;
 use Colybri\Criteria\Domain\FilterOperator;
@@ -48,15 +49,17 @@ final class AuthorMatcher
     {
         return new Criteria(
             Filters::from(
-                Filter::from(
-                    FilterField::from(AuthorFirstName::class),
-                    FilterOperator::Contains,
-                    FilterValue::from($keyword)
-                ),
-                Filter::from(
-                    FilterField::from(AuthorLastName::class),
-                    FilterOperator::Contains,
-                    FilterValue::from($keyword)
+                Disjunction::fromFilters(
+                    Filter::from(
+                        FilterField::from(AuthorFirstName::class),
+                        FilterOperator::Contains,
+                        FilterValue::from($keyword)
+                    ),
+                    Filter::from(
+                        FilterField::from(AuthorLastName::class),
+                        FilterOperator::Contains,
+                        FilterValue::from($keyword)
+                    )
                 )
             ),
             Order::none(),
