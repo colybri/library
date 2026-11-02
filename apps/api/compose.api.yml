@@ -1,0 +1,65 @@
+# The Symfony API: PHP-FPM and the nginx that serves it. Included from the
+# root docker-compose.yml (named compose.api.yml so that docker compose run
+# from this folder does not pick it up on its own and walks up to the root).
+# Paths are relative to this directory (apps/api/).
+services:
+  api:
+    build:
+      context: .
+      target: library_php_dev
+      args:
+        SYMFONY_VERSION: ${SYMFONY_VERSION:-7.4}
+        SKELETON: ${SKELETON:-symfony/skeleton}
+        STABILITY: ${STABILITY:-stable}
+        PHP_VERSION: 8.4.27
+        COVERAGE_DRIVER: ${COVERAGE_DRIVER:-pcov}
+    restart: unless-stopped
+    volumes:
+      - ./:/srv/app
+      # Whole repository, so GrumPHP can reach .git (it lives at the root, outside apps/api)
+      - ../../:/srv/repo
+      - php_socket:/var/run/php
+      - ../../var/xdebug:/tmp/xdebug
+      - ../../var/log:/srv/app/var/log
+      - ./docker/php/local.ini:/usr/local/etc/php/php.ini
+    working_dir: /srv/app
+    tty: true
+    healthcheck:
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+      test: ["CMD", "curl", "-f", "http://localhost"]
+    environment:
+      COMPOSER_NO_DEV: 0
+      SERVICE_NAME: library
+      SERVICE_TAGS: develop
+      # The repo is owned by the host user and the container runs as root, so git
+      # refuses it ("dubious ownership") and GrumPHP cannot find .git. Trust it.
+      GIT_CONFIG_COUNT: 1
+      GIT_CONFIG_KEY_0: safe.directory
+      GIT_CONFIG_VALUE_0: /srv/repo
+      # .git is at the repo root, outside /srv/app: tell GrumPHP where everything
+      # is, so git:init (run by composer install) writes the hook into the real
+      # .git/hooks with "cd apps/api" as exec path, whatever the current dir.
+      GRUMPHP_GIT_WORKING_DIR: /srv/repo
+      GRUMPHP_GIT_REPOSITORY_DIR: /srv/repo/.git
+      GRUMPHP_PROJECT_DIR: /srv/repo/apps/api
+
+  api_nginx:
+    restart: unless-stopped
+    build:
+      context: ./docker/nginx
+      target: webserver
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./:/srv/app
+      - php_socket:/var/run/php
+    depends_on:
+      - api
+
+volumes:
+  php_socket:
+    driver: local

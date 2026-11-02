@@ -11,7 +11,7 @@ default:
   extensions:
       Imbo\BehatApiExtension:
         apiClient:
-          base_uri: 'https://library_nginx'
+          base_uri: 'https://api_nginx'
           timeout: 5.0
           verify: false
       FriendsOfBehat\SymfonyExtension:
