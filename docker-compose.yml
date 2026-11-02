@@ -36,6 +36,12 @@ services:
       GIT_CONFIG_COUNT: 1
       GIT_CONFIG_KEY_0: safe.directory
       GIT_CONFIG_VALUE_0: /srv/repo
+      # .git is at the repo root, outside /srv/app: tell GrumPHP where everything
+      # is, so git:init (run by composer install) writes the hook into the real
+      # .git/hooks with "cd apps/api" as exec path, whatever the current dir.
+      GRUMPHP_GIT_WORKING_DIR: /srv/repo
+      GRUMPHP_GIT_REPOSITORY_DIR: /srv/repo/.git
+      GRUMPHP_PROJECT_DIR: /srv/repo/apps/api
 
   #Nginx Service
   library_nginx:
