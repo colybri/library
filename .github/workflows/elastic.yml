@@ -12,6 +12,7 @@ on:
   push:
     branches: [ master ]
     paths:
+      - 'docker/rabbit/**'
       - '.github/scripts/kibana-dashboards.mjs'
       - 'docker/compose.infra.yml'
       - 'docker/postgres/**'
@@ -30,6 +31,7 @@ on:
       - 'apps/api/src/Infrastructure/Messaging/**'
   pull_request:
     paths:
+      - 'docker/rabbit/**'
       - '.github/scripts/kibana-dashboards.mjs'
       - 'docker/compose.infra.yml'
       - 'docker/postgres/**'

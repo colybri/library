@@ -75,6 +75,8 @@ services:
     volumes:
       - amqp-data:/var/lib/rabbitmq
       - ./rabbit/enabled_plugins:/etc/rabbitmq/enabled_plugins
+      # Queue depth and consumers for Metricbeat (profile elastic)
+      - ./rabbit/90-library-metrics.conf:/etc/rabbitmq/conf.d/90-library-metrics.conf:ro
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_LOGIN}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
