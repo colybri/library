@@ -133,3 +133,28 @@ VOLUME /srv/app/var
 ENTRYPOINT ["docker-entrypoint"]
 CMD ["php-fpm"]
 
+
+# Development image: same as library_php plus a code coverage driver, so
+# `make report` works inside the container. Production keeps using the
+# library_php target and never ships PCOV or Xdebug.
+#
+#   docker build --target library_php_dev .                              # PCOV (default)
+#   docker build --target library_php_dev --build-arg COVERAGE_DRIVER=xdebug .
+#   docker build --target library_php_dev --build-arg COVERAGE_DRIVER=none .
+FROM library_php AS library_php_dev
+
+ARG COVERAGE_DRIVER=pcov
+ARG PCOV_VERSION=1.0.12
+
+RUN set -eux; \
+	apk add --no-cache --virtual .coverage-build-deps $PHPIZE_DEPS linux-headers; \
+	case "$COVERAGE_DRIVER" in \
+		pcov) pecl install pcov-${PCOV_VERSION}; docker-php-ext-enable pcov ;; \
+		xdebug) pecl install xdebug; docker-php-ext-enable xdebug ;; \
+		none) ;; \
+		*) echo "Unknown COVERAGE_DRIVER '$COVERAGE_DRIVER' (use pcov, xdebug or none)" >&2; exit 1 ;; \
+	esac; \
+	pecl clear-cache; \
+	apk del .coverage-build-deps
+
+COPY docker/php/conf.d/coverage.dev.ini $PHP_INI_DIR/conf.d/zz-coverage.ini
