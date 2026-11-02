@@ -65,9 +65,6 @@ if [ ! -f "$CERTS/elasticsearch/elasticsearch.crt" ]; then
 		  - name: kibana
 		    dns: [kibana, localhost]
 		    ip: [127.0.0.1]
-		  - name: apm_server
-		    dns: [apm_server, localhost]
-		    ip: [127.0.0.1]
 	YAML
 	bin/elasticsearch-certutil cert --silent --pem \
 		--in "$CERTS/instances.yml" \
@@ -75,6 +72,25 @@ if [ ! -f "$CERTS/elasticsearch/elasticsearch.crt" ]; then
 		-out "$CERTS/certs.zip"
 	unzip -q -o "$CERTS/certs.zip" -d "$CERTS"
 	rm "$CERTS/certs.zip"
+fi
+
+# Its own block: stacks created before the APM Server have no certificate for
+# it. The name has a hyphen because PHP rejects URLs whose host has "_", so
+# the API reaches the server through the network alias apm-server.
+if [ ! -f "$CERTS/apm-server/apm-server.crt" ]; then
+	log "Creating the APM Server certificate"
+	cat > "$CERTS/instances-apm.yml" <<-'YAML'
+		instances:
+		  - name: apm-server
+		    dns: [apm-server, apm_server, localhost]
+		    ip: [127.0.0.1]
+	YAML
+	bin/elasticsearch-certutil cert --silent --pem \
+		--in "$CERTS/instances-apm.yml" \
+		--ca-cert "$CERTS/ca/ca.crt" --ca-key "$CERTS/ca/ca.key" \
+		-out "$CERTS/apm-certs.zip"
+	unzip -q -o "$CERTS/apm-certs.zip" -d "$CERTS"
+	rm "$CERTS/apm-certs.zip"
 fi
 
 # The Elastic images run as uid 1000, gid 0: group root must read the files.
