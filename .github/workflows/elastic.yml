@@ -155,17 +155,24 @@ jobs:
       - name: elastic_setup can run again (idempotent)
         run: docker compose --profile elastic run --rm --no-deps elastic_setup
 
-      - name: The APM Server answers over TLS
+      - name: The APM Server answers over TLS and requires the token
         run: |
-          # 401: up, and it rejects requests without the secret token
+          code=
           for i in $(seq 1 30); do
             code=$(curl --silent --output /dev/null --write-out '%{http_code}' --cacert var/elastic-ca.crt https://localhost:8200/ || true)
-            [ "$code" = 401 ] && exit 0
+            [ "$code" = 200 ] && break
             sleep 5
           done
-          echo "::error::The APM Server did not answer 401 (last code: $code)"
-          docker compose --profile elastic logs apm_server
-          exit 1
+          if [ "$code" != 200 ]; then
+            echo "::error::The APM Server did not answer (last code: $code)"
+            docker compose --profile elastic logs apm_server
+            exit 1
+          fi
+          # Sending traces without the secret token is rejected
+          code=$(curl --silent --output /dev/null --write-out '%{http_code}' --cacert var/elastic-ca.crt \
+            -X POST -H 'Content-Type: application/x-protobuf' --data-binary '' https://localhost:8200/v1/traces)
+          echo "OTLP without token: $code"
+          test "$code" = 401
 
       - name: Load the schema and wait for the API and its consumers
         run: |
