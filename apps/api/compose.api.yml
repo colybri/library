@@ -28,8 +28,10 @@ services:
       interval: 10s
       timeout: 3s
       retries: 3
-      start_period: 30s
-      test: ["CMD", "curl", "-f", "http://localhost"]
+      start_period: 60s
+      # PHP-FPM ping over its socket (docker/php/docker-healthcheck.sh). Nothing
+      # listens on port 80 in this container: nginx is api_nginx.
+      test: ["CMD", "docker-healthcheck"]
     environment:
       COMPOSER_NO_DEV: 0
       SERVICE_NAME: library
@@ -66,8 +68,10 @@ services:
       start_period: 60s
       test: ["CMD", "library-consumers-healthcheck"]
     depends_on:
+      # api is healthy once its entrypoint ran composer install and the
+      # migrations and PHP-FPM answers.
       api:
-        condition: service_started
+        condition: service_healthy
       rabbitmq:
         condition: service_healthy
     environment:
