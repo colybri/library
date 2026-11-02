@@ -6,7 +6,11 @@ DOCKER_COMP = USER_ID=$$(id -u) GROUP_ID=$$(id -g) docker compose
 CONT_IP     = docker inspect --format="{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}"
 
 .DEFAULT_GOAL = help
-.PHONY        = help build up start stop down logs ps pgadmin rabbit
+# Every profile, so stop/down/ps also reach the Elastic stack when it runs
+DOCKER_ALL  = $(DOCKER_COMP) --profile elastic
+ELASTIC_SERVICES = elastic_setup elasticsearch kibana
+
+.PHONY        = help build up start stop down logs ps pgadmin rabbit elastic-up elastic-down elastic-reset elastic-ca elastic-logs kibana
 
 ## —— The Library monorepo ———————————————————————————————————————————————————
 help: ## Outputs this help screen (app targets: make api-help)
@@ -22,16 +26,16 @@ up: ## Start every app and the infrastructure in detached mode (no logs)
 start: build up ## Build and start the containers
 
 stop: ## Stop the containers
-	@$(DOCKER_COMP) stop
+	@$(DOCKER_ALL) stop
 
 down: ## Remove the containers
-	@$(DOCKER_COMP) down --remove-orphans
+	@$(DOCKER_ALL) down --remove-orphans
 
 logs: ## Show live logs
 	@$(DOCKER_COMP) logs --tail=0 --follow
 
 ps: ## List the containers
-	@$(DOCKER_COMP) ps
+	@$(DOCKER_ALL) ps
 
 ## —— Infrastructure ——————————————————————————————————————————————————————————
 pgadmin: ## Open pgadmin on browser
@@ -39,6 +43,29 @@ pgadmin: ## Open pgadmin on browser
 
 rabbit: ## Open the RabbitMQ management UI on browser
 	@xdg-open http://$$($(CONT_IP) $$($(DOCKER_COMP) ps -q rabbitmq)):15672
+
+## —— Elastic stack (profile elastic) ———————————————————————————————————————
+elastic-up: ## Start everything plus Elasticsearch and Kibana (https://localhost:5601)
+	@$(DOCKER_ALL) up --detach
+
+elastic-down: ## Stop and remove only the Elastic stack, keeping its data
+	@$(DOCKER_ALL) rm --stop --force $(ELASTIC_SERVICES)
+
+elastic-reset: ## Delete every Elastic document (volume elastic_data); certificates are kept
+	@printf "This deletes every document stored in Elasticsearch. Continue? [y/N] "; read answer; [ "$$answer" = "y" ]
+	@$(DOCKER_ALL) rm --stop --force $(ELASTIC_SERVICES)
+	@docker volume rm --force library_elastic_data library_kibana_data
+
+elastic-ca: ## Copy the local CA to var/elastic-ca.crt, to trust it in your browser
+	@mkdir -p var
+	@$(DOCKER_ALL) cp elasticsearch:/usr/share/elasticsearch/config/certs/ca/ca.crt var/elastic-ca.crt
+	@echo "CA written to var/elastic-ca.crt"
+
+elastic-logs: ## Show live logs of the Elastic stack
+	@$(DOCKER_ALL) logs --tail=50 --follow $(ELASTIC_SERVICES)
+
+kibana: ## Open Kibana on browser (user elastic, password ELASTIC_PASSWORD from .env)
+	@xdg-open https://localhost:5601
 
 ## —— Apps ————————————————————————————————————————————————————————————————————
 api-%: ## Run a target of apps/api/Makefile, example: make api-test

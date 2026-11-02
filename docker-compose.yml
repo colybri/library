@@ -2,8 +2,11 @@
 # app and the shared infrastructure. Variables come from the root .env (see
 # .env.dist). Each included file resolves its relative paths from its own
 # directory. Requires Docker Compose 2.20 or later.
+# The Elastic stack (docker/compose.elastic.yml) is in the "elastic" profile:
+# `make up` leaves it off, `make elastic-up` starts it as well.
 name: library
 
 include:
   - docker/compose.infra.yml
+  - docker/compose.elastic.yml
   - apps/api/compose.api.yml
