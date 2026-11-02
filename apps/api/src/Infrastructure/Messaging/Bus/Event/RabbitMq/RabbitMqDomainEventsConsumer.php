@@ -17,6 +17,9 @@ use Colybri\Library\Domain\Messaging\DomainEventSubscriber;
 
 final class RabbitMqDomainEventsConsumer
 {
+    /** @var array<string, true> Queues that already have a consumer registered on the channel */
+    private array $registeredQueues = [];
+
     public function __construct(
         private readonly RabbitMqConnection $connection,
         private readonly DomainEventMapping $mapping,
@@ -25,10 +28,18 @@ final class RabbitMqDomainEventsConsumer
     ) {
     }
 
+    /**
+     * Processes messages until the queue stays empty for the connection read
+     * timeout. Calling it again for the same queue reuses the consumer already
+     * registered (AMQP_JUST_CONSUME), so a long-running loop keeps one consumer.
+     */
     public function consume(string $queueName): void
     {
+        $flags = isset($this->registeredQueues[$queueName]) ? AMQP_JUST_CONSUME : AMQP_NOPARAM;
+        $this->registeredQueues[$queueName] = true;
+
         try {
-            $this->connection->queue($queueName)->consume($this->consumer());
+            $this->connection->queue($queueName)->consume($this->consumer(), $flags);
         } catch (AMQPQueueException $error) {
             // We don't want to raise an error if there are no messages in the queue
         }

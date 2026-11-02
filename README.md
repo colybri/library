@@ -17,6 +17,7 @@ flowchart LR
         subgraph api["apps/api/compose.api.yml"]
             nginx["api_nginx<br/>Nginx :80 / :443"]
             php["api<br/>PHP-FPM + Symfony"]
+            consumers["api_consumers<br/>supervisord"]
         end
         subgraph infra["docker/compose.infra.yml"]
             postgres[("postgres<br/>PostgreSQL 14")]
@@ -31,6 +32,8 @@ flowchart LR
     php --> postgres
     php --> rabbit
     php --> redis
+    rabbit --> consumers
+    consumers --> postgres
     pgadmin --> postgres
 ```
 
@@ -39,6 +42,7 @@ flowchart LR
 | Servicio | Fichero | Puertos en el host | Función |
 |---|---|---|---|
 | `api` | [apps/api/compose.api.yml](apps/api/compose.api.yml) | Ninguno | PHP-FPM con la API |
+| `api_consumers` | [apps/api/compose.api.yml](apps/api/compose.api.yml) | Ninguno | Consumidores de RabbitMQ: supervisord con un proceso por suscriptor |
 | `api_nginx` | [apps/api/compose.api.yml](apps/api/compose.api.yml) | 80, 443 | Servidor web de la API (certificado autofirmado en 443) |
 | `postgres` | [docker/compose.infra.yml](docker/compose.infra.yml) | 5432 | PostgreSQL 14 con SSL |
 | `rabbitmq` | [docker/compose.infra.yml](docker/compose.infra.yml) | 5672, 15672 | RabbitMQ con el plugin de gestión |

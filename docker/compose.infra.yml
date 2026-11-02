@@ -47,6 +47,12 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_LOGIN}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 20s
 
 # Elastic stack, disabled. Service names still use the old library_* prefix.
 #  library_elastic:

@@ -107,6 +107,10 @@ final class GenerateSupervisorRabbitMqConsumerFilesCommand extends Command
             exitcodes    = 2
             stopwaitsecs = 300
             autostart    = true
+            ; Logs go to the container output, so docker compose logs shows them
+            redirect_stderr         = true
+            stdout_logfile          = /dev/stdout
+            stdout_logfile_maxbytes = 0
 
             EOF;
     }

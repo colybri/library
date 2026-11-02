@@ -4,7 +4,7 @@
 # Paths are relative to this directory (apps/api/).
 services:
   api:
-    build:
+    build: &api_build
       context: .
       target: library_php_dev
       args:
@@ -45,6 +45,34 @@ services:
       GRUMPHP_GIT_WORKING_DIR: /srv/repo
       GRUMPHP_GIT_REPOSITORY_DIR: /srv/repo/.git
       GRUMPHP_PROJECT_DIR: /srv/repo/apps/api
+
+  # RabbitMQ consumers: same image and code as api, but runs supervisord with
+  # one program per domain event subscriber (docker/php/library-consumers.sh)
+  # instead of PHP-FPM. Long-running PHP: restart it after changing a
+  # subscriber (make api-consumers-restart).
+  api_consumers:
+    build: *api_build
+    command: ["library-consumers"]
+    restart: unless-stopped
+    volumes:
+      - ./:/srv/app
+      - ../../var/log:/srv/app/var/log
+      - ./docker/php/local.ini:/usr/local/etc/php/php.ini
+    working_dir: /srv/app
+    healthcheck:
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+      test: ["CMD", "library-consumers-healthcheck"]
+    depends_on:
+      api:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      SERVICE_NAME: library-consumers
+      SERVICE_TAGS: develop
 
   api_nginx:
     restart: unless-stopped

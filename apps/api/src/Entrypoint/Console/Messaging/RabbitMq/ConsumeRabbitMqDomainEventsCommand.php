@@ -23,15 +23,19 @@ final class ConsumeRabbitMqDomainEventsCommand extends Command
     protected function configure(): void
     {
         $this->setName(self::NAME)
-            ->setDescription('Consume domain events from the RabbitMQ')
+            ->setDescription('Consume domain events from a RabbitMQ queue until the process is stopped')
             ->addArgument('queue', InputArgument::REQUIRED, 'Queue name');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $queueName = (string)$input->getArgument('queue');
-        $this->consumer->consume($queueName);
 
-        return Command::SUCCESS;
+        // consume() returns when the queue stays empty for the read timeout;
+        // keep waiting. Supervisor stops the process with a signal, and a
+        // message is only acknowledged after its subscribers ran.
+        for (;;) {
+            $this->consumer->consume($queueName);
+        }
     }
 }
