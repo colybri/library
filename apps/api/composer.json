@@ -84,7 +84,10 @@
     "autoload": {
         "psr-4": {
             "Colybri\\Library\\": "src/"
-        }
+        },
+        "files": [
+            "config/opentelemetry.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
