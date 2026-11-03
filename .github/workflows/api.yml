@@ -196,6 +196,26 @@ jobs:
           docker rm -f fpm
           [ "$healthy" = 1 ] || { echo "docker-healthcheck does not reach PHP-FPM"; exit 1; }
 
+      - name: Production image runs on its own as www-data
+        run: |
+          check() { docker run --rm --entrypoint sh library-php:ci -c "$1"; }
+          test "$(check 'id -un')" = www-data
+          check 'test -f vendor/autoload_runtime.php && test -f var/cache/prod/Colybri_Library_KernelProdContainer.preload.php'
+          check 'test ! -e .env && test ! -d tests && ! ls config/jwt/*.pem 2>/dev/null'
+          check '! command -v composer && ! command -v git && ! command -v symfony'
+          test "$(docker run --rm --entrypoint php library-php:ci -r 'echo ini_get("opcache.validate_timestamps");')" = 0
+          docker run --rm library-php:ci bin/console about --no-ansi | grep -E "Environment +prod"
+          # A real request through PHP-FPM: Symfony answers 404 for an unknown route
+          docker run -d --name fpm-prod library-php:ci
+          for i in $(seq 15); do docker exec fpm-prod docker-healthcheck >/dev/null 2>&1 && break; sleep 1; done
+          docker exec fpm-prod env -i REQUEST_METHOD=GET REQUEST_URI=/no-such-route SCRIPT_NAME=/index.php \
+            SCRIPT_FILENAME=/srv/app/public/index.php SERVER_NAME=localhost \
+            cgi-fcgi -bind -connect /var/run/php/php-fpm.sock > response.txt || true
+          docker logs fpm-prod
+          docker rm -f fpm-prod
+          head -5 response.txt
+          grep -q "^Status: 404" response.txt || { echo "The production image did not serve a Symfony response"; exit 1; }
+
       - name: Production image loads the amqp, redis and opentelemetry extensions
         run: |
           docker run --rm --entrypoint php library-php:ci -m > modules.txt

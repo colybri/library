@@ -144,9 +144,10 @@ bin/console library:rabbit:configure
 
 | Etapa | Uso |
 |---|---|
-| `library_php_base` | PHP 8.4.27 FPM Alpine con extensiones, Composer y Symfony CLI, sin código |
-| `library_php_dev` | Desarrollo (la que usa compose). Añade un driver de cobertura: `COVERAGE_DRIVER=pcov` (por defecto), `xdebug` o `none` |
-| `library_php` | Producción: base más el código de la aplicación. Nunca incluye PCOV ni Xdebug |
+| `library_php_base` | PHP 8.4.27 FPM Alpine con extensiones y configuración de PHP-FPM, sin código ni herramientas de desarrollo |
+| `library_php_vendor` | Solo de construcción: `composer install --no-dev`, autoload optimizado y `cache:warmup` de `prod` |
+| `library_php_dev` | Desarrollo (la que usa compose). Añade Composer, Symfony CLI, git y un driver de cobertura: `COVERAGE_DRIVER=pcov` (por defecto), `xdebug` o `none` |
+| `library_php` | Producción: base más la aplicación construida (con `vendor/` y la caché calentada), `symfony.prod.ini` (OPcache sin comprobar ficheros y preload) y usuario `www-data`. Funciona sin montar nada y nunca incluye PCOV, Xdebug, Composer ni git |
 
 Al arrancar, el entrypoint del contenedor `api` ejecuta `composer install` (fuera de `prod`) y espera a que la base de datos responda ([docker/php/docker-entrypoint.sh](docker/php/docker-entrypoint.sh)).
 
@@ -168,6 +169,12 @@ La imagen de producción se construye, desde la raíz, con:
 
 ```bash
 docker build --target library_php -t library-php apps/api
+```
+
+La imagen no lleva `.env` ni las claves JWT (`config/jwt/*.pem`): la configuración llega por variables de entorno y las claves se montan al arrancar. Por ejemplo:
+
+```bash
+docker run --env-file apps/api/.env -v "$PWD/apps/api/config/jwt:/srv/app/config/jwt:ro" library-php
 ```
 
 ## Acceso a la aplicación
