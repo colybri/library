@@ -1,14 +1,17 @@
-FROM postgres:14.8-bullseye AS library_postgres
+FROM postgres:14.24-bookworm AS library_postgres
 
+# openssl generates the server certificate on first start (docker-ssl-entrypoint.sh)
+RUN set -eux; \
+	apt-get update; \
+	apt-get install -y --no-install-recommends openssl; \
+	rm -rf /var/lib/apt/lists/*
 
-COPY ./ca/server.key /var/lib/postgresql
-COPY ./ca/server.crt /var/lib/postgresql
-
-RUN chown root:postgres /var/lib/postgresql/server.key /var/lib/postgresql/server.crt
-RUN chmod 640 /var/lib/postgresql/server.key /var/lib/postgresql/server.crt
-
-COPY  postgresql.conf /var/lib/postgresql/data/
+COPY postgresql.conf /var/lib/postgresql/data/
 
 # Log folder (volume postgres_logs): Postgres writes it, Filebeat reads it
 RUN mkdir -p /var/log/postgresql && chown postgres:postgres /var/log/postgresql && chmod 750 /var/log/postgresql
 
+COPY --chmod=755 docker-ssl-entrypoint.sh /usr/local/bin/docker-ssl-entrypoint.sh
+
+ENTRYPOINT ["docker-ssl-entrypoint.sh"]
+CMD ["postgres"]

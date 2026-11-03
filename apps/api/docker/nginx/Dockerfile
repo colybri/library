@@ -1,4 +1,4 @@
-FROM nginx:alpine AS webserver
+FROM nginx:1.30.6-alpine AS webserver
 
 
 RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
