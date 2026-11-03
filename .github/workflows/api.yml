@@ -76,7 +76,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:14
+        image: postgres:14.24-bookworm
         env:
           POSTGRES_USER: library
           POSTGRES_PASSWORD: library
@@ -86,7 +86,7 @@ jobs:
           --health-cmd "pg_isready -U library"
           --health-interval 5s --health-timeout 5s --health-retries 10
       rabbitmq:
-        image: rabbitmq:3.13
+        image: rabbitmq:4.4.0
         ports: [ '5672:5672' ]
         options: >-
           --health-cmd "rabbitmq-diagnostics -q ping"
@@ -287,6 +287,40 @@ jobs:
       - name: Xdebug is loaded
         run: |
           docker run --rm --entrypoint php library-php-xdebug:ci -m | grep -qix xdebug
+
+  postgres-image:
+    name: Postgres image generates its TLS certificate
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: docker/postgres
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: No private key in the repository
+        working-directory: .
+        run: |
+          if git ls-files | grep -E '\.(key|pem)$'; then
+            echo "Private keys must not be committed"; exit 1
+          fi
+
+      - name: Build the image
+        run: docker build -t library-postgres:ci .
+
+      - name: Starts with SSL on and a generated certificate
+        run: |
+          docker run -d --name pg -e POSTGRES_PASSWORD=ci library-postgres:ci \
+            -c ssl=on \
+            -c ssl_cert_file=/var/lib/postgresql/ssl/server.crt \
+            -c ssl_key_file=/var/lib/postgresql/ssl/server.key
+          for i in $(seq 1 30); do
+            docker exec pg pg_isready -U postgres -h 127.0.0.1 >/dev/null 2>&1 && break
+            sleep 1
+          done
+          docker logs pg 2>&1 | tail -20
+          test "$(docker exec pg psql -U postgres -tAc 'show ssl')" = on
+          docker exec -e PGSSLMODE=require -e PGPASSWORD=ci pg psql -U postgres -h 127.0.0.1 -tAc 'select ssl from pg_stat_ssl where pid = pg_backend_pid()' | grep -qx t
+          docker exec pg stat -c '%U %a' /var/lib/postgresql/ssl/server.key | grep -qx 'postgres 600'
 
   security:
     name: Dependency audit

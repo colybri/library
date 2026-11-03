@@ -30,3 +30,16 @@ helm/
 public/bundles/
 var/
 vendor/
+# Secrets: never baked into an image (mount them at runtime)
+.env
+config/jwt/*.pem
+# Not needed at runtime; excluding them also keeps the code layer cached
+tests/
+docs/
+gen/
+.redocly.yaml
+behat.yml
+grumphp.yml
+phpcs.xml
+phpstan.neon
+phpunit.xml.dist

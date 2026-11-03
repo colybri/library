@@ -8,14 +8,14 @@ services:
     restart: unless-stopped
     # Logs go to files that Filebeat reads (profile elastic): one per weekday,
     # overwritten a week later. Slow statements (>= 200 ms) are logged too.
-    # Passed as flags: the image's postgresql.conf is hidden by the data volume.
+    # Settings are passed as flags (there is no custom postgresql.conf).
     command:
       - -c
       - ssl=on
       - -c
-      - ssl_cert_file=/var/lib/postgresql/server.crt
+      - ssl_cert_file=/var/lib/postgresql/ssl/server.crt
       - -c
-      - ssl_key_file=/var/lib/postgresql/server.key
+      - ssl_key_file=/var/lib/postgresql/ssl/server.key
       - -c
       - logging_collector=on
       - -c
@@ -45,7 +45,7 @@ services:
       - 5432:5432
 
   pgadmin:
-    image: dpage/pgadmin4:latest
+    image: dpage/pgadmin4:9.19.0
     restart: unless-stopped
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
@@ -54,7 +54,7 @@ services:
       - 5050:5050
 
   redis:
-    image: redis:alpine
+    image: redis:8.10.3-alpine
     restart: unless-stopped
     ports:
       - "6379:6379"
@@ -63,7 +63,7 @@ services:
       - ../redis_data:/data/redis
 
   rabbitmq:
-    image: rabbitmq:latest
+    image: rabbitmq:4.4.0
     restart: unless-stopped
     ports:
       - 5672:5672
