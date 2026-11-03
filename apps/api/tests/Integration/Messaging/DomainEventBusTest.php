@@ -59,7 +59,8 @@ final class DomainEventBusTest extends KernelTestCase
         self::getContainer()->get(RabbitConfigurator::class)->configure($this->exchange, $this->subscriber());
 
         $spy = $this->rabbit->queue(self::SPY_QUEUE);
-        $spy->setFlags(AMQP_AUTODELETE);
+        // Exclusive: RabbitMQ 4.3+ refuses transient non-exclusive queues (transient_nonexcl_queues)
+        $spy->setFlags(AMQP_EXCLUSIVE | AMQP_AUTODELETE);
         $spy->declareQueue();
         $spy->bind($this->exchange, '#');
         $spy->purge();
