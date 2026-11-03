@@ -35,7 +35,7 @@ final class BookCreatedTest extends TestCase
         );
 
         self::assertSame([self::AUTHOR_ID], $event->messagePayload()[BookCreated::BOOK_AUTHORS_PAYLOAD]);
-        self::assertTrue(Uuid::from(self::AUTHOR_ID)->equalTo($event->authorIds()->items()[0]));
+        self::assertTrue(Uuid::from(self::AUTHOR_ID)->equalTo($event->authorIds()->value()[0]));
     }
 
     #[Test]
@@ -57,6 +57,6 @@ final class BookCreatedTest extends TestCase
             ]
         );
 
-        self::assertTrue(Uuid::from(self::AUTHOR_ID)->equalTo($event->authorIds()->items()[0]));
+        self::assertTrue(Uuid::from(self::AUTHOR_ID)->equalTo($event->authorIds()->value()[0]));
     }
 }

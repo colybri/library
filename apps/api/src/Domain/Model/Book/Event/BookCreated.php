@@ -72,7 +72,7 @@ final class BookCreated extends DomainEvent
                 self::BOOK_ID_PAYLOAD => $id->value(),
                 self::BOOK_TITLE_PAYLOAD => $title->value(),
                 self::BOOK_SUBTITLE_PAYLOAD => $subtitle?->value(),
-                self::BOOK_AUTHORS_PAYLOAD => array_map(static fn (Uuid $authorId): string => $authorId->value(), $authorIds->items()),
+                self::BOOK_AUTHORS_PAYLOAD => array_map(static fn (Uuid $authorId): string => $authorId->value(), $authorIds->value()),
                 self::BOOK_PUBLISH_YEAR_PAYLOAD => $publishYear->value(),
                 self::BOOK_PUBLISH_YEAR_IS_ESTIMATED => $publishYearIsEstimated->value(),
                 self::BOOK_IS_PSEUDO_PAYLOAD => $isPseudo->value(),
