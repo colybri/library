@@ -6,8 +6,6 @@ RUN set -eux; \
 	apt-get install -y --no-install-recommends openssl; \
 	rm -rf /var/lib/apt/lists/*
 
-COPY postgresql.conf /var/lib/postgresql/data/
-
 # Log folder (volume postgres_logs): Postgres writes it, Filebeat reads it
 RUN mkdir -p /var/log/postgresql && chown postgres:postgres /var/log/postgresql && chmod 750 /var/log/postgresql
 
