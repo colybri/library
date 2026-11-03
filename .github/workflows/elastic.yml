@@ -211,16 +211,33 @@ jobs:
             [ "$status" = healthy ] || { docker compose logs "$service"; exit 1; }
           done
 
+      # Every /api/v1 route requires a JWT: keys, a user and a token
+      - name: Get a JWT
+        run: |
+          docker compose exec -T api bin/console lexik:jwt:generate-keypair --overwrite --no-interaction
+          # PHP-FPM workers must read the keys, whoever created them
+          docker compose exec -T api chmod 644 config/jwt/private.pem config/jwt/public.pem
+          docker compose exec -T api bin/console library:user:create "$(cat /proc/sys/kernel/random/uuid)" ci@example.com ci-password 1
+          token=$(curl --silent --show-error --fail -X POST http://localhost/api/v1/login_check \
+            -H 'Content-Type: application/json' -d '{"username":"ci@example.com","password":"ci-password"}' | jq -r .token)
+          test -n "$token" && test "$token" != null
+          echo "::add-mask::${token}"
+          echo "API_TOKEN=${token}" >> "$GITHUB_ENV"
+          # Without the token the API answers 401
+          code=$(curl --silent --output /dev/null --write-out '%{http_code}' http://localhost/api/v1/country/match?keywords=es)
+          test "$code" = "401"
+
       - name: Create an author through the API
         run: |
           author_id=$(cat /proc/sys/kernel/random/uuid)
           echo "AUTHOR_ID=${author_id}" >> "$GITHUB_ENV"
           code=$(curl --silent --show-error --output response.txt --write-out '%{http_code}' \
+            -H "Authorization: Bearer ${API_TOKEN}" \
             -X POST http://localhost/api/v1/author -H 'Content-Type: application/json' \
             -d "{\"id\":\"${author_id}\",\"firstName\":\"Emilia\",\"lastName\":\"Pardo Bazan\",\"countryId\":\"34d41de4-d197-8f63-5014-7c5e5e8f71e3\",\"isPseudonymOf\":null,\"bornAt\":1851,\"deathAt\":1921}")
           cat response.txt; echo
           test "$code" = "201"
-          curl --silent --show-error --fail "http://localhost/api/v1/author/${author_id}"
+          curl --silent --show-error --fail -H "Authorization: Bearer ${API_TOKEN}" "http://localhost/api/v1/author/${author_id}"
 
       - name: The request and its consumer share one trace in Elasticsearch
         run: |
@@ -230,7 +247,8 @@ jobs:
           }
           trace_id=""
           for i in $(seq 1 24); do
-            trace_id=$(search 'traces-apm*' '{"size":1,"query":{"bool":{"filter":[
+            # Latest POST: the author creation, not the earlier login_check
+            trace_id=$(search 'traces-apm*' '{"size":1,"sort":[{"@timestamp":"desc"}],"query":{"bool":{"filter":[
               {"term":{"service.name":"library-api"}},{"term":{"processor.event":"transaction"}},
               {"term":{"http.request.method":"POST"}}]}}}' | jq -r '.hits.hits[0]._source.trace.id // empty')
             [ -n "$trace_id" ] && break
@@ -421,7 +439,7 @@ jobs:
       - name: With the APM Server down the API still answers quickly
         run: |
           docker compose --profile elastic stop apm_server
-          time_total=$(curl --silent --output /dev/null --write-out '%{time_total}' "http://localhost/api/v1/author/${AUTHOR_ID}")
+          time_total=$(curl --silent --output /dev/null --write-out '%{time_total}' -H "Authorization: Bearer ${API_TOKEN}" "http://localhost/api/v1/author/${AUTHOR_ID}")
           echo "GET took ${time_total}s"
           awk -v t="$time_total" 'BEGIN { exit !(t < 2) }'
 
