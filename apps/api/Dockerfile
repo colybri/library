@@ -137,6 +137,10 @@ RUN set -eux; \
 # Production image.
 FROM library_php_base AS library_php
 
+LABEL org.opencontainers.image.title="library-php" \
+      org.opencontainers.image.description="Library API, PHP-FPM production image" \
+      org.opencontainers.image.source="https://github.com/colybri/library"
+
 ENV APP_ENV=prod
 ENV APP_DEBUG=0
 
@@ -159,6 +163,10 @@ CMD ["php-fpm"]
 #   docker build --target library_php_dev --build-arg COVERAGE_DRIVER=xdebug .
 #   docker build --target library_php_dev --build-arg COVERAGE_DRIVER=none .
 FROM library_php_base AS library_php_dev
+
+LABEL org.opencontainers.image.title="library-php-dev" \
+      org.opencontainers.image.description="Library API, development image with Composer and a coverage driver" \
+      org.opencontainers.image.source="https://github.com/colybri/library"
 
 # acl: setfacl in the entrypoint; git: Composer and GrumPHP
 RUN apk add --no-cache \

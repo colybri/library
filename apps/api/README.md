@@ -57,7 +57,7 @@ flowchart LR
     pgadmin --> postgres
 ```
 
-- **Nginx** (`api_nginx`) recibe las peticiones y las pasa a PHP-FPM por un socket compartido (volumen `php_socket`). Genera un certificado autofirmado al construir la imagen ([docker/nginx/Dockerfile](docker/nginx/Dockerfile)).
+- **Nginx** (`api_nginx`) recibe las peticiones y las pasa a PHP-FPM por un socket compartido (volumen `php_socket`). Genera un certificado autofirmado al arrancar, si no hay uno montado en `/etc/nginx/certificates` ([docker/nginx/15-self-signed-certificate.sh](docker/nginx/15-self-signed-certificate.sh)).
 - **Symfony** (`api`) resuelve la ruta, valida el JWT y despacha el comando o la consulta. Los controladores están en `src/Entrypoint/Controller/`, los casos de uso en `src/Application/` y el modelo en `src/Domain/`.
 - **PostgreSQL** guarda los datos del catálogo, los usuarios y los eventos de respaldo. No se usa el ORM, solo DBAL.
 - **RabbitMQ** recibe los eventos de dominio en el exchange definido por `RABBITMQ_EXCHANGE`. `library:rabbit:configure` crea las colas de cada suscriptor y `library:rabbit:consume` procesa cada una.

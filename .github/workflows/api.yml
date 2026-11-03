@@ -342,6 +342,52 @@ jobs:
           docker exec -e PGSSLMODE=require -e PGPASSWORD=ci pg psql -U postgres -h 127.0.0.1 -tAc 'select ssl from pg_stat_ssl where pid = pg_backend_pid()' | grep -qx t
           docker exec pg stat -c '%U %a' /var/lib/postgresql/ssl/server.key | grep -qx 'postgres 600'
 
+      - name: The image healthcheck reports healthy
+        run: |
+          for i in $(seq 1 30); do
+            status=$(docker inspect -f '{{.State.Health.Status}}' pg)
+            [ "$status" = healthy ] && break
+            sleep 2
+          done
+          docker rm -f pg
+          [ "$status" = healthy ] || { echo "Postgres healthcheck status: $status"; exit 1; }
+
+  nginx-image:
+    name: nginx image generates its TLS certificate
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api/docker/nginx
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the image
+        run: docker build -t library-nginx:ci .
+
+      - name: No certificate in the image
+        run: |
+          if docker run --rm --entrypoint sh library-nginx:ci -c 'ls /etc/nginx/certificates/*.pem' 2>/dev/null; then
+            echo "The certificate must be generated on start, not at build time"; exit 1
+          fi
+
+      - name: Starts, serves TLS and reports healthy
+        run: |
+          docker run -d --name web -p 8443:443 library-nginx:ci
+          for i in $(seq 1 30); do
+            status=$(docker inspect -f '{{.State.Health.Status}}' web)
+            [ "$status" = healthy ] && break
+            sleep 2
+          done
+          docker logs web 2>&1 | tail -20
+          [ "$status" = healthy ] || { echo "nginx healthcheck status: $status"; exit 1; }
+          # No code nor PHP-FPM behind it here (nginx answers 404): any HTTP
+          # status over TLS proves the generated certificate works.
+          code=$(curl -sk -o /dev/null -w '%{http_code}' https://127.0.0.1:8443/)
+          echo "HTTPS status: $code"
+          [ "$code" != 000 ] || { echo "No HTTPS response"; exit 1; }
+          docker exec web openssl x509 -noout -subject -enddate -in /etc/nginx/certificates/cert.pem
+          docker rm -f web
+
   security:
     name: Dependency audit
     runs-on: ubuntu-latest
