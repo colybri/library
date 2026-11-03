@@ -1,0 +1,7 @@
+name: isbn
+in: query
+required: false
+description: ISBN-10 or ISBN-13, with or without hyphens
+schema:
+  type: string
+example: '9783518396858'

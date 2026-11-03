@@ -1,0 +1,23 @@
+Error:
+  type: object
+  properties:
+    error:
+      type: string
+      description: Human-readable description of the error
+      examples: [ Resource not found ]
+  required: [ error ]
+ValidationError:
+  type: object
+  description: The request failed one or more validations
+  properties:
+    error:
+      type: string
+      examples: [ The following assertions failed ]
+    messages:
+      type: array
+      description: One message per failed assertion
+      items:
+        type: string
+      examples:
+        - [ '1) firstName: Value "" is empty, but non empty value was expected.' ]
+  required: [ error ]

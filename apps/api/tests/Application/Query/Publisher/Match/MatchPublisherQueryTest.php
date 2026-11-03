@@ -59,4 +59,21 @@ final class MatchPublisherQueryTest extends TestCase
             ]
         );
     }
+
+    #[Test]
+    public function given_offset_and_limit_from_the_query_string_when_query_is_invoke_then_they_are_integers(): void
+    {
+        // Query string values arrive as strings: ?keywords=Papua&offset=10&limit=20
+        $query = MatchPublisherQuery::fromPayload(
+            Uuid::v4(),
+            [
+                MatchPublisherQuery::KEYWORDS_PAYLOAD => $this->keywords,
+                MatchPublisherQuery::OFFSET_PAYLOAD => '10',
+                MatchPublisherQuery::LIMIT_PAYLOAD => '20',
+            ]
+        );
+
+        self::assertSame(10, $query->offset());
+        self::assertSame(20, $query->limit());
+    }
 }

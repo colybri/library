@@ -1,50 +1,49 @@
 Created:
-  description: Resource was created
+  description: Resource was created. The body is an empty JSON string.
   content:
-    application/json: {}
-
-Deleted:
-  description: Resource was deleted
-  content:
-    application/json: {}
+    application/json:
+      schema:
+        type: string
+        const: ''
 
 Updated:
   description: Resource was updated
-  content:
-    application/json: {}
+
+Deleted:
+  description: Resource was deleted
 
 InvalidArgument:
-  description: Invalid argument
+  description: The request contains an invalid argument
+  content:
+    application/json:
+      schema:
+        $ref: ../schemas/error.yml#/ValidationError
+
+Unauthorized:
+  description: The JWT is missing, invalid or expired
   content:
     application/json:
       schema:
         type: object
         properties:
-          error:
+          code:
+            type: integer
+            examples: [ 401 ]
+          message:
             type: string
-            examples:
-             - Request contains an invalid argument
+            examples: [ JWT Token not found ]
+        required: [ code, message ]
 
 NotFound:
-  description: Not found
+  description: The resource, or a resource it references, does not exist
   content:
     application/json:
       schema:
-        type: object
-        properties:
-          error:
-            type: string
-            examples:
-             - Resource not found
+        $ref: ../schemas/error.yml#/Error
 
 Conflict:
-  description: Logic exception
+  description: The request breaks a business rule, for example the resource already exists
   content:
     application/json:
       schema:
-        type: object
-        properties:
-          error:
-            type: string
-            examples:
-             - A logic exception ocurred
+        $ref: ../schemas/error.yml#/Error

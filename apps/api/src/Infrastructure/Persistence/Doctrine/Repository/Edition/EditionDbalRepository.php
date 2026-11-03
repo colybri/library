@@ -10,6 +10,7 @@ use Colybri\Library\Domain\Model\Edition\EditionRepository;
 use Colybri\Library\Domain\Model\Edition\ValueObject\EditionCity;
 use Colybri\Library\Domain\Model\Edition\ValueObject\EditionCondition;
 use Colybri\Library\Domain\Model\Edition\ValueObject\EditionGoogleBooksId;
+use Colybri\Library\Domain\Model\Edition\ValueObject\EditionImageUrl;
 use Colybri\Library\Domain\Model\Edition\ValueObject\EditionISBN;
 use Colybri\Library\Domain\Model\Edition\ValueObject\EditionIsOnLibrary;
 use Colybri\Library\Domain\Model\Edition\ValueObject\EditionLocale;
@@ -169,12 +170,12 @@ final class EditionDbalRepository extends DbalRepository implements EditionRepos
             EditionYear::from((int)$edition['year']),
             Uuid::from((string)$edition['publisher_id']),
             Uuid::from((string)$edition['book_id']),
-            EditionGoogleBooksId::from((string)$edition['google_id']),
+            null === $edition['google_id'] ? null : EditionGoogleBooksId::from((string)$edition['google_id']),
             EditionISBN::from((string)$edition['isbn']),
             EditionTitle::from((string)$edition['title']),
             null === $edition['subtitle'] ? null : EditionSubtitle::from((string)$edition['subtitle']),
             EditionLocale::from((string)$edition['locale']),
-            null,
+            null === $edition['image'] ? null : EditionImageUrl::from((string)$edition['image']),
             null === $edition['pages'] ? null : EditionPages::from((int)$edition['pages']),
             EditionCity::from((string)$edition['city']),
             EditionIsOnLibrary::from((bool)$edition['is_on_library']),

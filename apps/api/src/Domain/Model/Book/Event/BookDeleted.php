@@ -8,7 +8,7 @@ use Colybri\Library\Domain\VendorName;
 use Colybri\Library\Domain\ServiceName;
 use Colybri\Library\Domain\Messaging\DomainEvent;
 use Colybri\Library\Domain\Messaging\Message\ValueObject\MessageName;
-use Colybri\Library\Domain\Model\Author\Author;
+use Colybri\Library\Domain\Model\Book\Book;
 use PcComponentes\Ddd\Domain\Model\ValueObject\DateTimeValueObject;
 use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 
@@ -47,7 +47,7 @@ final class BookDeleted extends DomainEvent
             ServiceName::instance(),
             self::messageVersion(),
             self::messageType(),
-            Author::modelName(),
+            Book::modelName(),
             self::NAME
         );
     }

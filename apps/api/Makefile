@@ -5,8 +5,14 @@
 DOCKER_COMP = docker compose
 EXEC        = $(DOCKER_COMP) exec api
 
+DOCS_URL = https://localhost/docs/
+
+# Same versions as the docs job of .github/workflows/api.yml
+REDOCLY_VERSION  = 1.34.5
+ASYNCAPI_VERSION = 2.16.0
+
 .DEFAULT_GOAL = help
-.PHONY        = help sh consumers-logs consumers-restart consumers-status test test-integration behat grumphp lint fix report coverage dump restore composer console cc cache
+.PHONY: help sh consumers-logs consumers-restart consumers-status test test-integration behat grumphp lint docs docs-down docs-lint fix report coverage dump restore composer console cc cache
 
 ## —— The Library API ———————————————————————————————————————————————————————
 help: ## Outputs this help screen
@@ -46,6 +52,19 @@ lint: ## Run static quality analysis tools
 	@$(EXEC) ./vendor/bin/phpstan analyse -c phpstan.neon
 	@$(EXEC) ./vendor/bin/parallel-lint --exclude .git --exclude app --exclude vendor . --colors
 	@$(EXEC) ./vendor/bin/phpcs --standard=./phpcs.xml --error-severity=1 --warning-severity=8
+
+docs: ## Start Swagger UI of docs/openapi (profile docs) and open it in the browser
+	@$(DOCKER_COMP) --profile docs up -d api_docs
+	@echo "Swagger UI: $(DOCS_URL) (get a token with POST /api/v1/login_check and use Authorize)"
+	@(xdg-open $(DOCS_URL) || open $(DOCS_URL)) >/dev/null 2>&1 || true
+
+docs-down: ## Stop Swagger UI
+	@$(DOCKER_COMP) --profile docs stop api_docs
+
+docs-lint: ## Validate docs/openapi and docs/asyncapi (runs Node in Docker)
+	@docker run --rm -v $(CURDIR):/app -w /app node:22-alpine sh -c '\
+		npx --yes @redocly/cli@$(REDOCLY_VERSION) lint && \
+		npx --yes @asyncapi/cli@$(ASYNCAPI_VERSION) validate docs/asyncapi/asyncapi.yml'
 
 fix: ## Fix errors according to code standard
 	@$(EXEC) ./vendor/bin/phpcbf --standard=./phpcs.xml --error-severity=1 --warning-severity=8

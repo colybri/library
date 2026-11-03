@@ -1,0 +1,7 @@
+name: author
+in: query
+required: false
+description: Text contained in the name of an author
+schema:
+  type: string
+example: Jonas

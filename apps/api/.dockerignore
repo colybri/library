@@ -37,7 +37,7 @@ config/jwt/*.pem
 tests/
 docs/
 gen/
-.redocly.yaml
+redocly.yaml
 behat.yml
 grumphp.yml
 phpcs.xml

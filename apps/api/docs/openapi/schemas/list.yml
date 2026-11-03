@@ -1,38 +1,47 @@
-Authors:
+Page:
   type: object
-  properties: 
+  properties:
     total:
-      $ref: '#/total' 
+      type: integer
+      minimum: 0
+      description: Total number of items that match, across all pages
+      examples: [ 272 ]
     offset:
-      $ref: '#/offset' 
+      type: integer
+      minimum: 0
+      description: Position of the first item of this page
+      examples: [ 0 ]
     limit:
-      $ref: '#/limit' 
-    items:
-      type: array
-      items:
-        $ref: '../openapi.yml#/components/schemas/Author' 
-Countries:
-  type: array
-  properties: 
-    total:
-      $ref: '#/total' 
-    offset:
-      $ref: '#/offset' 
-    limit:
-      $ref: '#/limit' 
-    items:
-      type: array
-      items:
-        $ref: '../openapi.yml#/components/schemas/Country' 
-total:
-  type: integer
-  description: Total items
-  example: 272
-offset:
-  type: integer
-  description: Number for of first item of the list
-  example: 0
-limit:
-  type: integer
-  description: Number of max items on result
-  example: 1
+      type: integer
+      minimum: 1
+      maximum: 100
+      description: Maximum number of items in this page
+      examples: [ 50 ]
+  required: [ total, offset, limit, items ]
+AuthorList:
+  allOf:
+    - $ref: '#/Page'
+    - type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: ./author.yml
+PublisherList:
+  allOf:
+    - $ref: '#/Page'
+    - type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: ./publisher.yml
+CountryList:
+  allOf:
+    - $ref: '#/Page'
+    - type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: ./country.yml

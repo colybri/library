@@ -30,7 +30,7 @@ final class CreatePublisherCommand extends Command
     private PublisherName $name;
     private ?PublisherCity $city;
     private Uuid $countryId;
-    private PublisherFoundationYear $foundation;
+    private ?PublisherFoundationYear $foundation;
 
     public static function messageName(): string
     {
@@ -75,7 +75,6 @@ final class CreatePublisherCommand extends Command
         $this->city = null === ($payload[self::PUBLISHER_CITY_PAYLOAD] ?? null) ? null : PublisherCity::from((string)$payload[self::PUBLISHER_CITY_PAYLOAD]);
         $this->countryId = Uuid::from((string)$payload[self::PUBLISHER_COUNTRY_ID_PAYLOAD]);
         $this->foundation = null === $payload[self::PUBLISHER_FOUNDATION_PAYLOAD] ? null : PublisherFoundationYear::from((int)$payload[self::PUBLISHER_FOUNDATION_PAYLOAD]);
-        $this->foundation = PublisherFoundationYear::from((int)$payload[self::PUBLISHER_FOUNDATION_PAYLOAD]);
     }
 
 
@@ -99,7 +98,7 @@ final class CreatePublisherCommand extends Command
         return $this->countryId;
     }
 
-    public function foundation(): PublisherFoundationYear
+    public function foundation(): ?PublisherFoundationYear
     {
         return $this->foundation;
     }

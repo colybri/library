@@ -1,15 +1,22 @@
+type: object
+properties:
+  id:
+    type: string
+    format: uuid
+    examples: [ a28cf9dc-4a77-466a-b3c5-2987f50e2d28 ]
+  name:
+    type: string
+    examples: [ Germany ]
+  alpha2Code:
+    type: string
+    description: ISO 3166-1 alpha-2 code
+    pattern: '^[A-Z]{2}$'
+    examples: [ DE ]
+  nationality:
+    type: string
+    examples: [ German ]
 required:
   - id
   - name
   - alpha2Code
   - nationality
-properties:
-  id:
-    type: string
-    format: uuid
-  name:
-    type: string
-  alpha2Code:
-    type: string
-  nationality:
-    type: string

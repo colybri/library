@@ -1,0 +1,7 @@
+name: title
+in: query
+required: false
+description: Text contained in the title
+schema:
+  type: string
+example: Das Prinzip Verantwortung

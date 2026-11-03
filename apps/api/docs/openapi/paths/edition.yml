@@ -1,0 +1,109 @@
+collection:
+  post:
+    operationId: createEdition
+    summary: Create an edition
+    description: The client generates the identifier of the new edition.
+    tags: [ Edition ]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/edition-write.yml
+    responses:
+      '201':
+        $ref: ../components/responses.yml#/Created
+      '400':
+        $ref: ../components/responses.yml#/InvalidArgument
+      '401':
+        $ref: ../components/responses.yml#/Unauthorized
+      '404':
+        $ref: ../components/responses.yml#/NotFound
+      '409':
+        $ref: ../components/responses.yml#/Conflict
+  put:
+    operationId: updateEdition
+    summary: Update an edition
+    description: Replaces every field of the edition identified by `id` in the body.
+    tags: [ Edition ]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/edition-write.yml
+    responses:
+      '204':
+        $ref: ../components/responses.yml#/Updated
+      '400':
+        $ref: ../components/responses.yml#/InvalidArgument
+      '401':
+        $ref: ../components/responses.yml#/Unauthorized
+      '404':
+        $ref: ../components/responses.yml#/NotFound
+      '409':
+        $ref: ../components/responses.yml#/Conflict
+
+item:
+  parameters:
+    - $ref: ../parameters/id.yml
+  get:
+    operationId: getEdition
+    summary: Get an edition
+    tags: [ Edition ]
+    responses:
+      '200':
+        description: The edition
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/edition.yml
+      '400':
+        $ref: ../components/responses.yml#/InvalidArgument
+      '401':
+        $ref: ../components/responses.yml#/Unauthorized
+      '404':
+        $ref: ../components/responses.yml#/NotFound
+  delete:
+    operationId: deleteEdition
+    summary: Delete an edition
+    tags: [ Edition ]
+    responses:
+      '204':
+        $ref: ../components/responses.yml#/Deleted
+      '400':
+        $ref: ../components/responses.yml#/InvalidArgument
+      '401':
+        $ref: ../components/responses.yml#/Unauthorized
+      '404':
+        $ref: ../components/responses.yml#/NotFound
+      '409':
+        $ref: ../components/responses.yml#/Conflict
+
+seek:
+  get:
+    operationId: seekEdition
+    summary: Seek editions in Google Books
+    description: |
+      Searches Google Books, not the library, and returns the editions found
+      there so they can be added to the library. At least one filter is required;
+      filters are combined with AND.
+    tags: [ Edition ]
+    parameters:
+      - $ref: ../parameters/edition/title.yml
+      - $ref: ../parameters/edition/author.yml
+      - $ref: ../parameters/edition/publisher.yml
+      - $ref: ../parameters/edition/isbn.yml
+    responses:
+      '200':
+        description: Editions found in Google Books
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: ../schemas/edition.yml
+      '400':
+        $ref: ../components/responses.yml#/InvalidArgument
+      '401':
+        $ref: ../components/responses.yml#/Unauthorized

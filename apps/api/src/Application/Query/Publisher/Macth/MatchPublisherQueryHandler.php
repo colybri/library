@@ -31,7 +31,7 @@ final class MatchPublisherQueryHandler
 
         return ListResponse::fromPaginatedList(
             $this->publisherRepository->match($this->getCriteria($filters, $query)),
-            $this->publisherRepository->count($this->getCriteria($filters, $query)),
+            $this->publisherRepository->count($this->getCountCriteria($filters)),
             $query->offset(),
             $query->limit()
         );
@@ -57,9 +57,19 @@ final class MatchPublisherQueryHandler
     {
         return new Criteria(
             Filters::from($filters),
-            Order::from(OrderBy::from(PublisherName::class), OrderType::Desc),
+            Order::from(OrderBy::from(PublisherName::class), OrderType::Asc),
             $query->offset(),
             $query->limit()
+        );
+    }
+
+    private function getCountCriteria(Disjunction $filters): Criteria
+    {
+        return new Criteria(
+            Filters::from($filters),
+            Order::none(),
+            null,
+            null
         );
     }
 }

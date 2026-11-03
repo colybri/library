@@ -1,0 +1,17 @@
+# Reusable AMQP bindings
+exchange:
+  amqp:
+    is: routingKey
+    exchange:
+      name: library
+      type: topic
+      durable: true
+      autoDelete: false
+      vhost: /
+    bindingVersion: 0.3.0
+
+message:
+  amqp:
+    contentEncoding: utf-8
+    messageType: domain_event
+    bindingVersion: 0.3.0

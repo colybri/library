@@ -1,0 +1,18 @@
+# AMQP properties and headers of every published message
+Headers:
+  type: object
+  properties:
+    message_id:
+      type: string
+      format: uuid
+      description: AMQP message_id property, same as `data.id`
+    content_type:
+      type: string
+      const: application/json
+    content_encoding:
+      type: string
+      const: utf-8
+    redelivery_count:
+      type: integer
+      minimum: 1
+      description: Header added by the consumer each time it sends the message to retry or to dead letter

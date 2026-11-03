@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Colybri\Library\Tests\Application\Query\Publisher\Match;
 
 use PHPUnit\Framework\Attributes\Test;
+use Colybri\Criteria\Domain\Criteria;
 use Colybri\Library\Application\Query\Publisher\Macth\MatchPublisherQuery;
 use Colybri\Library\Application\Query\Publisher\Macth\MatchPublisherQueryHandler;
 use Colybri\Library\Domain\Model\Publisher\Publisher;
@@ -51,6 +52,28 @@ final class MatchPublisherQueryHandlerTest extends TestCase
         self::assertInstanceOf(Publisher::class, $response->items()[0]);
     }
 
+
+    #[Test]
+    public function given_more_matches_than_the_page_when_search_then_total_counts_every_match(): void
+    {
+        $mother = new PublisherObjectMother();
+
+        $this->publisherRepository->expects($this->once())
+            ->method('match')
+            ->with($this->callback(static fn (Criteria $criteria): bool => 0 === $criteria->offset() && 1 === $criteria->limit()))
+            ->willReturn([$mother->build()]);
+
+        // The count must not be limited to the page, or total would never exceed limit
+        $this->publisherRepository->expects($this->once())
+            ->method('count')
+            ->with($this->callback(static fn (Criteria $criteria): bool => null === $criteria->offset() && null === $criteria->limit()))
+            ->willReturn(7);
+
+        $response = ($this->handler)($this->query());
+
+        self::assertSame(7, $response->total());
+        self::assertCount(1, $response->items());
+    }
 
     private function query(): MatchPublisherQuery
     {

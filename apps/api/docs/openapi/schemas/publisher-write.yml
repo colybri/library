@@ -1,0 +1,19 @@
+type: object
+description: Body of the create and update publisher requests. Nullable fields may be omitted, which is the same as sending null.
+properties:
+  id:
+    $ref: ./publisher.yml#/properties/id
+  name:
+    $ref: ./publisher.yml#/properties/name
+  city:
+    $ref: ./publisher.yml#/properties/city
+  countryId:
+    $ref: ./publisher.yml#/properties/countryId
+  foundation:
+    type: [ integer, "null" ]
+    description: Year the publisher was founded
+    examples: [ 1982 ]
+required:
+  - id
+  - name
+  - countryId

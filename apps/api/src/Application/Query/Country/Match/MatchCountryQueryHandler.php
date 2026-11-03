@@ -57,7 +57,7 @@ final class MatchCountryQueryHandler
     {
         return new Criteria(
             Filters::from($filters),
-            Order::from(OrderBy::from(CountryName::class), OrderType::Desc),
+            Order::from(OrderBy::from(CountryName::class), OrderType::Asc),
             $query->offset(),
             $query->limit()
         );
@@ -67,7 +67,7 @@ final class MatchCountryQueryHandler
     {
         return new Criteria(
             Filters::from($filters),
-            Order::from(OrderBy::from(CountryName::class), OrderType::Desc),
+            Order::from(OrderBy::from(CountryName::class), OrderType::Asc),
             null,
             null
         );

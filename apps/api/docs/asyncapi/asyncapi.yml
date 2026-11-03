@@ -1,0 +1,113 @@
+asyncapi: 3.1.0
+info:
+  title: Library domain events
+  version: 1.0.0
+  description: |
+    Domain events the Library API publishes to RabbitMQ, and the consumers
+    that process them.
+
+    Every event is published to the durable topic exchange `library`
+    (`RABBITMQ_EXCHANGE`) with its name as routing key. Names follow
+    `<vendor>.<service>.<version>.domain_event.<aggregate>.<event>`.
+
+    Each subscriber has its own queue, bound to the routing keys of the
+    events it handles. `bin/console library:rabbit:configure` declares the
+    exchanges and queues, and the `api_consumers` container runs one
+    `library:rabbit:consume` process per queue.
+
+    When a subscriber fails, the message is republished to the
+    `retry-library` exchange, waits 1 second in the `retry.<queue>` queue
+    and goes back to the queue. After `RABBITMQ_MAX_RETRIES` attempts (3)
+    it goes to `dead_letter.<queue>` through the `dead_letter-library`
+    exchange. The `redelivery_count` header counts the attempts.
+
+    If RabbitMQ is down when the API publishes, the event is stored in the
+    Postgres table `events_pending_queue` and processed later with
+    `bin/console library:postgres:consume <quantity>`.
+
+    The HTTP API is documented with OpenAPI in `docs/openapi/openapi.yml`.
+  license:
+    name: MIT
+defaultContentType: application/json
+
+servers:
+  local:
+    host: rabbitmq:5672
+    protocol: amqp
+    protocolVersion: 0.9.1
+    description: RabbitMQ of the local environment (docker compose)
+    pathname: /
+    security:
+      - $ref: '#/components/securitySchemes/userPassword'
+
+channels:
+  authorCreated:
+    $ref: ./channels/author.yml#/authorCreated
+  authorDeleted:
+    $ref: ./channels/author.yml#/authorDeleted
+  bookCreated:
+    $ref: ./channels/book.yml#/bookCreated
+  bookDeleted:
+    $ref: ./channels/book.yml#/bookDeleted
+  updateSnapshotOnAuthorCreated:
+    $ref: ./channels/subscriber.yml#/updateSnapshotOnAuthorCreated
+
+operations:
+  publishAuthorCreated:
+    action: send
+    summary: An author was created (POST /api/v1/author)
+    channel:
+      $ref: '#/channels/authorCreated'
+    messages:
+      - $ref: '#/channels/authorCreated/messages/authorCreated'
+  publishAuthorDeleted:
+    action: send
+    summary: An author was deleted (DELETE /api/v1/author/{id})
+    channel:
+      $ref: '#/channels/authorDeleted'
+    messages:
+      - $ref: '#/channels/authorDeleted/messages/authorDeleted'
+  publishBookCreated:
+    action: send
+    summary: A book was created (POST /api/v1/book)
+    channel:
+      $ref: '#/channels/bookCreated'
+    messages:
+      - $ref: '#/channels/bookCreated/messages/bookCreated'
+  publishBookDeleted:
+    action: send
+    summary: A book was deleted (DELETE /api/v1/book/{id})
+    channel:
+      $ref: '#/channels/bookDeleted'
+    messages:
+      - $ref: '#/channels/bookDeleted/messages/bookDeleted'
+  updateSnapshotOnAuthorCreated:
+    action: receive
+    summary: Update the author snapshot when an author is created
+    description: |
+      `UpdateSnapshotOnAuthorCreatedSubscriber`. Idempotent: the identifiers
+      of processed messages are kept in Redis (`library:processed:*`, 7 days),
+      so a redelivered message is acknowledged without processing it again.
+      The processor is still a placeholder.
+    channel:
+      $ref: '#/channels/updateSnapshotOnAuthorCreated'
+    messages:
+      - $ref: '#/channels/updateSnapshotOnAuthorCreated/messages/authorCreated'
+    bindings:
+      amqp:
+        ack: true
+
+components:
+  securitySchemes:
+    userPassword:
+      type: userPassword
+      description: RABBITMQ_LOGIN and RABBITMQ_PASSWORD
+  messages:
+    AuthorCreated:
+      $ref: ./messages/author.yml#/AuthorCreated
+    AuthorDeleted:
+      $ref: ./messages/author.yml#/AuthorDeleted
+    BookCreated:
+      $ref: ./messages/book.yml#/BookCreated
+    BookDeleted:
+      $ref: ./messages/book.yml#/BookDeleted

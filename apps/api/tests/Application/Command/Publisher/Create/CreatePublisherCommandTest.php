@@ -115,4 +115,22 @@ final class CreatePublisherCommandTest extends TestCase
             ]
         );
     }
+
+    #[Test]
+    public function given_null_city_and_foundation_when_command_is_invoke_then_both_are_null(): void
+    {
+        $command = CreatePublisherCommand::fromPayload(
+            Uuid::v4(),
+            [
+                CreatePublisherCommand::PUBLISHER_ID_PAYLOAD => $this->publisherId,
+                CreatePublisherCommand::PUBLISHER_NAME_PAYLOAD => $this->name,
+                CreatePublisherCommand::PUBLISHER_COUNTRY_ID_PAYLOAD => $this->countryId,
+                CreatePublisherCommand::PUBLISHER_CITY_PAYLOAD => null,
+                CreatePublisherCommand::PUBLISHER_FOUNDATION_PAYLOAD => null,
+            ]
+        );
+
+        self::assertNull($command->city());
+        self::assertNull($command->foundation());
+    }
 }

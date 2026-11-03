@@ -54,8 +54,8 @@ final class MatchPublisherQuery extends Query
             ->verifyNow();
 
         Assert::lazy()
-            ->that($payload[MatchPublisherQuery::OFFSET_PAYLOAD])->integer()->min(0)
-            ->that($payload[MatchPublisherQuery::LIMIT_PAYLOAD])->integer()->min(1)->max(100)
+            ->that($payload[MatchPublisherQuery::OFFSET_PAYLOAD])->integerish()->min(0)
+            ->that($payload[MatchPublisherQuery::LIMIT_PAYLOAD])->integerish()->min(1)->max(100)
             ->that($payload[MatchPublisherQuery::KEYWORDS_PAYLOAD])->notEmpty()->string()
             ->verifyNow();
 

@@ -1,0 +1,44 @@
+login:
+  post:
+    operationId: login
+    summary: Get a JWT
+    description: Exchanges the credentials of a user for a JWT. Users are created with the `library:user:create` console command.
+    security: [ ]
+    tags: [ Auth ]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+                format: email
+                description: Email of the user
+                examples: [ reader@example.com ]
+              password:
+                type: string
+                format: password
+            required: [ username, password ]
+    responses:
+      '200':
+        description: Valid credentials
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  description: JWT to send in the `Authorization` header
+              required: [ token ]
+      '401':
+        description: Invalid credentials
+        content:
+          application/json:
+            schema:
+              $ref: ../components/responses.yml#/Unauthorized/content/application~1json/schema
+            example:
+              code: 401
+              message: Invalid credentials.

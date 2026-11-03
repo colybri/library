@@ -1,0 +1,19 @@
+# Linting of docs/openapi and docs/asyncapi (make api-docs-lint)
+apis:
+  main:
+    root: docs/openapi/openapi.yml
+extends:
+  - recommended
+rules:
+  tag-description: off
+  operation-summary: error
+  no-unresolved-refs: error
+  no-unused-components: error
+  operation-2xx-response: error
+  operation-operationId: error
+  operation-singular-tag: error
+  no-enum-type-mismatch: error
+  no-identical-paths: error
+  no-ambiguous-paths: error
+  # The only server is the local docker compose environment
+  no-server-example.com: off

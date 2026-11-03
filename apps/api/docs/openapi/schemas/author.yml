@@ -1,31 +1,40 @@
 type: object
+description: A person who wrote books, or a pseudonym of one
 properties:
   id:
     type: string
     format: uuid
-    example: 19424912-a0fc-4a94-869e-5b02d9965aa9
+    examples: [ 19424912-a0fc-4a94-869e-5b02d9965aa9 ]
   firstName:
     type: string
-    example: Gershom
+    minLength: 1
+    examples: [ Gershom ]
   lastName:
     type: [ string, "null" ]
-    example: Scholem
+    examples: [ Scholem ]
   countryId:
     type: string
     format: uuid
-    example: a28cf9dc-4a77-466a-b3c5-2987f50e2d28
+    description: Identifier of a country (see `GET /api/v1/country/{id}`)
+    examples: [ a28cf9dc-4a77-466a-b3c5-2987f50e2d28 ]
   isPseudonymOf:
     type: [ string, "null" ]
     format: uuid
-    example: 28873063-44e5-4908-862c-356604428a86
-  bornYear:
-      type: integer
-      example: 1897
-  deathYear:
-      type: [ integer, "null" ]
-      example: 1982
-required: 
-  -  id
+    description: Identifier of the real author when this author is a pseudonym
+    examples: [ null ]
+  bornAt:
+    type: integer
+    description: Year of birth (negative for years before Christ)
+    examples: [ 1897 ]
+  deathAt:
+    type: [ integer, "null" ]
+    description: Year of death, null while alive
+    examples: [ 1982 ]
+required:
+  - id
   - firstName
+  - lastName
   - countryId
-  - bornYear
+  - isPseudonymOf
+  - bornAt
+  - deathAt

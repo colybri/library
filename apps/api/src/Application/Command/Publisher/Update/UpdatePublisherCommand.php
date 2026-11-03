@@ -30,7 +30,7 @@ final class UpdatePublisherCommand extends Command
     private PublisherName $name;
     private ?PublisherCity $city;
     private Uuid $countryId;
-    private PublisherFoundationYear $foundation;
+    private ?PublisherFoundationYear $foundation;
 
     public static function messageName(): string
     {
@@ -65,16 +65,16 @@ final class UpdatePublisherCommand extends Command
         Assert::lazy()
             ->that($payload[self::PUBLISHER_ID_PAYLOAD], self::PUBLISHER_ID_PAYLOAD)->uuid()
             ->that($payload[self::PUBLISHER_NAME_PAYLOAD], self::PUBLISHER_NAME_PAYLOAD)->notEmpty()->string()
-            ->that($payload[self::PUBLISHER_CITY_PAYLOAD], self::PUBLISHER_CITY_PAYLOAD)->string()
+            ->that($payload[self::PUBLISHER_CITY_PAYLOAD], self::PUBLISHER_CITY_PAYLOAD)->nullOr()->string()
             ->that($payload[self::PUBLISHER_COUNTRY_ID_PAYLOAD], self::PUBLISHER_COUNTRY_ID_PAYLOAD)->notEmpty()->uuid()
-            ->that($payload[self::PUBLISHER_FOUNDATION_PAYLOAD], self::PUBLISHER_FOUNDATION_PAYLOAD)->integer()
+            ->that($payload[self::PUBLISHER_FOUNDATION_PAYLOAD], self::PUBLISHER_FOUNDATION_PAYLOAD)->nullOr()->integer()
             ->verifyNow();
 
         $this->publisherId = Uuid::from($payload[self::PUBLISHER_ID_PAYLOAD]);
         $this->name = PublisherName::from((string)$payload[self::PUBLISHER_NAME_PAYLOAD]);
         $this->city = null === ($payload[self::PUBLISHER_CITY_PAYLOAD] ?? null) ? null : PublisherCity::from((string)$payload[self::PUBLISHER_CITY_PAYLOAD]);
         $this->countryId = Uuid::from((string)$payload[self::PUBLISHER_COUNTRY_ID_PAYLOAD]);
-        $this->foundation = PublisherFoundationYear::from((int)$payload[self::PUBLISHER_FOUNDATION_PAYLOAD]);
+        $this->foundation = null === $payload[self::PUBLISHER_FOUNDATION_PAYLOAD] ? null : PublisherFoundationYear::from((int)$payload[self::PUBLISHER_FOUNDATION_PAYLOAD]);
     }
 
     public function publisherId(): Uuid
@@ -97,7 +97,7 @@ final class UpdatePublisherCommand extends Command
         return $this->countryId;
     }
 
-    public function foundation(): PublisherFoundationYear
+    public function foundation(): ?PublisherFoundationYear
     {
         return $this->foundation;
     }

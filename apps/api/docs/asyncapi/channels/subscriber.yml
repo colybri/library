@@ -1,0 +1,24 @@
+# One queue per subscriber, named <vendor>.<service>.<aggregate>.<subscriber>
+updateSnapshotOnAuthorCreated:
+  address: colybri.library.author.update_snapshot_on_author_created_subscriber
+  title: update_snapshot_on_author_created_subscriber
+  description: |
+    Bound to the `library` exchange with the routing keys
+    `colybri.library.1.domain_event.author.created` and the queue name
+    itself (used by the retry queue). Retry queue:
+    `retry.colybri.library.author.update_snapshot_on_author_created_subscriber`.
+    Dead letter queue:
+    `dead_letter.colybri.library.author.update_snapshot_on_author_created_subscriber`.
+  messages:
+    authorCreated:
+      $ref: ../messages/author.yml#/AuthorCreated
+  bindings:
+    amqp:
+      is: queue
+      queue:
+        name: colybri.library.author.update_snapshot_on_author_created_subscriber
+        durable: true
+        exclusive: false
+        autoDelete: false
+        vhost: /
+      bindingVersion: 0.3.0

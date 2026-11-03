@@ -1,0 +1,7 @@
+name: publisher
+in: query
+required: false
+description: Text contained in the name of the publisher
+schema:
+  type: string
+example: Insel

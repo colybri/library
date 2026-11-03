@@ -1,0 +1,57 @@
+# Body of every domain event published to RabbitMQ
+Envelope:
+  type: object
+  properties:
+    data:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Identifier of the message, also in the AMQP message_id property
+        type:
+          type: string
+          description: Name of the event, same as the routing key
+        occurred_on:
+          $ref: '#/OccurredOn'
+        attributes:
+          type: object
+          properties:
+            message_id:
+              type: string
+              format: uuid
+              description: Same as `data.id`
+            name:
+              type: string
+              description: Same as `data.type`
+            version:
+              type: string
+              description: Version of the event schema
+              examples: [ '1' ]
+            type:
+              type: string
+              const: domain_event
+            payload:
+              type: object
+              description: Data of the event, specific to each event
+            aggregate_id:
+              type: string
+              format: uuid
+              description: Identifier of the aggregate that recorded the event
+            aggregate_version:
+              type: integer
+              examples: [ 0 ]
+            occurred_on:
+              $ref: '#/OccurredOn'
+          required: [ message_id, name, version, type, payload, aggregate_id, aggregate_version, occurred_on ]
+      required: [ id, type, occurred_on, attributes ]
+    meta:
+      type: object
+      description: Reserved, always empty
+  required: [ data, meta ]
+
+OccurredOn:
+  type: string
+  description: When the event happened, in UTC
+  examples: [ '2026-11-03T19:30:26.123456+00:00' ]
+
