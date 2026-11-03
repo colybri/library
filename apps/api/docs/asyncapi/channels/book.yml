@@ -1,0 +1,19 @@
+bookCreated:
+  address: colybri.library.1.domain_event.book.created
+  title: book.created
+  description: Routing key of the BookCreated event in the `library` exchange
+  messages:
+    bookCreated:
+      $ref: ../messages/book.yml#/BookCreated
+  bindings:
+    $ref: ../components/bindings.yml#/exchange
+
+bookDeleted:
+  address: colybri.library.1.domain_event.book.deleted
+  title: book.deleted
+  description: Routing key of the BookDeleted event in the `library` exchange
+  messages:
+    bookDeleted:
+      $ref: ../messages/book.yml#/BookDeleted
+  bindings:
+    $ref: ../components/bindings.yml#/exchange

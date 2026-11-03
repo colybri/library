@@ -184,7 +184,9 @@ Con los contenedores arrancados:
 - **API**: `http://localhost/api/v1` o `https://localhost/api/v1`. Nginx publica los puertos 80 y 443 del host; el certificado HTTPS es autofirmado, así que con `curl` necesitas `-k`.
 - **Consola de Symfony**: `make api-console c="..."` (por ejemplo `make api-console c=about`) o `make api-sh` para entrar al contenedor.
 
-No hay endpoint de salud ni documentación OpenAPI servida por la aplicación. La especificación parcial (autores y países) está en [docs/openapi/openapi.yml](docs/openapi/openapi.yml).
+No hay endpoint de salud ni documentación servida por la aplicación. La API HTTP está especificada con OpenAPI en [docs/openapi/openapi.yml](docs/openapi/openapi.yml) y los eventos de dominio de RabbitMQ con AsyncAPI en [docs/asyncapi/asyncapi.yml](docs/asyncapi/asyncapi.yml). `make api-docs-lint` valida ambas (la CI también).
+
+Para consultar y probar la API en el navegador, `make api-docs` arranca Swagger UI (servicio `api_docs`, perfil `docs`, imagen oficial `swaggerapi/swagger-ui`) y abre https://localhost/docs/. Nginx le pasa `/docs/`, así que «Try it out» llama a la API desde el mismo origen: pide un token con `POST /api/v1/login_check` y pégalo en «Authorize». `make api-docs-down` lo para. Swagger UI lee los ficheros de `docs/openapi/` montados, así que basta con recargar la página tras editarlos.
 
 ### Crear un usuario y obtener un token
 
@@ -229,7 +231,7 @@ Todas las rutas están en `config/routes/` con el prefijo `/api/v1`. `make api-c
 
 Autores, libros, ediciones y editoriales tienen también `PUT` sobre la ruta base (por ejemplo `PUT /api/v1/author`) y `DELETE` sobre la ruta con id (por ejemplo `DELETE /api/v1/author/{id}`).
 
-Nota sobre la autorización: las reglas `access_control` de [config/packages/security.yaml](config/packages/security.yaml) usan los patrones `^/v1/login` y `^/v1`, que no coinciden con las rutas reales (`/api/v1/...`). El firewall `api` valida el JWT cuando se envía, pero esas reglas no exigen autenticación en ninguna ruta.
+Las reglas `access_control` de [config/packages/security.yaml](config/packages/security.yaml) dejan público solo `/api/v1/login_check` y exigen un JWT válido en el resto de rutas; sin él responden 401. El detalle de cada operación (cuerpos, respuestas y errores) está en la [especificación OpenAPI](docs/openapi/openapi.yml).
 
 ## Estructura de `apps/api`
 
@@ -241,7 +243,9 @@ apps/api/
 │   ├── packages/               # Configuración de bundles (seguridad, JWT, messenger, doctrine…)
 │   └── routes/                 # Rutas; prod/*/routes.yaml define cada recurso
 ├── docker/                     # Configuración de las imágenes php y nginx
-├── docs/openapi/               # Especificación OpenAPI (parcial: autores y países)
+├── docs/
+│   ├── asyncapi/               # Especificación AsyncAPI de los eventos de dominio (RabbitMQ)
+│   └── openapi/                # Especificación OpenAPI de la API HTTP
 ├── migrations/library.sql      # Esquema completo y datos de países (make api-dump / make api-restore)
 ├── public/index.php            # Front controller
 ├── scripts/                    # Mensajes de GrumPHP y wrapper de phpcs para PhpStorm
@@ -261,7 +265,7 @@ apps/api/
 ├── compose.api.yml             # Servicios api, api_consumers y api_nginx (incluido desde la raíz)
 ├── Dockerfile                  # Etapas library_php_base, library_php_dev y library_php
 ├── Makefile                    # Objetivos de la API (make api-help desde la raíz)
-├── behat.yml  phpunit.xml.dist  phpstan.neon  phpcs.xml  grumphp.yml  .redocly.yaml
+├── behat.yml  phpunit.xml.dist  phpstan.neon  phpcs.xml  grumphp.yml  redocly.yaml
 └── composer.json
 ```
 

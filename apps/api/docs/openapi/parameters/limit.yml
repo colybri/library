@@ -1,7 +1,9 @@
 name: limit
 in: query
 required: false
-description: Number of max items on result
-example: 100
+description: Maximum number of items in the page
 schema:
-  type: integer   
+  type: integer
+  minimum: 1
+  maximum: 100
+  default: 50

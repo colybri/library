@@ -1,0 +1,45 @@
+type: object
+description: Body of the create and update book requests. Nullable fields may be omitted, which is the same as sending null.
+properties:
+  id:
+    type: string
+    format: uuid
+    examples: [ 0f4c6a1e-3b7d-4c1a-9a55-1e2b8c9d7f01 ]
+  title:
+    type: string
+    minLength: 1
+    examples: [ Major Trends in Jewish Mysticism ]
+  subtitle:
+    type: [ string, "null" ]
+    examples: [ null ]
+  authorsIds:
+    type: array
+    description: Identifiers of the authors of the book
+    items:
+      type: string
+      format: uuid
+    examples:
+      - [ 19424912-a0fc-4a94-869e-5b02d9965aa9 ]
+  isPseudo:
+    type: boolean
+    description: Whether the attribution to the authors is apocryphal
+    examples: [ false ]
+  publishYear:
+    type: integer
+    description: Year of the first publication (negative for years before Christ)
+    examples: [ 1941 ]
+  estimatedPublishYear:
+    type: boolean
+    description: Whether `publishYear` is an estimate
+    examples: [ false ]
+  isOnWishList:
+    type: [ boolean, "null" ]
+    description: Whether the book is on the wish list; null is read as false
+    examples: [ false ]
+required:
+  - id
+  - title
+  - authorsIds
+  - isPseudo
+  - publishYear
+  - estimatedPublishYear

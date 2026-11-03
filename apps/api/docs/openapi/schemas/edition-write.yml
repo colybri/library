@@ -1,0 +1,59 @@
+type: object
+description: |
+  Body of the create and update edition requests. Nullable fields may be
+  omitted, which is the same as sending null. When `isOnLibrary` is true,
+  `condition` is required; when it is false, `condition` must be null.
+properties:
+  id:
+    $ref: ./edition.yml#/properties/id
+  title:
+    $ref: ./edition.yml#/properties/title
+  subtitle:
+    $ref: ./edition.yml#/properties/subtitle
+  year:
+    $ref: ./edition.yml#/properties/year
+  pages:
+    $ref: ./edition.yml#/properties/pages
+  language:
+    $ref: ./edition.yml#/$defs/Language
+  googleId:
+    $ref: ./edition.yml#/properties/googleId
+  isbn:
+    type: string
+    description: A valid ISBN-10 or ISBN-13, with or without hyphens
+    examples: [ 978-3-518-39685-8 ]
+  city:
+    $ref: ./edition.yml#/properties/city
+  image:
+    $ref: ./edition.yml#/properties/image
+  publisherId:
+    $ref: ./edition.yml#/properties/publisherId
+  bookId:
+    $ref: ./edition.yml#/properties/bookId
+  isOnLibrary:
+    $ref: ./edition.yml#/properties/isOnLibrary
+  condition:
+    $ref: ./edition.yml#/$defs/Condition
+required:
+  - id
+  - title
+  - year
+  - language
+  - isbn
+  - city
+  - publisherId
+  - bookId
+  - isOnLibrary
+if:
+  properties:
+    isOnLibrary:
+      const: true
+then:
+  required: [ condition ]
+  properties:
+    condition:
+      type: string
+else:
+  properties:
+    condition:
+      type: 'null'

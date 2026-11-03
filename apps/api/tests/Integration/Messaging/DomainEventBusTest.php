@@ -116,6 +116,7 @@ final class DomainEventBusTest extends KernelTestCase
         $message = $this->nextPublishedMessage();
         self::assertSame(BookCreated::messageName(), $message['data']['type']);
         self::assertSame($bookId, $message['data']['attributes']['aggregate_id']);
+        self::assertSame([$authorId], $message['data']['attributes']['payload']['authorsIds']);
 
         $this->dispatch(DeleteBookCommand::fromPayload(Uuid::v4(), [DeleteBookCommand::BOOK_ID_PAYLOAD => $bookId]));
 

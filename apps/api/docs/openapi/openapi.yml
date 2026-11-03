@@ -2,184 +2,100 @@ openapi: 3.1.0
 info:
   version: 1.0.0
   title: Library
-  description: A simple API for manage your personal library
+  description: |
+    API to manage a personal library: authors, books, editions, publishers and
+    countries.
+
+    Commands (create, update, delete) are synchronous and return an empty body.
+    The client generates the identifier of every new resource (UUID v4) and
+    sends it in the request body.
+
+    Every endpoint except `POST /api/v1/login_check` expects a JWT obtained
+    from that endpoint in the `Authorization: Bearer <token>` header.
+
+    The domain events the API publishes to RabbitMQ are documented with
+    AsyncAPI in `docs/asyncapi/asyncapi.yml`.
+  license:
+    name: MIT
+    identifier: MIT
 servers:
+  - url: /
+    description: Same host that serves this specification (Swagger UI of make api-docs)
   - url: https://localhost
+    description: Local environment (docker compose, self-signed certificate)
+
+security:
+  - JWTAuth: [ ]
+
+tags:
+  - name: Auth
+    description: JWT authentication
+  - name: Author
+    description: People who wrote books, and their pseudonyms
+  - name: Book
+    description: A work, independent of its editions
+  - name: Edition
+    description: A published edition of a book
+  - name: Publisher
+    description: Publishing houses
+  - name: Country
+    description: Read-only catalogue of countries
 
 paths:
-  /v1/author/{id}:
-    get:
-      operationId: searchAuthor
-      summary: Search author from name
-      security:
-        - JWTAuth: [ ]
-      parameters:
-        - $ref: ./parameters/query.yml
-        - $ref: ./parameters/offset.yml
-        - $ref: ./parameters/limit.yml
-      responses:
-        200:
-          description: Author list matched
-          content:
-            application/json:
-              schema:
-                $ref: './schemas/list.yml#/Authors'
-        400:
-          $ref: './components/responses.yml#/InvalidArgument'
-        409:
-          $ref: './components/responses.yml#/Conflict'
-      tags:
-        - Author
-
-  /v1/author/match:
-    get:
-      operationId: getAuthor
-      summary: Retrieve an author from id
-      security:
-        - JWTAuth: []
-      parameters: 
-        - $ref: ./parameters/id.yml 
-      responses:
-        200:
-          description: An author
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Author'
-        400:
-          $ref: './components/responses.yml#/InvalidArgument'
-        404:
-          $ref: './components/responses.yml#/NotFound'
-        409:
-          $ref: './components/responses.yml#/Conflict'
-      tags:
-        - Author
-
-  /v1/author:
-    post:
-      operationId: createAuthor
-      summary: Create an author
-      security:
-        - JWTAuth: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Author'
-      responses:
-        201:
-          $ref: './components/responses.yml#/Created'
-        400:
-          $ref: './components/responses.yml#/InvalidArgument'
-        404:
-          $ref: './components/responses.yml#/NotFound'
-        409:
-          $ref: './components/responses.yml#/Conflict'
-      tags:
-        - Author
-    put:
-      operationId: updateAuthor
-      summary: Update an author
-      security:
-        - JWTAuth: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Author'
-      responses:
-        204:
-          $ref: './components/responses.yml#/Updated'
-        400:
-          $ref: './components/responses.yml#/InvalidArgument'
-        404:
-          $ref: './components/responses.yml#/NotFound'
-        409:
-          $ref: './components/responses.yml#/Conflict'
-      tags:
-        - Author
-    delete:
-      operationId: deleteAuthor
-      summary: Delete an author
-      security:
-        - JWTAuth: []
-      parameters:
-        - $ref: ./parameters/id.yml
-      responses:
-        204:
-          $ref: './components/responses.yml#/Deleted'
-        400:
-          $ref: './components/responses.yml#/InvalidArgument'
-        404:
-          $ref: './components/responses.yml#/NotFound'
-        409:
-          $ref: './components/responses.yml#/Conflict'
-      tags:
-        - Author
-
-  /v1/country/{id}:
-    get:
-      operationId: getCountry
-      summary: Retrieve an country from id
-      security:
-        - JWTAuth: []
-      parameters: 
-        - $ref: ./parameters/id.yml 
-      responses:
-        200:
-          description: An country
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Country'
-        400:
-          $ref: './components/responses.yml#/InvalidArgument'
-        404:
-          $ref: './components/responses.yml#/NotFound'
-        409:
-          $ref: './components/responses.yml#/Conflict'
-      tags:
-        - Country
-    
-  /v1/country/match:
-    get:
-      operationId: searchCountry
-      summary: Search country from name
-      security:
-        - JWTAuth: []
-      parameters:
-        - $ref: ./parameters/query.yml
-        - $ref: ./parameters/offset.yml
-        - $ref: ./parameters/limit.yml
-      responses:
-        200:
-          description: Country list matched
-          content:
-            application/json:
-              schema:
-                $ref: './schemas/list.yml#/Countries'
-        400:
-          $ref: './components/responses.yml#/InvalidArgument'
-        409:
-          $ref: './components/responses.yml#/Conflict'
-      tags:
-        - Country
-
+  /api/v1/login_check:
+    $ref: ./paths/auth.yml#/login
+  /api/v1/author:
+    $ref: ./paths/author.yml#/collection
+  /api/v1/author/match:
+    $ref: ./paths/author.yml#/match
+  /api/v1/author/{id}:
+    $ref: ./paths/author.yml#/item
+  /api/v1/book:
+    $ref: ./paths/book.yml#/collection
+  /api/v1/book/{id}:
+    $ref: ./paths/book.yml#/item
+  /api/v1/edition:
+    $ref: ./paths/edition.yml#/collection
+  /api/v1/edition/seek:
+    $ref: ./paths/edition.yml#/seek
+  /api/v1/edition/{id}:
+    $ref: ./paths/edition.yml#/item
+  /api/v1/publisher:
+    $ref: ./paths/publisher.yml#/collection
+  /api/v1/publisher/match:
+    $ref: ./paths/publisher.yml#/match
+  /api/v1/publisher/{id}:
+    $ref: ./paths/publisher.yml#/item
+  /api/v1/country/match:
+    $ref: ./paths/country.yml#/match
+  /api/v1/country/{id}:
+    $ref: ./paths/country.yml#/item
 
 components:
   securitySchemes:
     JWTAuth:
-      description: 'JWT Authentification'
+      description: JWT issued by `POST /api/v1/login_check`
       type: http
       scheme: bearer
       bearerFormat: JWT
   schemas:
     Author:
       $ref: ./schemas/author.yml
+    Book:
+      $ref: ./schemas/book.yml
+    Edition:
+      $ref: ./schemas/edition.yml
+    Publisher:
+      $ref: ./schemas/publisher.yml
     Country:
       $ref: ./schemas/country.yml
-
-
-
-
-    
+    AuthorList:
+      $ref: ./schemas/list.yml#/AuthorList
+    PublisherList:
+      $ref: ./schemas/list.yml#/PublisherList
+    CountryList:
+      $ref: ./schemas/list.yml#/CountryList
+    Error:
+      $ref: ./schemas/error.yml#/Error
+    ValidationError:
+      $ref: ./schemas/error.yml#/ValidationError

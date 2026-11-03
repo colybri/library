@@ -1,0 +1,19 @@
+authorCreated:
+  address: colybri.library.1.domain_event.author.created
+  title: author.created
+  description: Routing key of the AuthorCreated event in the `library` exchange
+  messages:
+    authorCreated:
+      $ref: ../messages/author.yml#/AuthorCreated
+  bindings:
+    $ref: ../components/bindings.yml#/exchange
+
+authorDeleted:
+  address: colybri.library.1.domain_event.author.deleted
+  title: author.deleted
+  description: Routing key of the AuthorDeleted event in the `library` exchange
+  messages:
+    authorDeleted:
+      $ref: ../messages/author.yml#/AuthorDeleted
+  bindings:
+    $ref: ../components/bindings.yml#/exchange

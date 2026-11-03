@@ -1,7 +1,8 @@
 name: keywords
 in: query
 required: true
-description: List of words to be searched
-example: Hans Jonas
+description: Text to search for
 schema:
   type: string
+  minLength: 1
+example: Hans Jonas

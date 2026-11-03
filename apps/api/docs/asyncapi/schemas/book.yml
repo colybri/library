@@ -1,0 +1,29 @@
+# Payloads of the Book events. Field definitions are shared with OpenAPI.
+BookCreatedPayload:
+  type: object
+  properties:
+    id:
+      $ref: ../../openapi/schemas/book.yml#/properties/id
+    title:
+      $ref: ../../openapi/schemas/book.yml#/properties/title
+    subtitle:
+      $ref: ../../openapi/schemas/book.yml#/properties/subtitle
+    authorsIds:
+      $ref: ../../openapi/schemas/book.yml#/properties/authorsIds
+    publishYear:
+      $ref: ../../openapi/schemas/book.yml#/properties/publishYear
+    estimatedPublishYear:
+      $ref: ../../openapi/schemas/book.yml#/properties/estimatedPublishYear
+    isPseudo:
+      $ref: ../../openapi/schemas/book.yml#/properties/isPseudo
+    isOnWishList:
+      type: boolean
+      description: Whether the book is on the wish list
+  required: [ id, title, subtitle, authorsIds, publishYear, estimatedPublishYear, isPseudo, isOnWishList ]
+
+BookDeletedPayload:
+  type: object
+  properties:
+    id:
+      $ref: ../../openapi/schemas/book.yml#/properties/id
+  required: [ id ]

@@ -1,0 +1,64 @@
+collection:
+  post:
+    operationId: createBook
+    summary: Create a book
+    description: The client generates the identifier of the new book.
+    tags: [ Book ]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/book.yml
+    responses:
+      '201':
+        $ref: ../components/responses.yml#/Created
+      '400':
+        $ref: ../components/responses.yml#/InvalidArgument
+      '401':
+        $ref: ../components/responses.yml#/Unauthorized
+      '404':
+        $ref: ../components/responses.yml#/NotFound
+      '409':
+        $ref: ../components/responses.yml#/Conflict
+  put:
+    operationId: updateBook
+    summary: Update a book
+    description: Replaces every field of the book identified by `id` in the body.
+    tags: [ Book ]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/book.yml
+    responses:
+      '204':
+        $ref: ../components/responses.yml#/Updated
+      '400':
+        $ref: ../components/responses.yml#/InvalidArgument
+      '401':
+        $ref: ../components/responses.yml#/Unauthorized
+      '404':
+        $ref: ../components/responses.yml#/NotFound
+      '409':
+        $ref: ../components/responses.yml#/Conflict
+
+item:
+  parameters:
+    - $ref: ../parameters/id.yml
+  delete:
+    operationId: deleteBook
+    summary: Delete a book
+    tags: [ Book ]
+    responses:
+      '204':
+        $ref: ../components/responses.yml#/Deleted
+      '400':
+        $ref: ../components/responses.yml#/InvalidArgument
+      '401':
+        $ref: ../components/responses.yml#/Unauthorized
+      '404':
+        $ref: ../components/responses.yml#/NotFound
+      '409':
+        $ref: ../components/responses.yml#/Conflict

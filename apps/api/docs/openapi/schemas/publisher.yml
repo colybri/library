@@ -1,0 +1,29 @@
+type: object
+description: A publishing house
+properties:
+  id:
+    type: string
+    format: uuid
+    examples: [ 6b0f3d2e-8d0a-4e7c-b6a1-2f4e5d6c7b80 ]
+  name:
+    type: string
+    minLength: 1
+    examples: [ Siruela ]
+  city:
+    type: [ string, "null" ]
+    examples: [ Madrid ]
+  countryId:
+    type: string
+    format: uuid
+    description: Identifier of a country (see `GET /api/v1/country/{id}`)
+    examples: [ a28cf9dc-4a77-466a-b3c5-2987f50e2d28 ]
+  foundationYear:
+    type: [ integer, "null" ]
+    description: Year the publisher was founded. Named `foundation` in create and update requests.
+    examples: [ 1982 ]
+required:
+  - id
+  - name
+  - city
+  - countryId
+  - foundationYear

@@ -1,7 +1,8 @@
 name: offset
 in: query
 required: false
-description: Number for of first item of the list
-example: 0
+description: Position of the first item of the page
 schema:
   type: integer
+  minimum: 0
+  default: 0

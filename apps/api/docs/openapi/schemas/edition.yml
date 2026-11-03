@@ -1,0 +1,80 @@
+type: object
+description: A published edition of a book
+properties:
+  id:
+    type: string
+    format: uuid
+    examples: [ 7d1e2f3a-4b5c-4d6e-8f70-81a2b3c4d5e6 ]
+  title:
+    type: string
+    minLength: 1
+    examples: [ Das Prinzip Verantwortung ]
+  subtitle:
+    type: [ string, "null" ]
+    examples: [ Versuch einer Ethik für die technologische Zivilisation ]
+  year:
+    type: integer
+    description: Year of this edition
+    examples: [ 1984 ]
+  pages:
+    type: [ integer, "null" ]
+    minimum: 1
+    examples: [ 426 ]
+  language:
+    $ref: '#/$defs/Language'
+  googleId:
+    type: [ string, "null" ]
+    description: Identifier of the edition in Google Books
+    examples: [ 3QnQAAAAMAAJ ]
+  isbn:
+    type: integer
+    description: ISBN-13 without hyphens. ISBN-10 values are converted on write.
+    examples: [ 9783518396858 ]
+  city:
+    type: string
+    description: City where the edition was published
+    examples: [ Frankfurt am Main ]
+  image:
+    type: [ string, "null" ]
+    description: URL of the cover image
+    examples: [ 'https://books.google.com/books/content?id=3QnQAAAAMAAJ&printsec=frontcover&img=1' ]
+  publisherId:
+    type: string
+    format: uuid
+    examples: [ 6b0f3d2e-8d0a-4e7c-b6a1-2f4e5d6c7b80 ]
+  bookId:
+    type: string
+    format: uuid
+    examples: [ 0f4c6a1e-3b7d-4c1a-9a55-1e2b8c9d7f01 ]
+  isOnLibrary:
+    type: boolean
+    description: Whether a copy of this edition is in the library
+    examples: [ true ]
+  condition:
+    $ref: '#/$defs/Condition'
+required:
+  - id
+  - title
+  - subtitle
+  - year
+  - pages
+  - language
+  - googleId
+  - isbn
+  - city
+  - image
+  - publisherId
+  - bookId
+  - isOnLibrary
+  - condition
+$defs:
+  Language:
+    type: string
+    description: ISO 639-1 code of the language of the edition
+    enum: [ es, en, fr, pt, ru ]
+    examples: [ en ]
+  Condition:
+    type: [ string, "null" ]
+    description: Condition of the copy in the library; null when it is not in the library
+    enum: [ new, second hand, inherited, null ]
+    examples: [ second hand ]

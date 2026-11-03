@@ -193,6 +193,7 @@ final class Edition extends SimpleAggregateRoot
             'googleId' => $this->googleBooksId(),
             'isbn' => $this->isbn(),
             'city' => $this->city(),
+            'image' => $this->imageSlug(),
             'publisherId' => $this->publisherId(),
             'bookId' => $this->bookId(),
             'isOnLibrary' => $this->isOnLibrary(),

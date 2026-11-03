@@ -107,6 +107,21 @@ services:
     depends_on:
       - api
 
+  # Swagger UI of docs/openapi, only for development: make api-docs starts it
+  # and opens https://localhost/docs/ (api_nginx proxies /docs/ to it, so
+  # "Try it out" calls the API from the same origin, without CORS).
+  api_docs:
+    image: swaggerapi/swagger-ui:v5.34.1
+    profiles: [docs]
+    restart: unless-stopped
+    environment:
+      BASE_URL: /docs
+      URL: /docs/openapi/openapi.yml
+      # Keep the JWT between page reloads
+      PERSIST_AUTHORIZATION: "true"
+    volumes:
+      - ./docs/openapi:/usr/share/nginx/html/openapi:ro
+
 volumes:
   php_socket:
     driver: local

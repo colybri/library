@@ -71,6 +71,25 @@ jobs:
       - name: PHPUnit
         run: vendor/bin/phpunit -c phpunit.xml.dist
 
+  docs:
+    name: OpenAPI and AsyncAPI specifications
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Same versions as `make api-docs-lint`. Rules in apps/api/redocly.yaml.
+      - name: Lint the OpenAPI specification
+        run: npx --yes @redocly/cli@1.34.5 lint
+
+      - name: Validate the AsyncAPI specification
+        run: npx --yes @asyncapi/cli@2.16.0 validate docs/asyncapi/asyncapi.yml
+        env:
+          ASYNCAPI_METRICS: 'false'
+
   integration:
     name: Message bus integration (Postgres + RabbitMQ + Redis)
     runs-on: ubuntu-latest

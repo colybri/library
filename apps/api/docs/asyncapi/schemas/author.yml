@@ -1,0 +1,27 @@
+# Payloads of the Author events. Field definitions are shared with OpenAPI.
+AuthorCreatedPayload:
+  type: object
+  properties:
+    id:
+      $ref: ../../openapi/schemas/author.yml#/properties/id
+    name:
+      $ref: ../../openapi/schemas/author.yml#/properties/firstName
+      description: First name of the author (`firstName` in the HTTP API)
+    lastName:
+      $ref: ../../openapi/schemas/author.yml#/properties/lastName
+    countryId:
+      $ref: ../../openapi/schemas/author.yml#/properties/countryId
+    isPseudonymOf:
+      $ref: ../../openapi/schemas/author.yml#/properties/isPseudonymOf
+    bornAt:
+      $ref: ../../openapi/schemas/author.yml#/properties/bornAt
+    deathAt:
+      $ref: ../../openapi/schemas/author.yml#/properties/deathAt
+  required: [ id, name, lastName, countryId, isPseudonymOf, bornAt, deathAt ]
+
+AuthorDeletedPayload:
+  type: object
+  properties:
+    id:
+      $ref: ../../openapi/schemas/author.yml#/properties/id
+  required: [ id ]
