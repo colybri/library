@@ -20,3 +20,7 @@ book_routes:
 edition_routes:
     resource: prod/edition/routes.yaml
     prefix: api/v1
+
+edition_resource_routes:
+    resource: prod/edition_resource/routes.yaml
+    prefix: api/v1

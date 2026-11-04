@@ -24,6 +24,7 @@ flowchart LR
             rabbit[["rabbitmq<br/>RabbitMQ"]]
             redis[("redis<br/>Redis")]
             pgadmin["pgadmin<br/>pgAdmin"]
+            seaweedfs[("seaweedfs<br/>SeaweedFS (S3)")]
         end
     end
 
@@ -32,12 +33,13 @@ flowchart LR
     php --> postgres
     php --> rabbit
     php --> redis
+    php -->|"S3"| seaweedfs
     rabbit --> consumers
     consumers --> postgres
     pgadmin --> postgres
 ```
 
-[docker-compose.yml](docker-compose.yml) no define servicios: incluye (`include`) un fichero de infraestructura compartida y otro por app. Cada fichero incluido resuelve sus rutas relativas desde su propia carpeta. Todos forman el proyecto `library`, así que comparten red y los volúmenes conservan sus nombres (`library_amqp-data`, `library_php_socket`). Los datos de PostgreSQL y Redis están en `./postgres_data` y `./redis_data`.
+[docker-compose.yml](docker-compose.yml) no define servicios: incluye (`include`) un fichero de infraestructura compartida y otro por app. Cada fichero incluido resuelve sus rutas relativas desde su propia carpeta. Todos forman el proyecto `library`, así que comparten red y los volúmenes conservan sus nombres (`library_amqp-data`, `library_php_socket`). Los datos de PostgreSQL y Redis están en `./postgres_data` y `./redis_data`; los ficheros de SeaweedFS, en el volumen `library_seaweedfs_data`.
 
 | Servicio | Fichero | Puertos en el host | Función |
 |---|---|---|---|
@@ -48,6 +50,7 @@ flowchart LR
 | `rabbitmq` | [docker/compose.infra.yml](docker/compose.infra.yml) | 5672, 15672 | RabbitMQ con el plugin de gestión |
 | `redis` | [docker/compose.infra.yml](docker/compose.infra.yml) | 6379 | Redis con contraseña `REDIS_PASSWORD` |
 | `pgadmin` | [docker/compose.infra.yml](docker/compose.infra.yml) | 5050 | pgAdmin 4 |
+| `seaweedfs` | [docker/compose.infra.yml](docker/compose.infra.yml) | Ninguno | Almacenamiento S3 de los recursos de las ediciones. Crea el bucket `S3_BUCKET` al arrancar; los ficheros solo se descargan a través de la API |
 
 El stack de observabilidad (Elastic) está en [docker/compose.elastic.yml](docker/compose.elastic.yml), en el perfil `elastic`: `make up` no lo arranca. Ver [Observabilidad](#observabilidad).
 
@@ -71,7 +74,7 @@ cp .env.dist .env
 cp apps/api/.env.dist apps/api/.env
 ```
 
-Las credenciales de Postgres, Redis y RabbitMQ deben coincidir en los dos ficheros. Dentro de Docker, los hosts de `apps/api/.env` son los nombres de los servicios: `postgres`, `rabbitmq` y `redis`. Si una contraseña del `.env` de la raíz contiene `$`, escríbela con `$$` o entre comillas simples.
+Las credenciales de Postgres, Redis, RabbitMQ y S3 (`S3_ACCESS_KEY`, `S3_SECRET_KEY`, `S3_BUCKET`) deben coincidir en los dos ficheros. Dentro de Docker, los hosts de `apps/api/.env` son los nombres de los servicios: `postgres`, `rabbitmq` y `redis`, y `S3_ENDPOINT=http://seaweedfs:8333`. Si una contraseña del `.env` de la raíz contiene `$`, escríbela con `$$` o entre comillas simples.
 
 ## Arranque con Docker
 
@@ -94,6 +97,14 @@ make stop
 ```
 
 La API queda en `https://localhost/api/v1`. Para crear un usuario y obtener un token, sigue el [README de la API](apps/api/README.md#crear-un-usuario-y-obtener-un-token).
+
+### Actualizar una base de datos existente
+
+`make api-restore` carga el esquema completo en una base de datos vacía. Los cambios de esquema posteriores están en [apps/api/migrations/updates/](apps/api/migrations/updates); aplica cada uno una vez, en orden:
+
+```bash
+make api-migrate f=migrations/updates/2026-11-04-edition-resources.sql
+```
 
 Sin `make`, usa `docker compose` desde la raíz pasando tu usuario: `USER_ID=$(id -u) GROUP_ID=$(id -g) docker compose up --detach`. `make down` elimina los contenedores pero no los datos de `./postgres_data` ni `./redis_data`. No uses `docker compose down -v` salvo que quieras **borrar también el volumen de RabbitMQ (`amqp-data`)**.
 
@@ -169,10 +180,10 @@ El primer arranque tarda unos minutos. Para no ver avisos de certificado en el n
 ├── apps/
 │   └── api/                    # API Symfony: código, Dockerfile, compose.api.yml, Makefile, .env.dist
 ├── docker/
-│   ├── compose.infra.yml       # postgres, rabbitmq, redis, pgadmin
+│   ├── compose.infra.yml       # postgres, rabbitmq, redis, pgadmin, seaweedfs
 │   ├── compose.elastic.yml     # Elastic (perfil elastic): ES, Kibana, APM, Filebeat, Metricbeat
 │   ├── elastic/                # setup, configuración de los Beats y del APM Server, dashboards y alertas
-│   ├── postgres/  rabbit/  redis/
+│   ├── postgres/  rabbit/  redis/  seaweedfs/
 ├── .github/workflows/
 │   ├── api.yml                 # CI de la API
 │   └── elastic.yml             # CI del stack de Elastic: prueba de punta a punta
@@ -184,7 +195,7 @@ El primer arranque tarda unos minutos. Para no ver avisos de certificado en el n
 
 ## CI
 
-Cada app tiene su propio workflow, que solo se ejecuta cuando cambian sus ficheros. [elastic.yml](.github/workflows/elastic.yml) arranca todo con el perfil `elastic` y lo comprueba de punta a punta: la traza de un `POST` hasta el consumidor, logs, métricas, alertas y dashboards. Las capturas de los dashboards quedan en los artefactos de la ejecución. [api.yml](.github/workflows/api.yml) se lanza en `master` y en los pull requests que tocan `apps/api/`, `docker/`, `docker-compose.yml` o el propio workflow; también se puede lanzar a mano desde la pestaña Actions. No hay checks obligatorios en `master`. Ninguna imagen se publica en un registro.
+Cada app tiene su propio workflow, que solo se ejecuta cuando cambian sus ficheros. [elastic.yml](.github/workflows/elastic.yml) arranca todo con el perfil `elastic` y lo comprueba de punta a punta: la traza de un `POST` hasta el consumidor, la subida y descarga de un recurso de una edición a través de SeaweedFS, logs, métricas, alertas y dashboards. Las capturas de los dashboards quedan en los artefactos de la ejecución. [api.yml](.github/workflows/api.yml) se lanza en `master` y en los pull requests que tocan `apps/api/`, `docker/`, `docker-compose.yml` o el propio workflow; también se puede lanzar a mano desde la pestaña Actions. No hay checks obligatorios en `master`. Ninguna imagen se publica en un registro.
 
 ## Licencia
 

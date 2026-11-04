@@ -1,0 +1,19 @@
+edition_resources:
+  path: /edition/{id}/resource
+  controller: Colybri\Library\Entrypoint\Controller\EditionResource\ListEditionResourcesController
+  methods: GET
+
+create_edition_resource:
+  path: /edition/{id}/resource
+  controller: Colybri\Library\Entrypoint\Controller\EditionResource\CreateEditionResourceController
+  methods: POST
+
+download_edition_resource:
+  path: /edition/{id}/resource/{resourceId}
+  controller: Colybri\Library\Entrypoint\Controller\EditionResource\DownloadEditionResourceController
+  methods: GET
+
+delete_edition_resource:
+  path: /edition/{id}/resource/{resourceId}
+  controller: Colybri\Library\Entrypoint\Controller\EditionResource\DeleteEditionResourceController
+  methods: DELETE

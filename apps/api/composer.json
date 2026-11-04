@@ -20,6 +20,8 @@
         "elastic/ecs-logging": "^2.0",
         "fale/isbn": "^3.1",
         "guzzlehttp/guzzle": "^7.4",
+        "league/flysystem-aws-s3-v3": "^3.35",
+        "league/flysystem-bundle": "^3.7",
         "lexik/jwt-authentication-bundle": "^3.1",
         "open-telemetry/exporter-otlp": "^1.4",
         "open-telemetry/opentelemetry-auto-ext-amqp": "^0.1",

@@ -36,6 +36,8 @@ tags:
     description: A work, independent of its editions
   - name: Edition
     description: A published edition of a book
+  - name: Edition resource
+    description: Files attached to an edition, stored in S3 and served by the API
   - name: Publisher
     description: Publishing houses
   - name: Country
@@ -60,6 +62,10 @@ paths:
     $ref: ./paths/edition.yml#/seek
   /api/v1/edition/{id}:
     $ref: ./paths/edition.yml#/item
+  /api/v1/edition/{id}/resource:
+    $ref: ./paths/edition-resource.yml#/collection
+  /api/v1/edition/{id}/resource/{resourceId}:
+    $ref: ./paths/edition-resource.yml#/item
   /api/v1/publisher:
     $ref: ./paths/publisher.yml#/collection
   /api/v1/publisher/match:
@@ -85,6 +91,10 @@ components:
       $ref: ./schemas/book.yml
     Edition:
       $ref: ./schemas/edition.yml
+    EditionResource:
+      $ref: ./schemas/edition-resource.yml
+    EditionResourceUpload:
+      $ref: ./schemas/edition-resource-upload.yml
     Publisher:
       $ref: ./schemas/publisher.yml
     Country:

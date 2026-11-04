@@ -1,0 +1,8 @@
+name: resourceId
+in: path
+required: true
+description: Identifier of the edition resource
+schema:
+  type: string
+  format: uuid
+example: 0b8f5a52-6c3e-4f0e-9d4a-2f1c7e9b6a10

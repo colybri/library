@@ -120,14 +120,27 @@ CREATE TABLE public.editions (
     subtitle text,
     locale character(2) NOT NULL,
     image character varying,
-    resource character varying,
-    resource_type character varying[],
     condition character varying,
     pages integer,
     city character varying NOT NULL,
     is_on_library boolean DEFAULT false NOT NULL,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at timestamp with time zone
+);
+
+
+--
+-- Name: edition_resources; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.edition_resources (
+    id uuid NOT NULL,
+    edition_id uuid NOT NULL,
+    name character varying(255) NOT NULL,
+    file_name character varying(255) NOT NULL,
+    media_type character varying NOT NULL,
+    size bigint NOT NULL,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 
@@ -289,6 +302,14 @@ ALTER TABLE ONLY public.editions
 
 
 --
+-- Name: edition_resources edition_resources_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.edition_resources
+    ADD CONSTRAINT edition_resources_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: events_pending_queue events_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -345,6 +366,13 @@ ALTER TABLE ONLY public.publishers
 
 
 --
+-- Name: edition_resources_edition_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX edition_resources_edition_id_idx ON public.edition_resources USING btree (edition_id);
+
+
+--
 -- Name: books_authors authors_foreign_books; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -374,6 +402,14 @@ ALTER TABLE ONLY public.authors
 
 ALTER TABLE ONLY public.books_authors
     ADD CONSTRAINT books_foreign_authors FOREIGN KEY (author_id) REFERENCES public.authors(id);
+
+
+--
+-- Name: edition_resources edition_resources_foreign_editions; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.edition_resources
+    ADD CONSTRAINT edition_resources_foreign_editions FOREIGN KEY (edition_id) REFERENCES public.editions(id) ON DELETE CASCADE;
 
 
 --
