@@ -28,9 +28,9 @@ use PHPUnit\Framework\TestCase;
 
 final class EditionResourceServicesTest extends TestCase
 {
-    private MockObject $editions;
-    private MockObject $resources;
-    private MockObject $storage;
+    private EditionRepository&MockObject $editions;
+    private EditionResourceRepository&MockObject $resources;
+    private EditionResourceStorage&MockObject $storage;
 
     protected function setUp(): void
     {
