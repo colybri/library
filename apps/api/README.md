@@ -11,6 +11,7 @@ La aplicación expone una API JSON bajo el prefijo `/api/v1` pensada para ser co
 - Dar de alta, consultar, modificar y borrar los recursos del catálogo.
 - Buscar autores, editoriales y países por palabras clave con paginación (`keywords`, `offset`, `limit`).
 - Buscar ediciones en la API de Google Books por título, autor, editorial o ISBN (`/api/v1/edition/seek`).
+- Adjuntar ficheros a una edición (PDF, EPUB, JPEG, PNG, WebP o texto, hasta 200 MB), listarlos, descargarlos y borrarlos. Se guardan en S3 (SeaweedFS) y solo se descargan a través de la API.
 - Autenticarse con email y contraseña para obtener un token JWT.
 
 Cada caso de uso es un comando o una consulta que se despacha por un bus de Symfony Messenger (`command.bus`, `query.bus`). Los agregados emiten eventos de dominio (por ejemplo `AuthorCreated`) que se publican en un exchange de RabbitMQ; si RabbitMQ no está disponible, el evento se guarda en PostgreSQL como respaldo. Los suscriptores de dominio consumen esos eventos mediante comandos de consola.
@@ -105,6 +106,10 @@ Después edita `apps/api/.env` con tus valores. Las variables más importantes:
 | `RABBITMQ_EXCHANGE` | Sí | Exchange donde se publican los eventos | `library` |
 | `RABBITMQ_MAX_RETRIES` | Sí | Reintentos de un mensaje antes de descartarlo | `3` |
 | `REDIS_URL` | Sí | DSN de Redis para sesiones y mensajes ya procesados. Con Docker, `redis://<REDIS_PASSWORD>@redis:6379` | `redis://127.0.0.1:6379` |
+| `S3_ENDPOINT` | Sí | URL del servicio S3 de los recursos de las ediciones. Con Docker, `http://seaweedfs:8333` | `http://127.0.0.1:8333` |
+| `S3_REGION` | Sí | Región S3 (SeaweedFS la ignora) | `us-east-1` |
+| `S3_ACCESS_KEY`, `S3_SECRET_KEY` | Sí | Credenciales S3 (con Docker, las mismas que en el `.env` de la raíz) | `library`, `changeme-s3-secret` |
+| `S3_BUCKET` | Sí | Bucket de los recursos (con Docker, el mismo que en el `.env` de la raíz) | `library-resources` |
 | `JWT_SECRET_KEY`, `JWT_PUBLIC_KEY`, `JWT_PASSPHRASE` | Sí | Claves y frase de paso para firmar los JWT | `config/jwt/*.pem`, `ChangeMe` |
 | `GOOGLE_BOOKS_API_KEY` | No | Clave de la API de Google Books | Vacía |
 | `BEHAT_USER`, `BEHAT_PASSWORD` | Para Behat | Email y contraseña de un usuario existente para el paso `an authentificated user` | Vacías |
@@ -226,10 +231,13 @@ Todas las rutas están en `config/routes/` con el prefijo `/api/v1`. `make api-c
 | REST | GET | `/api/v1/edition/seek` | Buscar ediciones en Google Books (`title`, `author`, `publisher`, `isbn`) | Firewall `api` (JWT) |
 | REST | GET | `/api/v1/edition/{id}` | Obtener una edición | Firewall `api` (JWT) |
 | REST | POST | `/api/v1/edition` | Crear una edición | Firewall `api` (JWT) |
+| REST | POST | `/api/v1/edition/{id}/resource` | Subir un fichero a una edición (`multipart/form-data`: `id`, `name` opcional, `file`) | Firewall `api` (JWT) |
+| REST | GET | `/api/v1/edition/{id}/resource` | Listar los ficheros de una edición | Firewall `api` (JWT) |
+| REST | GET | `/api/v1/edition/{id}/resource/{resourceId}` | Descargar un fichero | Firewall `api` (JWT) |
 | REST | GET | `/api/v1/publisher/match` | Buscar editoriales | Firewall `api` (JWT) |
 | REST | GET | `/api/v1/country/match` | Buscar países | Firewall `api` (JWT) |
 
-Autores, libros, ediciones y editoriales tienen también `PUT` sobre la ruta base (por ejemplo `PUT /api/v1/author`) y `DELETE` sobre la ruta con id (por ejemplo `DELETE /api/v1/author/{id}`).
+Autores, libros, ediciones y editoriales tienen también `PUT` sobre la ruta base (por ejemplo `PUT /api/v1/author`) y `DELETE` sobre la ruta con id (por ejemplo `DELETE /api/v1/author/{id}`). Los ficheros de una edición se borran con `DELETE /api/v1/edition/{id}/resource/{resourceId}`, y todos a la vez al borrar la edición.
 
 Las reglas `access_control` de [config/packages/security.yaml](config/packages/security.yaml) dejan público solo `/api/v1/login_check` y exigen un JWT válido en el resto de rutas; sin él responden 401. El detalle de cada operación (cuerpos, respuestas y errores) está en la [especificación OpenAPI](docs/openapi/openapi.yml).
 

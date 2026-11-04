@@ -12,7 +12,7 @@ REDOCLY_VERSION  = 1.34.5
 ASYNCAPI_VERSION = 2.16.0
 
 .DEFAULT_GOAL = help
-.PHONY: help sh consumers-logs consumers-restart consumers-status test test-integration behat grumphp lint docs docs-down docs-lint fix report coverage dump restore composer console cc cache
+.PHONY: help sh consumers-logs consumers-restart consumers-status test test-integration behat grumphp lint docs docs-down docs-lint fix report coverage dump restore migrate composer console cc cache
 
 ## —— The Library API ———————————————————————————————————————————————————————
 help: ## Outputs this help screen
@@ -82,6 +82,10 @@ dump: ## Dump the schema and the countries data to migrations/library.sql (no li
 
 restore: ## Restore database from migrations
 	@$(DOCKER_COMP) exec -T postgres sh -c 'psql -U "$$POSTGRES_USER" library' < ./migrations/library.sql
+
+migrate: ## Apply an incremental migration to an existing database, example: make api-migrate f=migrations/updates/2026-11-04-edition-resources.sql
+	@test -n "$(f)" || (echo 'Pass the file: f=migrations/updates/<file>.sql' && exit 1)
+	@$(DOCKER_COMP) exec -T postgres sh -c 'psql -U "$$POSTGRES_USER" -d library -v ON_ERROR_STOP=1' < ./$(f)
 
 ## —— Composer ——————————————————————————————————————————————————————————————
 composer: ## Execute composer with parameter "c=", example: make api-composer c="require vendor/package"

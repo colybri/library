@@ -1,0 +1,45 @@
+type: object
+description: A file attached to an edition (a PDF or EPUB copy, a cover scan, notes...)
+properties:
+  id:
+    type: string
+    format: uuid
+    examples: [ 0b8f5a52-6c3e-4f0e-9d4a-2f1c7e9b6a10 ]
+  editionId:
+    type: string
+    format: uuid
+    examples: [ 7d1e2f3a-4b5c-4d6e-8f70-81a2b3c4d5e6 ]
+  name:
+    type: string
+    minLength: 1
+    maxLength: 255
+    description: Name shown for the resource
+    examples: [ Scanned copy ]
+  fileName:
+    type: string
+    minLength: 1
+    maxLength: 255
+    description: Original name of the uploaded file, used when it is downloaded
+    examples: [ das-prinzip-verantwortung.pdf ]
+  mediaType:
+    $ref: '#/$defs/MediaType'
+  size:
+    type: integer
+    minimum: 1
+    maximum: 209715200
+    description: Size of the file in bytes
+    examples: [ 1048576 ]
+required: [ id, editionId, name, fileName, mediaType, size ]
+
+$defs:
+  MediaType:
+    type: string
+    description: Media type detected from the file content when it was uploaded
+    enum:
+      - application/pdf
+      - application/epub+zip
+      - image/jpeg
+      - image/png
+      - image/webp
+      - text/plain
+    examples: [ application/pdf ]

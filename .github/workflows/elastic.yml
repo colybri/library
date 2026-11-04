@@ -118,6 +118,7 @@ jobs:
           # "#" as delimiter: with "|" the alternation \| would be a literal "|"
           sed -i 's#@127.0.0.1:5432#@postgres:5432#; s#^POSTGRES_\(WRITE\|READ\)_HOST=.*#POSTGRES_\1_HOST=postgres#' .env
           sed -i 's|^RABBITMQ_HOST=.*|RABBITMQ_HOST=rabbitmq|; s|^REDIS_URL=.*|REDIS_URL=redis://ci@redis:6379|' .env
+          sed -i 's|^S3_ENDPOINT=.*|S3_ENDPOINT=http://seaweedfs:8333|' .env
 
       - name: Build the PHP image
         run: docker compose build api
@@ -401,6 +402,49 @@ jobs:
               exit 1
             fi
           done
+
+      # Edition resources: the file goes to SeaweedFS (S3) and back through the API
+      - name: Upload, list, download and delete an edition resource
+        run: |
+          api() {
+            curl --silent --show-error -H "Authorization: Bearer ${API_TOKEN}" "$@"
+          }
+          uuid() { cat /proc/sys/kernel/random/uuid; }
+          publisher_id=$(uuid); book_id=$(uuid); edition_id=$(uuid); resource_id=$(uuid)
+          api --fail -X POST http://localhost/api/v1/publisher -H 'Content-Type: application/json' \
+            -d "{\"id\":\"${publisher_id}\",\"name\":\"Editorial CI\",\"city\":\"Madrid\",\"countryId\":\"34d41de4-d197-8f63-5014-7c5e5e8f71e3\",\"foundation\":null}"
+          api --fail -X POST http://localhost/api/v1/book -H 'Content-Type: application/json' \
+            -d "{\"id\":\"${book_id}\",\"title\":\"Los pazos de Ulloa\",\"subtitle\":null,\"authorsIds\":[\"${AUTHOR_ID}\"],\"isPseudo\":false,\"publishYear\":1886,\"estimatedPublishYear\":false,\"isOnWishList\":false}"
+          api --fail -X POST http://localhost/api/v1/edition -H 'Content-Type: application/json' \
+            -d "{\"id\":\"${edition_id}\",\"title\":\"Los pazos de Ulloa\",\"year\":1886,\"language\":\"es\",\"isbn\":\"978-3-518-39685-8\",\"city\":\"Barcelona\",\"publisherId\":\"${publisher_id}\",\"bookId\":\"${book_id}\",\"isOnLibrary\":false,\"condition\":null}"
+
+          # A small PDF, and a file whose content is not an allowed type
+          printf '%%PDF-1.4\n1 0 obj << /Type /Catalog >> endobj\ntrailer << /Root 1 0 R >>\n%%%%EOF\n' > resource.pdf
+          head -c 2048 /dev/urandom > resource.bin
+          code=$(api --output response.txt --write-out '%{http_code}' -X POST "http://localhost/api/v1/edition/${edition_id}/resource" \
+            -F "id=$(uuid)" -F 'file=@resource.bin;type=application/pdf')
+          cat response.txt; echo
+          test "$code" = 400
+
+          code=$(api --output response.txt --write-out '%{http_code}' -X POST "http://localhost/api/v1/edition/${edition_id}/resource" \
+            -F "id=${resource_id}" -F 'name=Copia escaneada' -F 'file=@resource.pdf;filename=los-pazos.pdf')
+          cat response.txt; echo
+          test "$code" = 201
+
+          api --fail "http://localhost/api/v1/edition/${edition_id}/resource" | tee list.json; echo
+          jq -e --arg id "$resource_id" 'length == 1 and .[0].id == $id and .[0].mediaType == "application/pdf"
+            and .[0].fileName == "los-pazos.pdf" and .[0].name == "Copia escaneada"' list.json
+
+          api --fail --dump-header headers.txt --output downloaded.pdf "http://localhost/api/v1/edition/${edition_id}/resource/${resource_id}"
+          cat headers.txt
+          cmp resource.pdf downloaded.pdf
+          grep -qi '^content-disposition: attachment; filename=los-pazos.pdf' headers.txt
+
+          code=$(api --output /dev/null --write-out '%{http_code}' -X DELETE "http://localhost/api/v1/edition/${edition_id}/resource/${resource_id}")
+          test "$code" = 204
+          code=$(api --output /dev/null --write-out '%{http_code}' "http://localhost/api/v1/edition/${edition_id}/resource/${resource_id}")
+          test "$code" = 404
+          api --fail "http://localhost/api/v1/edition/${edition_id}/resource" | jq -e 'length == 0'
 
       - name: The connector writes alerts to library-alerts
         run: |

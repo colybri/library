@@ -1,0 +1,106 @@
+collection:
+  parameters:
+    - $ref: ../parameters/id.yml
+  get:
+    operationId: listEditionResources
+    summary: List the resources of an edition
+    description: Metadata only, oldest first. Download each file with its own endpoint.
+    tags: [ Edition resource ]
+    responses:
+      '200':
+        description: The resources of the edition
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: ../schemas/edition-resource.yml
+      '400':
+        $ref: ../components/responses.yml#/InvalidArgument
+      '401':
+        $ref: ../components/responses.yml#/Unauthorized
+      '404':
+        $ref: ../components/responses.yml#/NotFound
+  post:
+    operationId: createEditionResource
+    summary: Upload a resource to an edition
+    description: |
+      Uploads a file (at most 200 MB) to the edition. The client generates the
+      identifier of the new resource. The file is stored in S3 and is only
+      reachable through this API.
+    tags: [ Edition resource ]
+    requestBody:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            $ref: ../schemas/edition-resource-upload.yml
+    responses:
+      '201':
+        $ref: ../components/responses.yml#/Created
+      '400':
+        $ref: ../components/responses.yml#/InvalidArgument
+      '401':
+        $ref: ../components/responses.yml#/Unauthorized
+      '404':
+        $ref: ../components/responses.yml#/NotFound
+      '409':
+        $ref: ../components/responses.yml#/Conflict
+      '413':
+        description: The request is larger than the upload limit (nginx answers with an HTML page)
+
+item:
+  parameters:
+    - $ref: ../parameters/id.yml
+    - $ref: ../parameters/resource-id.yml
+  get:
+    operationId: downloadEditionResource
+    summary: Download a resource
+    description: Returns the file as an attachment, with its original name.
+    tags: [ Edition resource ]
+    responses:
+      '200':
+        description: The file
+        headers:
+          Content-Disposition:
+            description: attachment, with the original file name
+            schema:
+              type: string
+              examples: [ attachment; filename=das-prinzip-verantwortung.pdf ]
+          Content-Length:
+            schema:
+              type: integer
+        content:
+          application/pdf:
+            schema: { }
+          application/epub+zip:
+            schema: { }
+          image/jpeg:
+            schema: { }
+          image/png:
+            schema: { }
+          image/webp:
+            schema: { }
+          text/plain:
+            schema:
+              type: string
+      '400':
+        $ref: ../components/responses.yml#/InvalidArgument
+      '401':
+        $ref: ../components/responses.yml#/Unauthorized
+      '404':
+        $ref: ../components/responses.yml#/NotFound
+  delete:
+    operationId: deleteEditionResource
+    summary: Delete a resource
+    description: Deletes the resource and its file.
+    tags: [ Edition resource ]
+    responses:
+      '204':
+        $ref: ../components/responses.yml#/Deleted
+      '400':
+        $ref: ../components/responses.yml#/InvalidArgument
+      '401':
+        $ref: ../components/responses.yml#/Unauthorized
+      '404':
+        $ref: ../components/responses.yml#/NotFound
