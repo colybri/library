@@ -105,7 +105,7 @@ Después edita `apps/api/.env` con tus valores. Las variables más importantes:
 | `RABBITMQ_LOGIN`, `RABBITMQ_PASSWORD` | Sí | Credenciales de RabbitMQ (con Docker, las mismas que en el `.env` de la raíz) | `guest` |
 | `RABBITMQ_EXCHANGE` | Sí | Exchange donde se publican los eventos | `library` |
 | `RABBITMQ_MAX_RETRIES` | Sí | Reintentos de un mensaje antes de descartarlo | `3` |
-| `REDIS_URL` | Sí | DSN de Redis para sesiones y mensajes ya procesados. Con Docker, `redis://<REDIS_PASSWORD>@redis:6379` | `redis://127.0.0.1:6379` |
+| `REDIS_URL` | Sí | DSN de Redis para sesiones y mensajes ya procesados. Con Docker, `redis://<REDIS_PASSWORD>@redis:6379` | `redis://changeme-redis@127.0.0.1:6379` |
 | `S3_ENDPOINT` | Sí | URL del servicio S3 de los recursos de las ediciones. Con Docker, `http://seaweedfs:8333` | `http://127.0.0.1:8333` |
 | `S3_REGION` | Sí | Región S3 (SeaweedFS la ignora) | `us-east-1` |
 | `S3_ACCESS_KEY`, `S3_SECRET_KEY` | Sí | Credenciales S3 (con Docker, las mismas que en el `.env` de la raíz) | `library`, `changeme-s3-secret` |
@@ -300,7 +300,7 @@ Comandos de consola propios (`make api-console c="..."`):
 
 | Comando | Descripción |
 |---|---|
-| `library:user:create id email password isActive` | Crea un usuario |
+| `library:user:create id email password isActive` | Crea un usuario. `isActive` es `1`/`true`/`yes` o `0`/`false`/`no`; un usuario inactivo no puede hacer login y sus JWT dejan de valer |
 | `library:fixtures:generate` / `library:fixtures:clean` | Carga o elimina datos de prueba |
 | `library:rabbit:configure` | Declara el exchange y las colas de los suscriptores |
 | `library:rabbit:consume cola` | Consume los eventos de una cola de RabbitMQ hasta que se detiene el proceso |

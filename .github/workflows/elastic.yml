@@ -50,6 +50,10 @@ on:
       - 'apps/api/src/Infrastructure/Messaging/**'
   workflow_dispatch:
 
+# The jobs only read the repository
+permissions:
+  contents: read
+
 concurrency:
   group: elastic-${{ github.ref }}
   cancel-in-progress: true

@@ -13,6 +13,7 @@ use Colybri\Criteria\Domain\Filters;
 use Colybri\Criteria\Domain\FilterValue;
 use Colybri\Criteria\Domain\Order;
 use Colybri\Library\Domain\Model\Book\ValueObject\BookTitle;
+use Colybri\Library\Infrastructure\Persistence\Api\Google\GoogleBooksUnavailable;
 use Colybri\Library\Infrastructure\Persistence\Api\Google\Repository\Edition\EditionGoogleRepository;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
@@ -55,9 +56,32 @@ final class EditionGoogleRepositoryTest extends TestCase
         self::assertSame([], $repository->match($this->criteria('xyz')));
     }
 
-    private function repository(array $body): EditionGoogleRepository
+    #[Test]
+    public function given_a_google_error_when_matching_then_the_exception_does_not_carry_the_api_key(): void
     {
-        $stack = HandlerStack::create(new MockHandler([new Response(200, [], (string) \json_encode($body))]));
+        $previous = $_ENV['GOOGLE_BOOKS_API_KEY'] ?? null;
+        $_ENV['GOOGLE_BOOKS_API_KEY'] = 'secret-api-key';
+
+        try {
+            $this->repository(new Response(400, [], 'Bad Request'))->match($this->criteria('x'));
+            self::fail('A Google error must reach the caller');
+        } catch (GoogleBooksUnavailable $exception) {
+            self::assertStringNotContainsString('secret-api-key', $exception->getMessage());
+            self::assertStringContainsString('key=REDACTED', $exception->getMessage());
+            self::assertNull($exception->getPrevious());
+        } finally {
+            if (null === $previous) {
+                unset($_ENV['GOOGLE_BOOKS_API_KEY']);
+            } else {
+                $_ENV['GOOGLE_BOOKS_API_KEY'] = $previous;
+            }
+        }
+    }
+
+    private function repository(array|Response $body): EditionGoogleRepository
+    {
+        $response = $body instanceof Response ? $body : new Response(200, [], (string) \json_encode($body));
+        $stack = HandlerStack::create(new MockHandler([$response]));
         $stack->push(Middleware::history($this->history));
 
         return new EditionGoogleRepository(new Client([

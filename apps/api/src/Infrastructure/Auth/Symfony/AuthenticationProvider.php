@@ -11,8 +11,17 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 final class AuthenticationProvider implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    public function __construct(private UserEmail $email, private UserPassword $password)
+    public function __construct(
+        private UserEmail $email,
+        private UserPassword $password,
+        private bool $active,
+    ) {
+    }
+
+    /** users.is_active: UserChecker rejects the login and the JWT of an inactive user */
+    public function isActive(): bool
     {
+        return $this->active;
     }
 
     public function getPassword(): string

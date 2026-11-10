@@ -9,6 +9,7 @@ use Colybri\Criteria\Infrastructure\Adapter\EntityMap;
 use Colybri\Library\Infrastructure\Tracing\GuzzleTracingMiddleware;
 use Colybri\Library\Infrastructure\Tracing\Tracing;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\HandlerStack;
 
 class GoogleRepository
@@ -41,7 +42,17 @@ class GoogleRepository
 
     protected function get($path)
     {
-        $request = $this->client->request('GET', $path);
+        try {
+            $request = $this->client->request('GET', $path);
+        } catch (GuzzleException $exception) {
+            // The message of a Guzzle exception holds the request URI with the
+            // API key. Rethrow without it, and without the original exception
+            // as previous, so the key reaches neither the logs nor the traces.
+            throw new GoogleBooksUnavailable(
+                GuzzleTracingMiddleware::redactedMessage($exception->getMessage()),
+                (int) $exception->getCode()
+            );
+        }
 
         $response = json_decode($request->getBody()->getContents());
 

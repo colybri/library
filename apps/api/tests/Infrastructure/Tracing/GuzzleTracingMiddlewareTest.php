@@ -73,6 +73,38 @@ final class GuzzleTracingMiddlewareTest extends TestCase
         self::assertCount(1, $span->getEvents());
     }
 
+    #[Test]
+    public function an_error_message_with_the_api_key_is_recorded_without_it(): void
+    {
+        $uri = 'https://www.googleapis.com/books/v1/volumes?q=intitle:x&&key=secret-api-key';
+        $error = new ConnectException(sprintf('cURL error 28: Operation timed out (see %s)', $uri), new Request('GET', $uri));
+
+        try {
+            $this->client($error)->request('GET', $uri);
+            self::fail('The connection error must reach the caller');
+        } catch (ConnectException) {
+        }
+
+        $span = $this->tracing->span('GET www.googleapis.com');
+        $event = $span->getEvents()[0];
+
+        self::assertStringNotContainsString('secret-api-key', $span->getStatus()->getDescription());
+        self::assertStringContainsString('key=REDACTED', $span->getStatus()->getDescription());
+        self::assertSame('exception', $event->getName());
+        self::assertSame(ConnectException::class, $event->getAttributes()->get('exception.type'));
+        self::assertStringNotContainsString('secret-api-key', $event->getAttributes()->get('exception.message'));
+    }
+
+    #[Test]
+    public function the_key_is_redacted_in_guzzle_error_messages(): void
+    {
+        self::assertSame(
+            'Client error: `GET https://www.googleapis.com/books/v1/volumes?q=a&&key=REDACTED` resulted in a `400 Bad Request` response',
+            GuzzleTracingMiddleware::redactedMessage('Client error: `GET https://www.googleapis.com/books/v1/volumes?q=a&&key=AIza-secret_1` resulted in a `400 Bad Request` response')
+        );
+        self::assertSame('no key here', GuzzleTracingMiddleware::redactedMessage('no key here'));
+    }
+
     private function client(Response|\Throwable $result): Client
     {
         $stack = HandlerStack::create(new MockHandler([$result]));

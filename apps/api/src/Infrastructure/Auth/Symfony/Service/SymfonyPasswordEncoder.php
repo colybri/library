@@ -17,7 +17,7 @@ class SymfonyPasswordEncoder implements PasswordGenerator
     }
     public function generate(User $user, UserPassword $password): UserPassword
     {
-        $authUser = new AuthenticationProvider($user->email(), $password);
+        $authUser = new AuthenticationProvider($user->email(), $password, $user->isActive()->value());
         return UserPassword::from($this->passwordHasher->hashPassword($authUser, $password->value()));
     }
 }

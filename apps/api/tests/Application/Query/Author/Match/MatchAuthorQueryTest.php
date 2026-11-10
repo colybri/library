@@ -59,4 +59,19 @@ final class MatchAuthorQueryTest extends TestCase
             ]
         );
     }
+
+    #[Test]
+    public function given_too_long_keywords_when_query_is_created_then_throws_invalid_argument_exception(): void
+    {
+        self::expectException(InvalidArgumentException::class);
+
+        MatchAuthorQuery::fromPayload(
+            Uuid::v4(),
+            [
+                MatchAuthorQuery::KEYWORDS_PAYLOAD => str_repeat('a ', MatchAuthorQuery::KEYWORDS_MAX_LENGTH),
+                MatchAuthorQuery::OFFSET_PAYLOAD => 0,
+                MatchAuthorQuery::LIMIT_PAYLOAD => 10,
+            ]
+        );
+    }
 }

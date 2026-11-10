@@ -55,8 +55,15 @@ final class GuzzleTracingMiddleware
                 },
                 static function (mixed $reason) use ($span): PromiseInterface {
                     if ($reason instanceof \Throwable) {
-                        $span->recordException($reason);
-                        $span->setStatus(StatusCode::STATUS_ERROR, $reason->getMessage());
+                        // Guzzle puts the whole URI, query string included, in the
+                        // message of its exceptions: record it without the key.
+                        // Not recordException(): it would copy the raw message.
+                        $message = self::redactedMessage($reason->getMessage());
+                        $span->addEvent('exception', [
+                            'exception.type'    => $reason::class,
+                            'exception.message' => $message,
+                        ]);
+                        $span->setStatus(StatusCode::STATUS_ERROR, $message);
                     } else {
                         $span->setStatus(StatusCode::STATUS_ERROR);
                     }
@@ -66,6 +73,20 @@ final class GuzzleTracingMiddleware
                 }
             );
         };
+    }
+
+    /** Replaces the value of the secret query parameters wherever they appear in a text */
+    public static function redactedMessage(string $message): string
+    {
+        foreach (self::SECRET_QUERY_PARAMETERS as $name) {
+            $message = (string) preg_replace(
+                '/([?&]' . preg_quote($name, '/') . '=)[^&\s"\'`#<>]*/i',
+                '$1REDACTED',
+                $message
+            );
+        }
+
+        return $message;
     }
 
     public static function redactedUrl(UriInterface $uri): string

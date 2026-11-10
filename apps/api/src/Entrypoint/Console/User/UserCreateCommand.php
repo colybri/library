@@ -28,7 +28,7 @@ final class UserCreateCommand extends Command
         $this->addArgument('id', InputArgument::REQUIRED, 'User id');
         $this->addArgument('email', InputArgument::REQUIRED, 'Email');
         $this->addArgument('password', InputArgument::REQUIRED, 'Password');
-        $this->addArgument('isActive', InputArgument::REQUIRED, 'If is an active user');
+        $this->addArgument('isActive', InputArgument::REQUIRED, 'Whether the user can log in: 1/true/yes or 0/false/no');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -36,7 +36,13 @@ final class UserCreateCommand extends Command
         $userId = $input->getArgument('id');
         $email = $input->getArgument('email');
         $password = $input->getArgument('password');
-        $isActive = $input->getArgument('isActive');
+        // (bool) would turn "false" or "no" into true
+        $isActive = filter_var($input->getArgument('isActive'), FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
+        if (null === $isActive) {
+            $output->writeln('<error>isActive must be 1/true/yes or 0/false/no.</error>');
+
+            return Command::INVALID;
+        }
 
         $this->commandBus->dispatch(CreateUserCommand::fromPayload(
             Uuid::v4(),
@@ -44,7 +50,7 @@ final class UserCreateCommand extends Command
                 CreateUserCommand::USER_ID_PAYLOAD => $userId,
                 CreateUserCommand::USER_EMAIL_PAYLOAD => $email,
                 CreateUserCommand::USER_PASSWORD_PAYLOAD => $password,
-                CreateUserCommand::USER_IS_ACTIVE_PAYLOAD => (bool) $isActive
+                CreateUserCommand::USER_IS_ACTIVE_PAYLOAD => $isActive
             ]
         ));
 
