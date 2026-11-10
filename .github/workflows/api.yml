@@ -19,6 +19,10 @@ on:
       - '.github/workflows/api.yml'
   workflow_dispatch:
 
+# The jobs only read the repository
+permissions:
+  contents: read
+
 concurrency:
   group: api-${{ github.ref }}
   cancel-in-progress: true
@@ -136,6 +140,9 @@ jobs:
         run: psql -h 127.0.0.1 -U library -d library -v ON_ERROR_STOP=1 -q -f migrations/library.sql
 
       - name: Integration tests
+        env:
+          # The CI Redis service has no password (.env.dist has a placeholder one)
+          REDIS_URL: redis://127.0.0.1:6379
         run: vendor/bin/phpunit -c phpunit.xml.dist --testsuite integration
 
   prod-boot:

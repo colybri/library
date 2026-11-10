@@ -16,6 +16,7 @@ security:
         login:
             pattern: ^/api/v1/login
             stateless: true
+            user_checker: Colybri\Library\Infrastructure\Auth\Symfony\UserChecker
             json_login:
                 check_path: /api/v1/login_check
                 provider: app_user_provider
@@ -25,6 +26,7 @@ security:
             pattern: ^/api/v1
             stateless: true
             provider: app_user_provider
+            user_checker: Colybri\Library\Infrastructure\Auth\Symfony\UserChecker
             jwt: ~
 
         main:

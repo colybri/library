@@ -49,8 +49,10 @@ flowchart LR
 | `postgres` | [docker/compose.infra.yml](docker/compose.infra.yml) | 5432 | PostgreSQL 14 con SSL |
 | `rabbitmq` | [docker/compose.infra.yml](docker/compose.infra.yml) | 5672, 15672 | RabbitMQ con el plugin de gestión |
 | `redis` | [docker/compose.infra.yml](docker/compose.infra.yml) | 6379 | Redis con contraseña `REDIS_PASSWORD` |
-| `pgadmin` | [docker/compose.infra.yml](docker/compose.infra.yml) | 5050 | pgAdmin 4 |
+| `pgadmin` | [docker/compose.infra.yml](docker/compose.infra.yml) | 5050 | pgAdmin 4 (usuario `PGADMIN_DEFAULT_EMAIL` / `PGADMIN_DEFAULT_PASSWORD`) |
 | `seaweedfs` | [docker/compose.infra.yml](docker/compose.infra.yml) | Ninguno | Almacenamiento S3 de los recursos de las ediciones. Crea el bucket `S3_BUCKET` al arrancar; los ficheros solo se descargan a través de la API |
+
+Los puertos se publican solo en `127.0.0.1`: desde otra máquina no se llega a ninguno. Para abrir la API a tu red pon `API_BIND_ADDR=0.0.0.0` en el `.env` de la raíz, y `INFRA_BIND_ADDR=0.0.0.0` para Postgres, Redis, RabbitMQ y pgAdmin. El profiler de Symfony (`/_profiler`, `/_wdt`) solo responde a esta máquina aunque abras la API.
 
 El stack de observabilidad (Elastic) está en [docker/compose.elastic.yml](docker/compose.elastic.yml), en el perfil `elastic`: `make up` no lo arranca. Ver [Observabilidad](#observabilidad).
 
@@ -66,7 +68,7 @@ Hay dos ficheros `.env`, los dos ignorados por git:
 
 | Fichero | Lo lee | Plantilla | Contenido |
 |---|---|---|---|
-| `.env` (raíz) | Docker Compose | [.env.dist](.env.dist) | `USER_ID`, credenciales con las que arrancan Postgres, Redis y RabbitMQ, `COVERAGE_DRIVER` |
+| `.env` (raíz) | Docker Compose | [.env.dist](.env.dist) | `USER_ID`, credenciales con las que arrancan Postgres, Redis, RabbitMQ y pgAdmin, direcciones en las que se publican los puertos, `COVERAGE_DRIVER` |
 | `apps/api/.env` | Symfony | [apps/api/.env.dist](apps/api/.env.dist) | Configuración de la API; ver su [README](apps/api/README.md#configuración) |
 
 ```bash

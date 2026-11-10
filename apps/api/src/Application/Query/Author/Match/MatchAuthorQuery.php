@@ -16,6 +16,8 @@ final class MatchAuthorQuery extends Query
     private const VERSION = '1';
     private const NAME = 'match';
 
+    /** Longer phrases only add work: AuthorMatcher uses its first words */
+    public const KEYWORDS_MAX_LENGTH = 128;
     public const KEYWORDS_PAYLOAD = 'keywords';
     public const OFFSET_PAYLOAD = 'offset';
     public const LIMIT_PAYLOAD = 'limit';
@@ -55,7 +57,7 @@ final class MatchAuthorQuery extends Query
         Assert::lazy()
             ->that($payload[MatchAuthorQuery::OFFSET_PAYLOAD])->integerish()->min(0)
             ->that($payload[MatchAuthorQuery::LIMIT_PAYLOAD])->integerish()->min(1)->max(100)
-            ->that($payload[MatchAuthorQuery::KEYWORDS_PAYLOAD])->string()->notEmpty()
+            ->that($payload[MatchAuthorQuery::KEYWORDS_PAYLOAD])->string()->notEmpty()->maxLength(self::KEYWORDS_MAX_LENGTH)
             ->verifyNow();
 
         $this->offset = (int)$payload[self::OFFSET_PAYLOAD];

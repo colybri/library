@@ -62,7 +62,7 @@ final class CreateUserCommand extends Command
             ->that($payload[self::USER_ID_PAYLOAD], self::USER_ID_PAYLOAD)->notEmpty()->uuid()
             ->that($payload[self::USER_EMAIL_PAYLOAD], self::USER_EMAIL_PAYLOAD)->notEmpty()->string()
             ->that($payload[self::USER_PASSWORD_PAYLOAD], self::USER_PASSWORD_PAYLOAD)->notEmpty()->string()
-            ->that($payload[self::USER_IS_ACTIVE_PAYLOAD], self::USER_IS_ACTIVE_PAYLOAD)->notEmpty()->boolean()
+            ->that($payload[self::USER_IS_ACTIVE_PAYLOAD], self::USER_IS_ACTIVE_PAYLOAD)->boolean()
             ->verifyNow();
 
         $this->userId = Uuid::from($payload[self::USER_ID_PAYLOAD]);

@@ -33,6 +33,6 @@ class UserProvider implements UserProviderInterface
             throw new UserNotFoundException();
         }
 
-        return new AuthenticationProvider($user->email(), $user->password());
+        return new AuthenticationProvider($user->email(), $user->password(), $user->isActive()->value());
     }
 }

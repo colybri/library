@@ -72,14 +72,33 @@ final class MatchAuthorQueryHandlerTest extends TestCase
         self::assertSame($response->items()[0]->lastName(), $mockTwo->lastName());
     }
 
-    private function query($limit): MatchAuthorQuery
+    #[Test]
+    public function given_a_long_phrase_when_search_then_queries_are_bounded(): void
+    {
+        $criteria = [];
+        $this->authorRepository->expects(static::exactly(AuthorMatcher::MAX_KEYWORDS))
+            ->method('match')
+            ->willReturnCallback(static function ($criterion) use (&$criteria): array {
+                $criteria[] = $criterion;
+
+                return [];
+            });
+
+        ($this->handler)($this->query(10, 'a  a b c d e f g h i j k'));
+
+        foreach ($criteria as $criterion) {
+            self::assertSame(AuthorMatcher::MAX_MATCHES_PER_KEYWORD, $criterion->limit());
+        }
+    }
+
+    private function query($limit, string $keywords = 'Barruel'): MatchAuthorQuery
     {
         $query = MatchAuthorQuery::fromPayload(
             Uuid::from('2e9d7383-775f-4786-a7f3-b9c560a161ba'),
             [
                 'offset' => 0,
                 'limit' => $limit,
-                'keywords' => 'Barruel'
+                'keywords' => $keywords
             ],
         );
         return $query;

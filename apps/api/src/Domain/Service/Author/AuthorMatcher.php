@@ -20,13 +20,26 @@ use Colybri\Library\Domain\Service\Shared\SimilarityAligner;
 
 final class AuthorMatcher
 {
+    /** One query per word: a phrase of thousands of words would be thousands of queries */
+    public const MAX_KEYWORDS = 5;
+    /** Candidates per word before ranking: no word loads the whole table */
+    public const MAX_MATCHES_PER_KEYWORD = 200;
+
     public function __construct(private AuthorRepository $authorRepository, private SimilarityAligner $aligner)
     {
     }
 
     public function execute($phrase)
     {
-        $keywords = explode(' ', $phrase);
+        // Without empty words ("a  b" would match every author) and repetitions
+        $keywords = array_slice(
+            array_values(array_unique(array_filter(
+                preg_split('/\s+/u', trim((string) $phrase)) ?: [],
+                static fn (string $keyword): bool => '' !== $keyword
+            ))),
+            0,
+            self::MAX_KEYWORDS
+        );
 
         $authors = [];
         foreach ($keywords as $keyword) {
@@ -63,8 +76,8 @@ final class AuthorMatcher
                 )
             ),
             Order::none(),
-            null,
-            null
+            0,
+            self::MAX_MATCHES_PER_KEYWORD
         );
     }
 }

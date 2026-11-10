@@ -18,6 +18,7 @@ RUN set -eux; \
 COPY --chmod=755 15-self-signed-certificate.sh /docker-entrypoint.d/15-self-signed-certificate.sh
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY library-php.conf /etc/nginx/snippets/library-php.conf
 
 # stub_status on the internal port 8080 (only reachable from private networks)
 HEALTHCHECK --interval=10s --timeout=3s --retries=3 \

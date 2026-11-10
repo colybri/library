@@ -41,24 +41,30 @@ services:
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_READ_PASS}
       POSTGRES_USER: ${POSTGRES_READ_USER}
+    # Only from this machine: the published ports are for host tools (psql,
+    # pgAdmin desktop, make). Set INFRA_BIND_ADDR=0.0.0.0 in .env to open them
+    # to the network (they use the credentials of .env).
     ports:
-      - 5432:5432
+      - ${INFRA_BIND_ADDR:-127.0.0.1}:5432:5432
 
   pgadmin:
     image: dpage/pgadmin4:9.19.0
     restart: unless-stopped
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: root
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@example.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:?Set PGADMIN_DEFAULT_PASSWORD in .env}
+    # pgAdmin listens on port 80 inside the container
     ports:
-      - 5050:5050
+      - ${INFRA_BIND_ADDR:-127.0.0.1}:5050:80
 
   redis:
     image: redis:8.10.3-alpine
     restart: unless-stopped
     ports:
-      - "6379:6379"
-    command: redis-server --loglevel warning --requirepass ${REDIS_PASSWORD}
+      - ${INFRA_BIND_ADDR:-127.0.0.1}:6379:6379
+    # An empty password would leave "--requirepass" without a value and Redis
+    # would not start: fail early with a clear message instead.
+    command: redis-server --loglevel warning --requirepass ${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}
     volumes:
       - ../redis_data:/data/redis
 
@@ -66,8 +72,8 @@ services:
     image: rabbitmq:4.4.0
     restart: unless-stopped
     ports:
-      - 5672:5672
-      - 15672:15672
+      - ${INFRA_BIND_ADDR:-127.0.0.1}:5672:5672
+      - ${INFRA_BIND_ADDR:-127.0.0.1}:15672:15672
     # No user override: the image starts as root, fixes the ownership of the
     # amqp-data volume and drops to the rabbitmq user. Running it as the host
     # UID failed with "Error when reading /var/lib/rabbitmq/.erlang.cookie:

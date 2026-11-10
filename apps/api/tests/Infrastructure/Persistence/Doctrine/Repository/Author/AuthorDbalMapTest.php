@@ -19,7 +19,7 @@ use PHPUnit\Framework\TestCase;
 final class AuthorDbalMapTest extends TestCase
 {
     #[Test]
-    public function given_a_keyword_when_matching_authors_then_searches_first_or_last_name_columns(): void
+    public function given_a_keyword_when_matching_authors_then_searches_first_or_last_name_columns_with_a_limit(): void
     {
         $criteria = null;
         $repository = $this->createMock(AuthorRepository::class);
@@ -39,7 +39,7 @@ final class AuthorDbalMapTest extends TestCase
         (new CriteriaDbalAdapter($queryBuilder, new AuthorDbalMap()))->build($criteria);
 
         self::assertSame(
-            'SELECT * FROM authors WHERE ( LOWER(first_name) LIKE :first_name1 OR LOWER(last_name) LIKE :last_name2  )',
+            'SELECT * FROM authors WHERE ( LOWER(first_name) LIKE :first_name1 OR LOWER(last_name) LIKE :last_name2  ) LIMIT 200',
             $queryBuilder->getSQL()
         );
         self::assertSame(['first_name1' => '%guin%', 'last_name2' => '%guin%'], $queryBuilder->getParameters());
